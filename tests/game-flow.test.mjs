@@ -4,13 +4,14 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import * as level from '../dist/src/level.js';
 import * as combat from '../dist/src/combat.js';
+import * as coupling from '../dist/src/coupling.js';
 import * as campaign from '../dist/src/campaign.js';
 
 // Exercise the actual game loop without a rendering surface or audio device.
 function game(){
  const nodes=new Map(),storage=new Map();
  const node=id=>{if(!nodes.has(id))nodes.set(id,{style:{},hidden:true,textContent:'',value:'2',focus(){},getContext(){return {};}});return nodes.get(id);};
- const context=vm.createContext({...level,...combat,...campaign,DEVELOPMENT_MODE:true,
+ const context=vm.createContext({...level,...combat,...campaign,...coupling,DEVELOPMENT_MODE:true,
   document:{getElementById:node,querySelector:node,querySelectorAll:()=>[],addEventListener(){}},
   window:{addEventListener(){}},matchMedia:()=>({matches:false}),innerHeight:720,innerWidth:1280,
   navigator:{getGamepads:()=>[]},performance:{now:()=>0},requestAnimationFrame(){},Image:class {},
@@ -22,7 +23,7 @@ function game(){
 test('finishing level one transitions and automatically enters Dellinger level',()=>{
  const run=game();run('reset();mode="play";player.x=LEVEL.exit+1;update(1/120)');
  assert.equal(run('mode'),'transition');assert.equal(run('saved().stage'),'transition');
- run('pause();update(1)');assert.equal(run('transitionTime'),0);run('resume();update(7)');
+ run('pause();update(1)');assert.equal(run('transitionTime'),0);run('resume();update(COUPLING_DURATION)');
  assert.equal(run('LEVEL.id'),2);assert.equal(run('player.robot'),'dellinger');assert.equal(run('player.health'),150);
  assert.equal(run('saved().levelId'),2);assert.equal(run('mode'),'play');
 });

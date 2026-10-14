@@ -1,3 +1,4 @@
+import {COUPLING_DURATION,couplingState,ease} from './coupling.js';
 import {DEVELOPMENT_MODE} from './config.js';
 import {LEVELS,ROBOTS,GRAVITY,moveBody,overlaps} from './level.js';
 import {setStance,playerShot,shotBounds} from './combat.js';
@@ -46,7 +47,7 @@ function pause(){if(!['play','intro','transition'].includes(mode))return;beforeP
 function resume(){if(innerHeight>innerWidth)return;$('pause-menu').hidden=true;mode=beforePause;$('skip').hidden=mode!=='transition';last=performance.now();acc=0;canvas.focus();}
 function input(){let a=new Set([...keys,...touch]);const gp=navigator.getGamepads?.()[0];if(gp){if(gp.axes[1]<-.4||gp.buttons[12]?.pressed)a.add('up');if(gp.axes[1]>.4||gp.buttons[13]?.pressed)a.add('crouch');if(gp.axes[0]<-.25||gp.buttons[14]?.pressed)a.add('left');if(gp.axes[0]>.25||gp.buttons[15]?.pressed)a.add('right');if(gp.buttons[0]?.pressed)a.add('jump');if(gp.buttons[2]?.pressed||gp.buttons[7]?.pressed)a.add('fire');if(gp.buttons[1]?.pressed)a.add('charge');}return a;}
 function fire(charged=false){const shot=playerShot(player,charged),{x,y}=shot;shots.push(shot);shotCooldown=LEVEL.robot==='dellinger'?.24:.17;if(charged){energy-=35;chargeCooldown=.65;shake=reduced?0:3;}tone(charged?150:620,charged?.22:.08,'sawtooth',.025,charged?50:180);burst(x,y,'#83efff',charged?12:3);}
-function update(dt){clock+=dt;if(clock>toastUntil)$('toast').textContent='';if(mode==='menu'||mode==='pause'||mode==='end')return;if(innerHeight>innerWidth){pause();return;}if(mode==='transition'){transitionTime+=dt;if(transitionTime>=7)finishTransition();return;}if(mode==='dead'){respawnTimer-=dt;if(respawnTimer<=0)respawn();return;}if(mode==='intro'){intro+=dt;player.x=150;player.y=470;if(intro>4){mode='play';toast('PROTESSER ACTIVO · ALCANZA EL HANGAR',3);tone(440,.2,'triangle',.04,880);}return;}
+function update(dt){clock+=dt;if(clock>toastUntil)$('toast').textContent='';if(mode==='menu'||mode==='pause'||mode==='end')return;if(innerHeight>innerWidth){pause();return;}if(mode==='transition'){transitionTime+=dt;if(transitionTime>=COUPLING_DURATION)finishTransition();return;}if(mode==='dead'){respawnTimer-=dt;if(respawnTimer<=0)respawn();return;}if(mode==='intro'){intro+=dt;player.x=150;player.y=470;if(intro>4){mode='play';toast('PROTESSER ACTIVO · ALCANZA EL HANGAR',3);tone(440,.2,'triangle',.04,880);}return;}
 elapsed+=dt;energy=Math.min(100,energy+dt*7);invulnerable=Math.max(0,invulnerable-dt);shotCooldown-=dt;chargeCooldown-=dt;shake=Math.max(0,shake-dt*30);musicTick+=dt;if(musicTick>.6){musicTick=0;const seq=[110,110,146.83,130.81,98,110,164.81,146.83];tone(seq[Math.floor(clock/.6)%8],.3,'triangle',.008);}
 const a=input(),jump=a.has('jump');player.aimUp=a.has('up');setStance(player,a.has('crouch'),ROBOTS[LEVEL.robot].height);if(jump&&!prevJump)jumpBuffer=.13;prevJump=jump;jumpBuffer-=dt;coyote=player.grounded?.1:coyote-dt;player.vx=(Number(a.has('right'))-Number(a.has('left')))*ROBOTS[LEVEL.robot].speed*(player.crouching?.4:1);if(player.vx)player.face=Math.sign(player.vx);if(jumpBuffer>0&&coyote>0){setStance(player,false,ROBOTS[LEVEL.robot].height);player.vy=-ROBOTS[LEVEL.robot].jump;jumpBuffer=0;coyote=0;player.grounded=false;tone(180,.12,'triangle',.03,520);burst(player.x+20,player.y+90,'#c1b093',5);}if(!jump&&player.vy<-250)player.vy+=GRAVITY*dt*.85;player.vy=Math.min(1000,player.vy+GRAVITY*dt);const previousX=player.x;moveBody(player,[...LEVEL.platforms,...barriers.filter(b=>!b.dead)],dt);blockHorizontal(player,previousX,barriers);player.x=Math.max(0,Math.min(LEVEL.width-player.w,player.x));if(player.y>810){player.health=0;mode='dead';respawnTimer=.7;toast('CAÍDA · RECUPERANDO SEÑAL',2);return;}if(a.has('fire')&&shotCooldown<=0)fire();if(a.has('charge')&&!chargeLatch&&energy>=35&&chargeCooldown<=0)fire(true);chargeLatch=a.has('charge');
 for(let i=0;i<LEVEL.checkpoints.length;i++){if(player.x>LEVEL.checkpoints[i].x&&checkpoint<i){checkpoint=i;player.health=ROBOTS[LEVEL.robot].maxHealth;save();toast('PUNTO DE CONTROL · SISTEMAS RESTAURADOS');tone(440,.25,'triangle',.04,880);}}
@@ -84,71 +85,35 @@ function armor(e){
  rect(27,7,22,5,e.timer<.4?'#ffe5a0':'#ff6a4c');line(38,38,38+facing*53,38,'#202b35',16);line(38,33,38+facing*51,33,'#9b9f83',3);
  rect(facing<0?3:56,26,17,40,'#94a083');rect(15,-12,46,3,'#182734');rect(15,-12,46*e.hp/10,3,'#e7b563');ctx.restore();
 }
-// Mechanical cradle inspired by the articulated toy's nested armor shells.
-function couplingBay(close,foreground){
- const openness=1-close;
- const poly=(points,fill,stroke='#8299a6',width=2)=>{ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke();};
- ctx.save();
- if(!foreground){
-  // Beveled pressure frame, recessed lining and ribbed backplate.
-  poly([[776,270],[858,270],[880,290],[880,437],[859,470],[775,470],[754,437],[754,290]],'#a7b6bc','#253b4a',4);
-  poly([[781,280],[852,280],[870,296],[870,434],[853,458],[781,458],[764,434],[764,296]],'#354f63','#dfebeb',2);
-  const well=ctx.createLinearGradient(764,0,870,0);well.addColorStop(0,'#162a3c');well.addColorStop(.45,'#54758a');well.addColorStop(.7,'#304b60');well.addColorStop(1,'#132638');
-  poly([[788,287],[847,287],[859,302],[859,427],[846,447],[788,447],[775,427],[775,302]],well,'#1b2b3a',3);
-  for(let y=306;y<431;y+=19){poly([[789,y],[846,y],[851,y+7],[785,y+7]],'#708997','#263c4a',1);line(795,y+3,842,y+3,'#a4bdc5',1);}
-  // Shoulder pads, central spine and shock-absorbing hip supports.
-  rect(807,293,20,130,'#1c3448');for(let y=300;y<420;y+=13)rect(811,y,12,5,'#a5b6ba');
-  for(const x of [778,843]){rect(x,313,12,48,'#233341');line(x+3,318,x+3,356,'#7a95a4',2);ellipse(x+6,380,9,13,'#172c3c');ellipse(x+6,380,5,8,'#738d9c');}
-  poly([[786,422],[847,422],[856,436],[846,449],[787,449],[779,437]],'#a0acaf','#263b49',2);
-  rect(790,431,23,7,'#253d4e');rect(822,431,23,7,'#253d4e');
-  for(const x of [764,866]){line(x,303,x,427,'#80ddea',3);for(const y of [294,441]){ellipse(x,y,4,4,'#172c3c');ellipse(x,y,2,2,'#e0e7e5');}}
- }
- if(foreground){
-  // Side shells pivot inward. The original sprite supplies the closed armor.
-  for(const side of [-1,1]){
-   const hinge=side<0?755:879,tip=hinge+side*43*openness;
-   line(hinge,309,tip,316,'#bbc5c5',5);line(hinge,410,tip,422,'#b8c2c3',5);
-   poly([[hinge,285],[tip,298],[tip,433],[hinge,450]],'#9b2533','#e96c63',2);
-   poly([[hinge+side*5,297],[tip-side*5,307],[tip-side*5,422],[hinge+side*5,435]],'#b2bdc0','#4a6070',2);
-   for(let y=322;y<408;y+=19)line(hinge+side*9,y,tip-side*9,y+5,'#566e7c',3);
-   for(const y of [300,433]){ellipse(hinge,y,6,6,'#d3d9d6');ellipse(hinge,y,3,3,'#425565');}
-  }
-  // Raised upper cowl and its hydraulic struts fold back into the chest.
-  const lift=openness*35;
-  line(775,284,779,269-lift,'#d2dddd',4);line(859,284,855,269-lift,'#d2dddd',4);
-  poly([[771,277-lift],[778,258-lift],[852,258-lift],[864,277-lift],[852,287-lift],[783,287-lift]],'#a82f3c','#f18d76',2);
-  poly([[782,273-lift],[788,266-lift],[847,266-lift],[854,276-lift],[846,281-lift],[788,281-lift]],'#425b6c','#93a8ad',1);
-  for(let x=796;x<844;x+=10)rect(x,270-lift,4,7,'#c3d0d0');
-  // Restore the actual red armor progressively from either side, avoiding a flat door.
-  if(close>0){ctx.save();ctx.beginPath();ctx.rect(748,265,70*close,210);ctx.rect(888-70*close,265,70*close,210);ctx.clip();robot(738,200,4,3,1,1,120,false,'dellinger');ctx.restore();}
-  const lock=Math.max(0,(close-.5)*2);if(lock>0){rect(795,449,44,6,'#d2b368');rect(813,449,8,6,'#9ef3e0');}
- }
- ctx.restore();
+function couplingPose(index,x=810,feet=604,size=490,alpha=1){
+ const pose=spriteFrames.coupling?.[index];if(!pose||alpha<=0)return;
+ ctx.save();ctx.globalAlpha=alpha;ctx.drawImage(pose,x-size/2,feet-size,size,size);ctx.restore();
 }
 function drawTransition(){
- const t=transitionTime,walk=Math.min(1,t/2.8),enter=Math.max(0,Math.min(1,(t-2.8)/1.8)),close=Math.max(0,Math.min(1,(t-4.6)/.9));
- rect(0,0,W,H,'#07111fee');const glow=ctx.createRadialGradient(810,365,20,810,365,450);glow.addColorStop(0,'#234b64');glow.addColorStop(1,'#07111f');ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
- for(let i=0;i<9;i++){rect(i*160,120,5,440,'#2c4351');line(i*160,560,640+(i-4)*240,720,'#344652',2);}rect(0,558,W,12,'#72828b');
- ellipse(820,560,180,23,'#6adffb28');robot(738,200,4,3,1,1,120,false,'dellinger');
- // The robot enters a lined cradle; the armor occludes it as the shell closes.
- if(close<1)couplingBay(close,false);
- if(close<1){
-  const scale=1.8-enter*.95,x=210+walk*500+enter*80,feet=558-enter*112;
-  ctx.save();
-  if(enter>=1){ctx.beginPath();ctx.rect(758+60*close,275,120*(1-close),188);ctx.clip();}
-  robot(x,feet-90*scale,t<2.8?Math.floor(t*8)%4:4,scale,1,1,90,false,'protesser');ctx.restore();
-  couplingBay(close,true);
+ const t=transitionTime,state=couplingState(t);
+ rect(0,0,W,H,'#07111f');const glow=ctx.createRadialGradient(810,365,20,810,365,490);glow.addColorStop(0,'#30536b');glow.addColorStop(1,'#07111f');ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+ for(let i=0;i<9;i++){rect(i*160,120,4,485,'#253d4d');line(i*160,605,640+(i-4)*240,720,'#344652',2);}rect(0,605,W,9,'#72828b');
+ ellipse(810,606,190,18,'#69d9ec28');ellipse(810,606,130,9,'#91e9ed20');
+ if(state.pose===0){
+  couplingPose(0);
+  if(t>.9){const p=state.entry;couplingPose(11,420+390*p,636-32*p,330+100*p,Math.min(1,(t-.9)*3));}
+ }else{
+  if(state.blend<1)couplingPose(state.previous);
+  couplingPose(state.pose,810,604,490,state.blend);
  }
- if(t>5.4&&!reduced){ctx.globalAlpha=Math.max(0,.6-(t-5.4));rect(0,0,W,H,'#acf4ff');ctx.globalAlpha=1;}
- text('SANTORE / CÁMARA DE ACOPLAMIENTO',80,166,16,'#e8b76d');
- text(t<2.8?'PROTESSER EN POSICIÓN':t<4.6?'INSERCIÓN EN DELLINGER':t<5.5?'SELLANDO ARMADURA':'DELLINGER · SISTEMAS ACTIVOS',80,211,25,'#b9efff');
- text('NIVEL 02 / CANTERA DE SANTORE',80,247,14,'#9eb3c2');rect(80,275,310,4,'#233d4e');rect(80,275,310*Math.min(1,t/6),4,'#79e5ef');
+ // Brief mechanical confirmation lights accompany each latch, without a full-screen flash.
+ if(state.pose>=2&&state.pose<=4&&state.blend<1&&!reduced){ctx.save();ctx.globalAlpha=(1-state.blend)*.65;ellipse(810,state.pose===2?505:state.pose===3?290:255,90,5,'#91eeff');ctx.restore();}
+ text('SANTORE / ACOPLAMIENTO 01 → 02',64,192,14,'#e8b76d');
+ text(state.label,64,232,19,'#b9efff');text('PROTESSER + DELLINGER',64,264,13,'#9eb3c2');
+ rect(64,290,330,4,'#233d4e');rect(64,290,330*Math.min(1,t/10.4),4,'#79e5ef');
+ const steps=['ALINEACIÓN','ENCAJE','CIERRE','GIRO'];const active=t<3?0:t<3.8?1:t<7.6?2:3;
+ steps.forEach((label,i)=>{ellipse(72,340+i*31,4,4,i<=active?'#81e4eb':'#344d60');text(label,88,345+i*31,12,i===active?'#f2d093':'#91a8b8');});
+ if(state.fade>0){ctx.save();ctx.globalAlpha=state.fade;rect(0,0,W,H,'#07111f');ctx.restore();}
 }
 function frame(now){const dt=Math.min(.1,(now-last)/1000||0);last=now;acc+=dt;while(acc>=1/120){update(1/120);acc-=1/120;}draw();requestAnimationFrame(frame);}
-function keySprites(img,unit){spriteFrames[unit]=[];const sheet=document.createElement('canvas');sheet.width=img.width;sheet.height=img.height;const c=sheet.getContext('2d',{willReadFrequently:true});c.drawImage(img,0,0);const d=c.getImageData(0,0,img.width,img.height);for(let i=0;i<d.data.length;i+=4){const r=d.data[i],g=d.data[i+1],b=d.data[i+2];if(g>100&&g>r*1.35&&g>b*1.35){d.data[i+3]=0;}}c.putImageData(d,0,0);const cw=img.width/4,ch=img.height/2;for(let i=0;i<8;i++){const ox=(i%4)*cw,oy=Math.floor(i/4)*ch;let minX=cw,minY=ch,maxX=0,maxY=0;for(let y=0;y<ch;y++)for(let x=0;x<cw;x++){if(d.data[((oy+y)*img.width+ox+x)*4+3]>150){minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);}}const f=document.createElement('canvas');f.width=maxX-minX+1;f.height=maxY-minY+1;f.getContext('2d').drawImage(sheet,ox+minX,oy+minY,f.width,f.height,0,0,f.width,f.height);spriteFrames[unit].push(f);}}
+function keySprites(img,unit,rows=2,preserveCells=false){spriteFrames[unit]=[];const sheet=document.createElement('canvas');sheet.width=img.width;sheet.height=img.height;const c=sheet.getContext('2d',{willReadFrequently:true});c.drawImage(img,0,0);const d=c.getImageData(0,0,img.width,img.height);for(let i=0;i<d.data.length;i+=4){const r=d.data[i],g=d.data[i+1],b=d.data[i+2];if(g>100&&g>r*1.35&&g>b*1.35){d.data[i+3]=0;}}c.putImageData(d,0,0);const cw=img.width/4,ch=img.height/rows;for(let i=0;i<4*rows;i++){const ox=(i%4)*cw,oy=Math.floor(i/4)*ch;let minX=cw,minY=ch,maxX=0,maxY=0;for(let y=0;y<ch;y++)for(let x=0;x<cw;x++){if(d.data[((oy+y)*img.width+ox+x)*4+3]>150){minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);}}if(preserveCells){minX=0;minY=0;maxX=cw-1;maxY=ch-1;}const f=document.createElement('canvas');f.width=maxX-minX+1;f.height=maxY-minY+1;f.getContext('2d').drawImage(sheet,ox+minX,oy+minY,f.width,f.height,0,0,f.width,f.height);spriteFrames[unit].push(f);}}
 window.addEventListener('keydown',e=>{if(maps[e.code]){e.preventDefault();keys.add(maps[e.code]);}if(e.code==='Escape'&&!e.repeat){mode==='pause'?resume():pause();}});window.addEventListener('keyup',e=>{keys.delete(maps[e.code]);});window.addEventListener('blur',()=>{keys.clear();touch.clear();pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});window.addEventListener('resize',()=>{if(innerHeight>innerWidth)pause();});
 for(const button of document.querySelectorAll('[data-action]')){const release=e=>{e.preventDefault();touch.delete(button.dataset.action);button.classList.remove('active');};button.addEventListener('pointerdown',e=>{e.preventDefault();button.setPointerCapture(e.pointerId);touch.add(button.dataset.action);button.classList.add('active');});button.addEventListener('pointerup',release);button.addEventListener('pointercancel',release);button.addEventListener('lostpointercapture',release);}
 $('start').onclick=()=>{activateAudio();reset(false,DEVELOPMENT_MODE?Number($('dev-level').value):1);};$('preview-transition').onclick=()=>{activateAudio();reset(false,1);beginTransition();};$('continue').onclick=()=>{activateAudio();reset(true);};$('resume').onclick=resume;$('pause').onclick=pause;$('restart').onclick=()=>reset(false,LEVEL.id);$('again').onclick=()=>reset(false,2);$('skip').onclick=finishTransition;$('level-two').onclick=()=>{activateAudio();reset(false,2);};$('sound').onclick=()=>{activateAudio();soundOn=!soundOn;$('sound').textContent='SONIDO '+(soundOn?'ON':'OFF');};$('fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('game-shell').requestFullscreen();}catch{toast('Usa la opción de pantalla completa del navegador');}};
-Promise.all(['canyon','protesser','dellinger','quarry'].map(name=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{assets[name]=img;resolve();};img.onerror=()=>reject(new Error(name));img.src='assets/'+name+'.webp';}))).then(()=>{keySprites(assets.protesser,'protesser');keySprites(assets.dellinger,'dellinger');$('start').disabled=false;$('start').textContent='INICIAR MISIÓN →';$('dev-tools').hidden=!DEVELOPMENT_MODE;$('dev-level').replaceChildren(...LEVELS.map(l=>new Option('Nivel '+l.id+' · '+l.title+' / '+l.robot,l.id)));$('continue').hidden=!saved();$('level-two').hidden=(saved()?.unlocked||1)<2;}).catch(()=>{$('start').textContent='ERROR DE RECURSOS · RECARGA';});requestAnimationFrame(frame);
-
+Promise.all(['canyon','protesser','dellinger','quarry','coupling-front'].map(name=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{assets[name]=img;resolve();};img.onerror=()=>reject(new Error(name));img.src='assets/'+name+'.webp';}))).then(()=>{keySprites(assets.protesser,'protesser');keySprites(assets.dellinger,'dellinger');keySprites(assets['coupling-front'],'coupling',3,true);$('start').disabled=false;$('start').textContent='INICIAR MISIÓN →';$('dev-tools').hidden=!DEVELOPMENT_MODE;$('dev-level').replaceChildren(...LEVELS.map(l=>new Option('Nivel '+l.id+' · '+l.title+' / '+l.robot,l.id)));$('continue').hidden=!saved();$('level-two').hidden=(saved()?.unlocked||1)<2;}).catch(()=>{$('start').textContent='ERROR DE RECURSOS · RECARGA';});requestAnimationFrame(frame);
 
