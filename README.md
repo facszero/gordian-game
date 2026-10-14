@@ -10,6 +10,9 @@ Con Node.js 20 o posterior: `npm start`. Abrir `http://localhost:4173`. No requi
 
 - Flechas o A/D: movimiento.
 - Z o espacio: salto de altura variable.
+- Flecha abajo o S: agacharse en el suelo, con menor altura de colisión y movimiento lento. Soltar para levantarse; saltar también levanta al robot.
+- Flecha arriba o W + disparo: disparar verticalmente, también en el aire o con disparo potente.
+- En móvil y mando: arriba apunta y abajo agacha; el salto mantiene su botón independiente.
 - X o J: disparo continuo.
 - C o K: disparo potente (consume energía regenerable).
 - Escape: pausa. Controles táctiles en dispositivos de puntero grueso y soporte básico de mando.
