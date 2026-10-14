@@ -1,5 +1,6 @@
+import {ENEMY_GROUP_PLAN} from './enemies.js';
 export const ROBOTS={protesser:{speed:310,jump:740,width:38,height:90,maxHealth:100},dellinger:{speed:240,jump:650,width:55,height:120,maxHealth:150},garbin:{speed:190,jump:590,width:80,height:160,maxHealth:220}};
-export const CAMPAIGN=['protesser','dellinger','protesser','protesser','dellinger','garbin','dellinger','garbin','dellinger','protesser','dellinger','garbin'].map((robot,i)=>({id:i+1,robot,boss:[3,7,11].includes(i),available:i<2}));
+export const CAMPAIGN=['protesser','dellinger','protesser','protesser','dellinger','garbin','dellinger','garbin','dellinger','protesser','dellinger','garbin'].map((robot,i)=>({id:i+1,robot,boss:[3,7,11].includes(i),available:i<2,enemyGroups:ENEMY_GROUP_PLAN[i]}));
 export const LEVEL={id:1,title:'Victor Town',robot:'protesser',width:6200,spawn:{x:150,y:470},exit:5940,
  platforms:[
  [0,560,720],[840,525,440],[1400,560,540],[2050,490,330],[2500,550,420],[3040,500,430],[3590,560,510],[4210,505,410],[4730,550,450],[5320,500,880],

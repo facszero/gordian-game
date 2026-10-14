@@ -31,8 +31,13 @@ Incluye Victor Town con Protesser (6200 unidades) y la cantera de Santore con De
 - `dist/style.css`: interfaz adaptable.
 - `tests`: comprobaciones de física y recorrido. Ejecutar `npm test`.
 
-La hoja de poses usa fondo croma, eliminado al cargar. El arte es una primera interpretación del concepto: requiere una pasada adicional de consistencia y animación. Los enemigos y plataformas usan dibujo procedural. El juego puede alojarse como sitio estático sirviendo `dist/`.
+La hoja de poses usa fondo croma, eliminado al cargar. El arte es una primera interpretación del concepto: requiere una pasada adicional de consistencia y animación. Los enemigos usan un atlas propio con cuatro variantes de la misma familia visual: centinela ligero, explorador aéreo, centinela bípedo blindado y dron pesado. Las plataformas usan dibujo procedural. Ver ENEMY-ART.md para las referencias de diseño y el estudio de animación ambiental pendiente. El juego puede alojarse como sitio estático sirviendo `dist/`.
 
 ## Ampliación
 
 Crear un objeto de nivel con plataformas, enemigos, puntos de control y robot asignado y añadirlo a `LEVELS`. El selector de desarrollo lo incorporará automáticamente. Las transiciones futuras de desacoplamiento y los sprites de Garbin aún deben implementarse. La campaña definida conserva el retorno entre tamaños y el combate final con Garbin. No hay servicios externos, cuentas ni analítica dentro del juego.
+
+
+## Grupos enemigos
+
+A (militar) aparece en el nivel 1. B (insectoide) aparece en el nivel 2. C (industrial) está creado y reservado para el futuro nivel 3. Cada grupo tiene cuatro unidades en pares de poses reposo/disparo. La galería `enemy-gallery.html`, accesible desde el menú de desarrollo, permite compararlos. `ENEMY_GROUP_PLAN` define las mezclas desde el nivel 5 y los seis grupos en los niveles 11–12; D, E y F están pendientes de diseño. Este plan no desbloquea niveles sin implementar.
