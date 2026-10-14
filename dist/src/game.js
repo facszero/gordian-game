@@ -84,15 +84,61 @@ function armor(e){
  rect(27,7,22,5,e.timer<.4?'#ffe5a0':'#ff6a4c');line(38,38,38+facing*53,38,'#202b35',16);line(38,33,38+facing*51,33,'#9b9f83',3);
  rect(facing<0?3:56,26,17,40,'#94a083');rect(15,-12,46,3,'#182734');rect(15,-12,46*e.hp/10,3,'#e7b563');ctx.restore();
 }
+// Mechanical cradle inspired by the articulated toy's nested armor shells.
+function couplingBay(close,foreground){
+ const openness=1-close;
+ const poly=(points,fill,stroke='#8299a6',width=2)=>{ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke();};
+ ctx.save();
+ if(!foreground){
+  // Beveled pressure frame, recessed lining and ribbed backplate.
+  poly([[776,270],[858,270],[880,290],[880,437],[859,470],[775,470],[754,437],[754,290]],'#a7b6bc','#253b4a',4);
+  poly([[781,280],[852,280],[870,296],[870,434],[853,458],[781,458],[764,434],[764,296]],'#354f63','#dfebeb',2);
+  const well=ctx.createLinearGradient(764,0,870,0);well.addColorStop(0,'#162a3c');well.addColorStop(.45,'#54758a');well.addColorStop(.7,'#304b60');well.addColorStop(1,'#132638');
+  poly([[788,287],[847,287],[859,302],[859,427],[846,447],[788,447],[775,427],[775,302]],well,'#1b2b3a',3);
+  for(let y=306;y<431;y+=19){poly([[789,y],[846,y],[851,y+7],[785,y+7]],'#708997','#263c4a',1);line(795,y+3,842,y+3,'#a4bdc5',1);}
+  // Shoulder pads, central spine and shock-absorbing hip supports.
+  rect(807,293,20,130,'#1c3448');for(let y=300;y<420;y+=13)rect(811,y,12,5,'#a5b6ba');
+  for(const x of [778,843]){rect(x,313,12,48,'#233341');line(x+3,318,x+3,356,'#7a95a4',2);ellipse(x+6,380,9,13,'#172c3c');ellipse(x+6,380,5,8,'#738d9c');}
+  poly([[786,422],[847,422],[856,436],[846,449],[787,449],[779,437]],'#a0acaf','#263b49',2);
+  rect(790,431,23,7,'#253d4e');rect(822,431,23,7,'#253d4e');
+  for(const x of [764,866]){line(x,303,x,427,'#80ddea',3);for(const y of [294,441]){ellipse(x,y,4,4,'#172c3c');ellipse(x,y,2,2,'#e0e7e5');}}
+ }
+ if(foreground){
+  // Side shells pivot inward. The original sprite supplies the closed armor.
+  for(const side of [-1,1]){
+   const hinge=side<0?755:879,tip=hinge+side*43*openness;
+   line(hinge,309,tip,316,'#bbc5c5',5);line(hinge,410,tip,422,'#b8c2c3',5);
+   poly([[hinge,285],[tip,298],[tip,433],[hinge,450]],'#9b2533','#e96c63',2);
+   poly([[hinge+side*5,297],[tip-side*5,307],[tip-side*5,422],[hinge+side*5,435]],'#b2bdc0','#4a6070',2);
+   for(let y=322;y<408;y+=19)line(hinge+side*9,y,tip-side*9,y+5,'#566e7c',3);
+   for(const y of [300,433]){ellipse(hinge,y,6,6,'#d3d9d6');ellipse(hinge,y,3,3,'#425565');}
+  }
+  // Raised upper cowl and its hydraulic struts fold back into the chest.
+  const lift=openness*35;
+  line(775,284,779,269-lift,'#d2dddd',4);line(859,284,855,269-lift,'#d2dddd',4);
+  poly([[771,277-lift],[778,258-lift],[852,258-lift],[864,277-lift],[852,287-lift],[783,287-lift]],'#a82f3c','#f18d76',2);
+  poly([[782,273-lift],[788,266-lift],[847,266-lift],[854,276-lift],[846,281-lift],[788,281-lift]],'#425b6c','#93a8ad',1);
+  for(let x=796;x<844;x+=10)rect(x,270-lift,4,7,'#c3d0d0');
+  // Restore the actual red armor progressively from either side, avoiding a flat door.
+  if(close>0){ctx.save();ctx.beginPath();ctx.rect(748,265,70*close,210);ctx.rect(888-70*close,265,70*close,210);ctx.clip();robot(738,200,4,3,1,1,120,false,'dellinger');ctx.restore();}
+  const lock=Math.max(0,(close-.5)*2);if(lock>0){rect(795,449,44,6,'#d2b368');rect(813,449,8,6,'#9ef3e0');}
+ }
+ ctx.restore();
+}
 function drawTransition(){
  const t=transitionTime,walk=Math.min(1,t/2.8),enter=Math.max(0,Math.min(1,(t-2.8)/1.8)),close=Math.max(0,Math.min(1,(t-4.6)/.9));
  rect(0,0,W,H,'#07111fee');const glow=ctx.createRadialGradient(810,365,20,810,365,450);glow.addColorStop(0,'#234b64');glow.addColorStop(1,'#07111f');ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
  for(let i=0;i<9;i++){rect(i*160,120,5,440,'#2c4351');line(i*160,560,640+(i-4)*240,720,'#344652',2);}rect(0,558,W,12,'#72828b');
  ellipse(820,560,180,23,'#6adffb28');robot(738,200,4,3,1,1,120,false,'dellinger');
- // The open torso receives Protesser; armor panels slide closed after entry.
- if(close<1){rect(766,285,103,175,'#030b17');line(770,287,770,458,'#8beeff',3);line(866,287,866,458,'#8beeff',3);}
- if(enter<1){const scale=1.8-enter*.95,x=210+walk*500+enter*80,feet=558-enter*112;robot(x,feet-90*scale,t<2.8?Math.floor(t*8)%4:4,scale,1,1-enter*.4,90,false,'protesser');}
- if(close>0&&close<1){rect(766,285,52*close,175,'#b53139');rect(869-52*close,285,52*close,175,'#b53139');}
+ // The robot enters a lined cradle; the armor occludes it as the shell closes.
+ if(close<1)couplingBay(close,false);
+ if(close<1){
+  const scale=1.8-enter*.95,x=210+walk*500+enter*80,feet=558-enter*112;
+  ctx.save();
+  if(enter>=1){ctx.beginPath();ctx.rect(758+60*close,275,120*(1-close),188);ctx.clip();}
+  robot(x,feet-90*scale,t<2.8?Math.floor(t*8)%4:4,scale,1,1,90,false,'protesser');ctx.restore();
+  couplingBay(close,true);
+ }
  if(t>5.4&&!reduced){ctx.globalAlpha=Math.max(0,.6-(t-5.4));rect(0,0,W,H,'#acf4ff');ctx.globalAlpha=1;}
  text('SANTORE / CÁMARA DE ACOPLAMIENTO',80,166,16,'#e8b76d');
  text(t<2.8?'PROTESSER EN POSICIÓN':t<4.6?'INSERCIÓN EN DELLINGER':t<5.5?'SELLANDO ARMADURA':'DELLINGER · SISTEMAS ACTIVOS',80,211,25,'#b9efff');
@@ -104,4 +150,5 @@ window.addEventListener('keydown',e=>{if(maps[e.code]){e.preventDefault();keys.a
 for(const button of document.querySelectorAll('[data-action]')){const release=e=>{e.preventDefault();touch.delete(button.dataset.action);button.classList.remove('active');};button.addEventListener('pointerdown',e=>{e.preventDefault();button.setPointerCapture(e.pointerId);touch.add(button.dataset.action);button.classList.add('active');});button.addEventListener('pointerup',release);button.addEventListener('pointercancel',release);button.addEventListener('lostpointercapture',release);}
 $('start').onclick=()=>{activateAudio();reset(false,DEVELOPMENT_MODE?Number($('dev-level').value):1);};$('preview-transition').onclick=()=>{activateAudio();reset(false,1);beginTransition();};$('continue').onclick=()=>{activateAudio();reset(true);};$('resume').onclick=resume;$('pause').onclick=pause;$('restart').onclick=()=>reset(false,LEVEL.id);$('again').onclick=()=>reset(false,2);$('skip').onclick=finishTransition;$('level-two').onclick=()=>{activateAudio();reset(false,2);};$('sound').onclick=()=>{activateAudio();soundOn=!soundOn;$('sound').textContent='SONIDO '+(soundOn?'ON':'OFF');};$('fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('game-shell').requestFullscreen();}catch{toast('Usa la opción de pantalla completa del navegador');}};
 Promise.all(['canyon','protesser','dellinger','quarry'].map(name=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{assets[name]=img;resolve();};img.onerror=()=>reject(new Error(name));img.src='assets/'+name+'.webp';}))).then(()=>{keySprites(assets.protesser,'protesser');keySprites(assets.dellinger,'dellinger');$('start').disabled=false;$('start').textContent='INICIAR MISIÓN →';$('dev-tools').hidden=!DEVELOPMENT_MODE;$('dev-level').replaceChildren(...LEVELS.map(l=>new Option('Nivel '+l.id+' · '+l.title+' / '+l.robot,l.id)));$('continue').hidden=!saved();$('level-two').hidden=(saved()?.unlocked||1)<2;}).catch(()=>{$('start').textContent='ERROR DE RECURSOS · RECARGA';});requestAnimationFrame(frame);
+
 
