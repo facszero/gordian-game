@@ -1,6 +1,6 @@
 # GORDIAN — El despertar
 
-Primer nivel de un juego de plataformas lateral para navegador y móvil horizontal. Prototipo de aficionado inspirado en Gordian; los personajes pertenecen a sus titulares originales.
+Dos niveles de un juego de plataformas lateral para navegador y móvil horizontal. Prototipo de aficionado inspirado en Gordian; los personajes pertenecen a sus titulares originales.
 
 ## Ejecutar
 
@@ -19,11 +19,13 @@ Con Node.js 20 o posterior: `npm start`. Abrir `http://localhost:4173`. No requi
 
 ## Estado
 
-Incluye entrada de Daigo en Protesser, un recorrido de 6200 unidades, 13 enemigos, dos puntos de control, células de recuperación, guardado local, sonidos sintetizados, pausa automática y aviso de orientación. Los otros once niveles están planificados, no implementados. Los jefes pertenecen a los niveles 4, 8 y 12; este nivel termina en el hangar sin jefe.
+Incluye Victor Town con Protesser (6200 unidades) y la cantera de Santore con Dellinger (6400 unidades). Hay acoplamiento animado de 7 segundos, omisión de la secuencia, enemigos blindados y barreras destructibles. Dellinger tiene 150 de salud, menor velocidad y doble daño por disparo. Cada nivel tiene dos puntos de control. Se guardan el nivel, los objetos recogidos, enemigos derrotados, barreras destruidas y progreso de campaña en el navegador. Se recuperan partidas del primer prototipo. Los niveles 3–12 están planificados, no implementados. Los jefes siguen reservados para 4, 8 y 12.
 
 ## Estructura
 
 - `dist/src/level.js`: datos del escenario, robots y campaña.
+- `dist/src/config.js`: `DEVELOPMENT_MODE` muestra u oculta el selector temporal de nivel y el botón de prueba del acoplamiento. El selector se genera con los niveles implementados; escoger nivel y pulsar Iniciar misión. Continuar recupera la partida guardada independientemente de la selección. Poner la bandera en `false` para la versión final.
+- `dist/src/campaign.js`: validación de partidas y colisión horizontal de barreras.
 - `dist/src/game.js`: simulación con paso fijo, controles, audio y render Canvas 2D.
 - `dist/assets`: fondos y hoja de poses generados para el prototipo.
 - `dist/style.css`: interfaz adaptable.
@@ -33,4 +35,4 @@ La hoja de poses usa fondo croma, eliminado al cargar. El arte es una primera in
 
 ## Ampliación
 
-Crear un objeto de nivel con plataformas, enemigos, puntos de control y robot asignado; después extraer el selector de nivel y la transición de acoplamiento a escenas independientes. La campaña definida conserva el retorno entre tamaños y el combate final con Garbin. No hay servicios externos, cuentas ni analítica dentro del juego.
+Crear un objeto de nivel con plataformas, enemigos, puntos de control y robot asignado y añadirlo a `LEVELS`. El selector de desarrollo lo incorporará automáticamente. Las transiciones futuras de desacoplamiento y los sprites de Garbin aún deben implementarse. La campaña definida conserva el retorno entre tamaños y el combate final con Garbin. No hay servicios externos, cuentas ni analítica dentro del juego.

@@ -3,3 +3,7 @@
 #touch .directions{display:grid;grid-template-columns:48px 48px 48px;grid-template-rows:44px 44px 44px;gap:3px;align-items:center}
 #touch .directions button{width:46px;height:42px;font-size:23px;border-radius:12px}
 .directions [data-action=up]{grid-column:2;grid-row:1}.directions [data-action=left]{grid-column:1;grid-row:2}.directions [data-action=right]{grid-column:3;grid-row:2}.directions [data-action=crouch]{grid-column:2;grid-row:3}
+
+#skip{position:absolute;bottom:7%;right:5%;z-index:5}#game-shell:has(#skip:not([hidden])) #hint{display:none}@media(max-height:520px){.menu-copy .intro-copy{margin:6px 0}.menu-copy .controls-copy{margin:6px 0}.menu-copy .gold-rule{margin:7px 0}.menu-copy h1{font-size:50px}.menu-copy .primary,.menu-copy .secondary{padding:8px 15px;margin-top:6px}}
+
+#dev-tools{border-left:2px solid #76d9e9;padding-left:12px;margin:12px 0}#dev-tools label{display:block;font-size:9px;letter-spacing:2px;color:#9fdee9;margin-bottom:6px}#dev-level{width:100%;max-width:350px;padding:9px;color:#e6f5ff;background:#12293d;border:1px solid #6698ac;font:inherit;font-size:12px}#dev-tools .secondary{padding:8px 12px;margin-top:7px;font-size:9px}@media(max-height:620px){.menu-copy .intro-copy,.menu-copy .gold-rule,.menu-side{display:none}.menu-copy h1{font-size:46px;margin-top:0}.menu-copy .controls-copy{line-height:1.5;font-size:9px;margin:7px 0}#dev-tools{margin:6px 0}.menu-copy .primary,.menu-copy .secondary{padding:8px 15px;margin-top:6px}.menu-copy .subtitle{margin:5px 0;font-size:12px}}
