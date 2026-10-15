@@ -1,6 +1,6 @@
 # GORDIAN — El despertar
 
-Dos niveles de un juego de plataformas lateral para navegador y móvil horizontal. Prototipo de aficionado inspirado en Gordian; los personajes pertenecen a sus titulares originales.
+Cuatro niveles de un juego de plataformas lateral para navegador y móvil horizontal. Prototipo de aficionado inspirado en Gordian; los personajes pertenecen a sus titulares originales.
 
 ## Ejecutar
 
@@ -19,7 +19,7 @@ Con Node.js 20 o posterior: `npm start`. Abrir `http://localhost:4173`. No requi
 
 ## Estado
 
-Incluye Victor Town con Protesser (6200 unidades) y la cantera de Santore con Dellinger (6400 unidades). Hay acoplamiento frontal animado de 11 segundos, con encaje de extremidades, cierre de armadura por etapas y giro a perfil, omisión de la secuencia, enemigos blindados y barreras destructibles. Dellinger tiene 150 de salud, menor velocidad y doble daño por disparo. Cada nivel tiene dos puntos de control. Se guardan el nivel, los objetos recogidos, enemigos derrotados, barreras destruidas y progreso de campaña en el navegador. Se recuperan partidas del primer prototipo. Los niveles 3–12 están planificados, no implementados. Los jefes siguen reservados para 4, 8 y 12.
+Incluye Victor Town con Protesser (6200 unidades) y la cantera de Santore con Dellinger (6400 unidades). Hay acoplamiento frontal animado de 11 segundos, con encaje de extremidades, cierre de armadura por etapas y giro a perfil, omisión de la secuencia, enemigos blindados y barreras destructibles. Dellinger tiene 150 de salud, menor velocidad y doble daño por disparo. Cada nivel tiene dos puntos de control. Se guardan el nivel, los objetos recogidos, enemigos derrotados, barreras destruidas y progreso de campaña en el navegador. Se recuperan partidas del primer prototipo. Los niveles 3 y 4 están implementados con Protesser y Garbin, fondos propios y el primer jefe en el nivel 4. Los niveles 5–12 y los jefes 8/12 están pendientes.
 
 ## Estructura
 
@@ -35,13 +35,19 @@ La hoja de poses usa fondo croma, eliminado al cargar. El arte es una primera in
 
 ## Ampliación
 
-Crear un objeto de nivel con plataformas, enemigos, puntos de control y robot asignado y añadirlo a `LEVELS`. El selector de desarrollo lo incorporará automáticamente. Las transiciones futuras de desacoplamiento y los sprites de Garbin aún deben implementarse. La campaña definida conserva el retorno entre tamaños y el combate final con Garbin. No hay servicios externos, cuentas ni analítica dentro del juego.
+Crear un objeto de nivel con plataformas, enemigos, puntos de control y robot asignado y añadirlo a `LEVELS`. El selector de desarrollo lo incorporará automáticamente. Se incluyen el desacoplamiento Dellinger → Protesser y el acoplamiento doble Protesser → Dellinger → Garbin; las transiciones posteriores al nivel 4 quedan pendientes. La campaña definida conserva el retorno entre tamaños y el combate final con Garbin. No hay servicios externos, cuentas ni analítica dentro del juego.
 
 
 ## Grupos enemigos
 
-A (militar) aparece en el nivel 1. B (insectoide) aparece en el nivel 2. C (industrial) está creado y reservado para el futuro nivel 3. Cada grupo tiene cuatro unidades en pares de poses reposo/disparo. La galería `enemy-gallery.html`, accesible desde el menú de desarrollo, permite compararlos. `ENEMY_GROUP_PLAN` define las mezclas desde el nivel 5 y los seis grupos en los niveles 11–12; D, E y F están pendientes de diseño. Este plan no desbloquea niveles sin implementar.
+A (militar) aparece en el nivel 1. B (insectoide) aparece en el nivel 2. C (industrial) aparece en el nivel 3 y D (asedio) en el nivel 4. Cada grupo tiene cuatro unidades en pares de poses reposo/disparo. La galería `enemy-gallery.html`, accesible desde el menú de desarrollo, permite compararlos. `ENEMY_GROUP_PLAN` define las mezclas desde el nivel 5 y los seis grupos en los niveles 11–12; E y F están pendientes de diseño. Este plan no desbloquea niveles sin implementar.
 
 La ampliación del territorio de los niveles a aproximadamente el triple está pendiente para la etapa final; ver `ROADMAP.md`.
 
 Las casillas de entrada/salida y los puntos de control tienen arte industrial propio. La transición conserva sus movimientos sobre un fondo ilustrado de hangar. El humano de polígonos del inicio está oculto. Un felino robótico decorativo corre y salta al comenzar cada nivel; no interviene en combate, no se repite al recuperar una partida y respeta la preferencia de movimiento reducido. El título tiene letras rojas con volumen amarillo inspiradas en el afiche. Referencias, recursos y prompts en `COMPANION-ART.md`; ruta del compañero en `dist/src/companion.js`.
+
+## Capítulos 3 y 4
+
+Nivel 3: Túneles de infiltración, Protesser y grupo C. Nivel 4: Bastión de acero, Garbin y grupo D, con el Centinela de Acero al final. El jefe tiene dos fases y tres ataques anunciados: láser alto (agacharse), impacto marcado (moverse) y onda baja (saltar). El punto de control anterior permite reintentar con vida completa; el jefe recupera toda su vida tras la muerte del jugador. La salida solo se abre al derrotarlo.
+
+El selector permite comenzar en cualquiera de los cuatro niveles. La vista de transición usa el nivel seleccionado y el botón «Probar jefe 01» empieza directamente en la arena. Las partidas antiguas que completaron el nivel 2 continúan hacia el 3. Arte y prompts: CHAPTER34-ART.md.

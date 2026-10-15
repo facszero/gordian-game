@@ -1,10 +1,10 @@
 // Atlas regions are normalized because the props intentionally have different proportions.
 export const INDUSTRIAL_REGIONS=[[0,0,.31,.5],[.31,0,.31,.5],[.62,0,.18,.5],[.8,0,.2,.5],[0,.5,.31,.5],[.31,.5,.15,.5],[.46,.5,.36,.5],[.82,.5,.18,.5]];
-export function extractProps(img,regions){
+export function extractProps(img,regions,chroma='magenta'){
  const sheet=document.createElement('canvas');sheet.width=img.width;sheet.height=img.height;
  const ctx=sheet.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,0,0);
  const pixels=ctx.getImageData(0,0,img.width,img.height),d=pixels.data;
- for(let i=0;i<d.length;i+=4)if(d[i]>100&&d[i+2]>100&&d[i]>d[i+1]*1.5&&d[i+2]>d[i+1]*1.5)d[i+3]=0;
+ for(let i=0;i<d.length;i+=4)if(chroma==='green'?(d[i+1]>100&&d[i+1]>d[i]*1.35&&d[i+1]>d[i+2]*1.35):(d[i]>100&&d[i+2]>100&&d[i]>d[i+1]*1.5&&d[i+2]>d[i+1]*1.5))d[i+3]=0;
  ctx.putImageData(pixels,0,0);
  return regions.map(([rx,ry,rw,rh])=>{
   const ox=Math.round(rx*img.width),oy=Math.round(ry*img.height),w=Math.min(img.width-ox,Math.round(rw*img.width)),h=Math.min(img.height-oy,Math.round(rh*img.height));

@@ -7,7 +7,7 @@ export function setStance(player, crouch, standingHeight=90) {
 }
 
 export function playerShot(player, charged=false) {
-  const power=player.robot==='dellinger'?2:1;
+  const power=player.robot==='garbin'?3:player.robot==='dellinger'?2:1;
   const speed=charged?900:780, length=charged?55:24, thickness=charged?20:7;
   const up=Boolean(player.aimUp);
   return {

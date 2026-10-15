@@ -1,6 +1,6 @@
 import {ENEMY_GROUPS,ENEMY_GROUP_PLAN} from './enemies.js';
-const names={A:['Centinela ligero','Dron explorador','Centinela blindado','Dron pesado'],B:['Ácaro centinela','Escarabajo explorador','Arácnido blindado','Escarabajo pesado'],C:['Vigía hidráulico','Dron recolector','Autómata de asedio','Transporte blindado']};
-const destinations={A:'Nivel 1 · Victor Town',B:'Nivel 2 · Cantera de Santore',C:'Reservado para el nivel 3'};
+const names={A:['Centinela ligero','Dron explorador','Centinela blindado','Dron pesado'],B:['Ácaro centinela','Escarabajo explorador','Arácnido blindado','Escarabajo pesado'],D:['Tanque de asedio','Escarabajo de ataque','Artillero pesado','Nave de asedio'],C:['Vigía hidráulico','Dron recolector','Autómata de asedio','Transporte blindado']};
+const destinations={A:'Nivel 1 · Victor Town',B:'Nivel 2 · Cantera de Santore',C:'Nivel 3 · Túneles de infiltración',D:'Nivel 4 · Bastión de acero'};
 let firing=false;const renderers=[];
 for(const [group,spec] of Object.entries(ENEMY_GROUPS)){
  if(!spec.available)continue;

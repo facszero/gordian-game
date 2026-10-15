@@ -1,8 +1,8 @@
 # Grupos enemigos A–F
 
-A: militar verde oliva, listo, nivel 1. B: insectoide burdeos, listo, nivel 2. C: industrial ocre, listo y reservado para nivel 3. D, E y F: pendientes de diseño. Cada grupo disponible contiene centinela ligero, dron ligero, centinela pesado y dron pesado con poses reposo/disparo.
+A: militar verde oliva, listo, nivel 1. B: insectoide burdeos, listo, nivel 2. C: industrial ocre, listo, nivel 3. D: asedio, listo, nivel 4. E y F: pendientes de diseño. Cada grupo disponible contiene centinela ligero, dron ligero, centinela pesado y dron pesado con poses reposo/disparo.
 
-La distribución completa está en `ENEMY_GROUP_PLAN` en `dist/src/enemies.js`. Desde nivel 5 se mezclan grupos; en los niveles 11 y 12 se prevén los seis. Los únicos niveles jugables siguen siendo 1 y 2. Los futuros grupos no se sustituyen silenciosamente por A.
+La distribución completa está en `ENEMY_GROUP_PLAN` en `dist/src/enemies.js`. Desde nivel 5 se mezclan grupos; en los niveles 11 y 12 se prevén los seis. Los niveles 1–4 son jugables. Los futuros grupos no se sustituyen silenciosamente por A.
 
 Recursos: `dist/assets/enemy-army.webp` (A), `enemy-group-b.webp` (B), `enemy-group-c.webp` (C). Galería: `dist/enemy-gallery.html`. Creados con image_gen integrado; B y C recibieron una segunda edición para cambiar únicamente el fondo cuadriculado a croma magenta. El juego elimina ese croma al cargar. Los atlas se normalizaron a 2048 × 1024.
 
@@ -27,3 +27,5 @@ All eight sprites from one coherent industrial family, meaningful idle/fire diff
 ## Edición del fondo
 
 Preserve all eight robots, colors, poses, positions and the 4 by 2 grid. Change ONLY the gray white checkerboard background to flat solid magenta #ff00ff, including gaps between limbs. No gradients, checkerboards or shadows. Preserve small muzzle flashes.
+
+Grupo D — Asedio: tanque, escarabajo de ataque, artillero pesado y nave de asedio. Implementado en nivel 4; comparte acero azul, bronce y luces rojas con el jefe escorpión.

@@ -5,7 +5,7 @@ import {ROBOTS,overlaps} from '../dist/src/level.js';
 import {playerShot,setStance,shotBounds} from '../dist/src/combat.js';
 
 test('both ground enemy silhouettes can be hit from standing and crouching',()=>{
- for(const [type,robot,levelId] of [['turret','protesser',1],['armor','dellinger',2]]){
+ for(const [type,robot,levelId] of [['turret','protesser',1],['armor','dellinger',2],['turret','garbin',4],['armor','garbin',4]]){
   const spec=enemySpec(type,levelId),unit=ROBOTS[robot],enemy={...spec,x:300,y:560-spec.h};
   for(const crouch of [false,true]){
    const p={robot,x:100,y:560-unit.height,w:unit.width,h:unit.height,face:1,grounded:true};
@@ -25,10 +25,10 @@ test('muzzle follows enemy scale and facing; heavy variants are larger',()=>{
 });
 
 test('enemy groups remain separate early, mix from level five and retain planned six-group finale',()=>{
- assert.deepEqual(Object.keys(ENEMY_GROUPS).filter(id=>ENEMY_GROUPS[id].available),['A','B','C']);
+ assert.deepEqual(Object.keys(ENEMY_GROUPS).filter(id=>ENEMY_GROUPS[id].available),['A','B','C','D']);
  assert.equal(groupForEnemy(1),'A');assert.equal(groupForEnemy(2),'B');assert.equal(groupForEnemy(3),'C');
  assert.deepEqual([0,1,2,3].map(i=>groupForEnemy(5,i)),['A','B','C','A']);
  assert.equal(ENEMY_GROUP_PLAN[11].length,6);
- assert.throws(()=>enemySpec('armor',4,'D'),/not implemented/);
+ assert.equal(groupForEnemy(4),'D');assert.throws(()=>enemySpec('armor',8,'E'),/not implemented/);
  for(const group of ['A','B','C']){assert.equal(enemySpec('armor',2,group).group,group);assert.ok(enemySpec('drone',3,group,'protesser').h<enemySpec('drone',3,group,'dellinger').h);}
 });

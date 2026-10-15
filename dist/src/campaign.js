@@ -12,7 +12,8 @@ export function normalizeSave(data) {
     kills:count(data.kills),cells:count(data.cells),elapsed:count(data.elapsed),
     defeated:ids(data.defeated,level.enemies.length),collected:ids(data.collected,level.pickups.length),
     destroyed:ids(data.destroyed,(level.barriers||[]).length),
-    stage:data.stage==='transition'&&levelId===1?'transition':data.stage==='complete'&&levelId===2?'complete':'play'};
+    bossDefeated:Boolean(level.boss&&data.bossDefeated===true),
+    stage:(data.stage==='transition'||data.stage==='complete')&&levelId<LEVELS.length?'transition':data.stage==='complete'&&levelId===LEVELS.length&&data.bossDefeated===true?'complete':'play'};
 }
 
 export function blockHorizontal(body,previousX,barriers) {
