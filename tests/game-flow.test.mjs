@@ -1,3 +1,4 @@
+import * as companionArt from '../dist/src/companion.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -13,7 +14,7 @@ import * as campaign from '../dist/src/campaign.js';
 function game(){
  const nodes=new Map(),storage=new Map();
  const node=id=>{if(!nodes.has(id))nodes.set(id,{style:{},hidden:true,textContent:'',value:'2',focus(){},getContext(){return {};}});return nodes.get(id);};
- const context=vm.createContext({...environmentArt,...enemyDesign,...level,...combat,...campaign,...coupling,DEVELOPMENT_MODE:true,
+ const context=vm.createContext({...companionArt,...environmentArt,...enemyDesign,...level,...combat,...campaign,...coupling,DEVELOPMENT_MODE:true,
   document:{getElementById:node,querySelector:node,querySelectorAll:()=>[],addEventListener(){}},
   window:{addEventListener(){}},matchMedia:()=>({matches:false}),innerHeight:720,innerWidth:1280,
   navigator:{getGamepads:()=>[]},performance:{now:()=>0},requestAnimationFrame(){},Image:class {},
