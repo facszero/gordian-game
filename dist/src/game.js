@@ -69,10 +69,10 @@ if(boss&&!boss.dead){
 }
 for(const s of shots){s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;if(s.friendly){if(boss?.active&&!boss.dead&&overlaps(shotBounds(s),bossBounds(boss))){
  s.life=0;if(hitBoss(boss,s.damage)){shots=shots.filter(p=>p.friendly);kills++;burst(boss.x+240,boss.floor-140,'#ffc476',60);toast('CENTINELA DESTRUIDO · SALIDA ABIERTA',4);save();}else burst(s.x,s.y,'#ffc476',4);continue;
-}for(const b of barriers){if(!b.dead&&overlaps(shotBounds(s),b)){b.hp-=s.damage;s.life=0;burst(s.x,s.y,'#ffb466',6);if(b.hp<=0){b.dead=true;burst(b.x+30,b.y+40,'#ffc476',28);save();}break;}}if(s.life<=0)continue;for(const e of enemies){if(!e.dead&&overlaps(shotBounds(s),e)){e.hp-=s.damage;s.life=0;burst(s.x,s.y,'#ffcc7a',6);if(e.hp<=0){e.dead=true;kills++;save();burst(e.x+25,e.y+20,'#ffb466',25);tone(70,.18,'sawtooth',.035,25);shake=reduced?0:5;}break;}}}else if(overlaps(shotBounds(s),player)){damage(12);s.life=0;}}
+}for(const b of barriers){if(!b.dead&&overlaps(shotBounds(s),b)){b.hp-=s.damage;s.life=0;burst(s.x,s.y,'#ffb466',6);if(b.hp<=0){b.dead=true;burst(b.x+30,b.y+40,'#ffc476',28);save();}break;}}if(s.life<=0)continue;for(const e of enemies){if(!e.dead&&overlaps(shotBounds(s),e)){e.hp-=s.damage;s.life=0;burst(s.x,s.y,'#ffcc7a',6);if(e.hp<=0){e.dead=true;kills++;save();burst(e.x+25,e.y+20,'#ffb466',25);tone(70,.18,'sawtooth',.035,25);shake=reduced?0:5;}break;}}}else if(overlaps(shotBounds(s),player)){damage(s.damage||12);s.life=0;}}
 shots=shots.filter(s=>s.life>0);for(const p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=300*dt;p.life-=dt;}particles=particles.filter(p=>p.life>0);cam+=((boss?.active?boss.left:Math.max(0,Math.min(LEVEL.width-W,player.x-W*.32)))-cam)*Math.min(1,dt*5);
 if(player.x>LEVEL.exit){completeLevel();return;}
-hud();$('hint').textContent=LEVEL.id>=3?(boss?.active?(boss.state==='warning'?(boss.attack==='beam'?'LÁSER ALTO · ↓ AGÁCHATE':boss.attack==='shell'?'IMPACTO MARCADO · MUÉVETE':'ONDA BAJA · SALTA'):'DISPARA AL CUERPO · C / ϟ PARA CARGA'):boss?.dead?'SALIDA ABIERTA →':LEVEL.id===4?'GARBIN · RUMBO AL BASTIÓN →':'PROTESSER · INFILTRACIÓN EN LOS TÚNELES →'):LEVEL.id===2?(player.x<900?'DELLINGER · DISPARA PARA ROMPER LAS BARRERAS':player.x>5700?'ALCANZA LA SALIDA →':'CANTERA · ↑ APUNTA A LOS DRONES · ↓ ESQUIVA'):player.x<680?'SALTA EL CAÑÓN · Z / ESPACIO':player.x<1600?'↓ AGACHARSE · ↑ + DISPARO ARRIBA':player.x>5500?'ALCANZA EL HANGAR →':'VICTOR TOWN · RUMBO AL HANGAR →';}
+hud();$('hint').textContent=LEVEL.id>=3?(boss?.active?(boss.state==='warning'?(boss.attack==='beam'?'LÁSER ALTO · ↓ AGÁCHATE':boss.attack==='shell'?'IMPACTO MARCADO · MUÉVETE':boss.attack==='burst'?'RÁFAGA DE '+boss.rounds+' DISPAROS · ESQUIVA':'ONDA BAJA · SALTA'):'DISPARA AL CUERPO · C / ϟ PARA CARGA'):boss?.dead?'SALIDA ABIERTA →':LEVEL.id===4?'GARBIN · RUMBO AL BASTIÓN →':'PROTESSER · INFILTRACIÓN EN LOS TÚNELES →'):LEVEL.id===2?(player.x<900?'DELLINGER · DISPARA PARA ROMPER LAS BARRERAS':player.x>5700?'ALCANZA LA SALIDA →':'CANTERA · ↑ APUNTA A LOS DRONES · ↓ ESQUIVA'):player.x<680?'SALTA EL CAÑÓN · Z / ESPACIO':player.x<1600?'↓ AGACHARSE · ↑ + DISPARO ARRIBA':player.x>5500?'ALCANZA EL HANGAR →':'VICTOR TOWN · RUMBO AL HANGAR →';}
 
 function background(){const backdrop=assets[LEVEL.background||'canyon'];if(backdrop){const s=Math.max(W/backdrop.width,H/backdrop.height),w=backdrop.width*s*1.22,h=backdrop.height*s*1.22;ctx.drawImage(backdrop,-(cam/(LEVEL.width-W))*(w-W),-(h-H)*.35,w,h);}else rect(0,0,W,H,'#b36d63');const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#10223d18');g.addColorStop(.7,'#10223d10');g.addColorStop(1,'#071324bb');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);}
 function platform(p){
@@ -135,7 +135,7 @@ function enemySprite(e){
 function drawBoss(){
  if(!boss||!bossSprite||boss.x>cam+W+100)return;
  ctx.save();ctx.globalAlpha=boss.dead?.25:1;
- const bob=boss.active&&!reduced?Math.sin(boss.age*2)*2:0;
+ const bob=boss.active&&!reduced?Math.sin(boss.age*(boss.moving?12:2))*(boss.moving?4:2):0;
  if(boss.flash>0)ctx.filter='brightness(1.8)';
  ctx.drawImage(bossSprite,boss.x,boss.floor-boss.h+bob,boss.w,boss.h);ctx.restore();
  if(boss.dead)return;
@@ -144,7 +144,7 @@ function drawBoss(){
   const alpha=.35+Math.sin(clock*18)*.15;ctx.save();ctx.globalAlpha=alpha;
   if(boss.attack==='beam')line(boss.left,boss.floor-110,boss.x+140,boss.floor-110,'#ff694f',3);
   else if(boss.attack==='shell'){rect(boss.targetX-75,boss.floor-8,150,8,'#ff674b');line(boss.targetX,boss.floor-190,boss.targetX,boss.floor,'#ff8c5c',2);}
-  else line(boss.left,boss.floor-16,boss.x+100,boss.floor-16,'#ffb454',3);
+  else if(boss.attack==='burst')line(boss.x+100,boss.floor-110,boss.targetX,boss.targetY,'#ff8765',2);  else line(boss.left,boss.floor-16,boss.x+100,boss.floor-16,'#ffb454',3);
   ctx.restore();ellipse(boss.x+210,boss.floor-265,9,9,'#ff6d67');
  }
  for(const h of boss.hazards){ctx.save();ctx.globalAlpha=.75;ctx.shadowBlur=25;ctx.shadowColor='#ff654c';rect(h.x,h.y,h.w,h.h,'#ff7955');ctx.restore();}

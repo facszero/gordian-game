@@ -48,6 +48,6 @@ Las casillas de entrada/salida y los puntos de control tienen arte industrial pr
 
 ## Capítulos 3 y 4
 
-Nivel 3: Túneles de infiltración, Protesser y grupo C. Nivel 4: Bastión de acero, Garbin y grupo D, con el Centinela de Acero al final. El jefe tiene dos fases y tres ataques anunciados: láser alto (agacharse), impacto marcado (moverse) y onda baja (saltar). El punto de control anterior permite reintentar con vida completa; el jefe recupera toda su vida tras la muerte del jugador. La salida solo se abre al derrotarlo.
+Nivel 3: Túneles de infiltración, Protesser y grupo C. Nivel 4: Bastión de acero, Garbin y grupo D, con el Centinela de Acero al final. El jefe tiene dos fases y cuatro ataques anunciados: láser alto (agacharse), impacto marcado (moverse) onda baja (saltar) y ráfaga dirigida de tres o cuatro proyectiles (esquivar). El orden de ataque y las pausas varían; el jefe avanza y retrocede en la arena, manteniendo espacio delante del jugador. La segunda fase aumenta la velocidad y acorta las pausas. El punto de control anterior permite reintentar con vida completa; el jefe recupera toda su vida tras la muerte del jugador. La salida solo se abre al derrotarlo.
 
 El selector permite comenzar en cualquiera de los cuatro niveles. La vista de transición usa el nivel seleccionado y el botón «Probar jefe 01» empieza directamente en la arena. Las partidas antiguas que completaron el nivel 2 continúan hacia el 3. Arte y prompts: CHAPTER34-ART.md.
