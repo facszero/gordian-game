@@ -13,7 +13,7 @@ for(const level of LEVELS)test('companion clears terrain and exits screen in lev
   for(const b of level.barriers||[])if(cat.x>=b.x-40&&cat.x<=b.x+b.w+40){assert.ok(cat.feet<b.y);barrierCleared=true;}
  }
  assert.ok(jumped);assert.equal(cat.active,false);assert.ok(cat.time<3);
- assert.ok(cat.x-70>1360);if(level.barriers?.length)assert.ok(barrierCleared);
+ assert.ok(cat.x-70>1360);if(level.barriers?.some(b=>b.x<cat.x-40))assert.ok(barrierCleared);
  const x=cat.x;updateCompanion(cat,1,1000);assert.equal(cat.x,x);
 });
 test('disabled companion stays inactive',()=>{

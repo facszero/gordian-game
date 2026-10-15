@@ -25,10 +25,10 @@ test('muzzle follows enemy scale and facing; heavy variants are larger',()=>{
 });
 
 test('enemy groups remain separate early, mix from level five and retain planned six-group finale',()=>{
- assert.deepEqual(Object.keys(ENEMY_GROUPS).filter(id=>ENEMY_GROUPS[id].available),['A','B','C','D']);
+ assert.deepEqual(Object.keys(ENEMY_GROUPS).filter(id=>ENEMY_GROUPS[id].available),['A','B','C','D','E','F']);
  assert.equal(groupForEnemy(1),'A');assert.equal(groupForEnemy(2),'B');assert.equal(groupForEnemy(3),'C');
  assert.deepEqual([0,1,2,3].map(i=>groupForEnemy(5,i)),['A','B','C','A']);
  assert.equal(ENEMY_GROUP_PLAN[11].length,6);
- assert.equal(groupForEnemy(4),'D');assert.throws(()=>enemySpec('armor',8,'E'),/not implemented/);
+ assert.equal(groupForEnemy(4),'D');assert.equal(enemySpec('armor',8,'E').group,'E');
  for(const group of ['A','B','C']){assert.equal(enemySpec('armor',2,group).group,group);assert.ok(enemySpec('drone',3,group,'protesser').h<enemySpec('drone',3,group,'dellinger').h);}
 });

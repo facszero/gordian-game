@@ -1,9 +1,11 @@
+import {darkBounds,updateDarkBoss} from './dark-boss.js';
+export {darkMuzzle,darkSword} from './dark-boss.js';
 export function createBoss(config,defeated=false){
- return config?{...config,homeX:config.x,direction:-1,moving:false,walkDistance:0,hp:defeated?0:180,maxHp:180,active:false,dead:defeated,state:'idle',timer:1,cycle:0,attack:'beam',targetX:0,targetY:0,hazards:[],flash:0,age:0,bag:[],rounds:0}:null;
+ return config?{...config,homeX:config.x,direction:-1,moving:false,walkDistance:0,hp:defeated?0:(config.hp||180),maxHp:config.hp||180,hidden:false,face:-1,active:false,dead:defeated,state:'idle',timer:1,cycle:0,attack:'beam',targetX:0,targetY:0,hazards:[],flash:0,age:0,bag:[],rounds:0}:null;
 }
-export function bossBounds(b){return {x:b.x+100,y:b.floor-175,w:b.w-150,h:175};}
+export function bossBounds(b){return b.kind==='dark'?darkBounds(b):{x:b.x+100,y:b.floor-175,w:b.w-150,h:175};}
 export function hitBoss(b,amount){
- if(!b?.active||b.dead)return false;
+ if(!b?.active||b.dead||b.hidden)return false;
  b.hp=Math.max(0,b.hp-amount);b.flash=.12;
  if(!b.hp){b.dead=true;b.active=false;b.moving=false;b.rounds=0;b.hazards=[];return true;}return false;
 }
@@ -14,6 +16,7 @@ function volleyShot(b){
 // Randomness is injectable for reproducible tests. Targets lock during the warning.
 export function updateBoss(b,dt,player,random=Math.random){
  if(!b||b.dead)return [];
+ if(b.kind==='dark')return updateDarkBoss(b,dt,player,random);
  b.flash=Math.max(0,b.flash-dt);b.age+=dt;
  if(!b.active){if(player.x<b.trigger)return [];b.active=true;b.state='recover';b.timer=1.2;}
  const fast=b.hp<=90;

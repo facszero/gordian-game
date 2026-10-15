@@ -47,7 +47,7 @@ test('four-level progression, new transition saves and boss victory persist',()=
  run('player.x=LEVEL.exit+1;update(1/120)');assert.equal(run('mode'),'transition');run('reset(true);finishTransition()');assert.equal(run('LEVEL.id'),4);assert.equal(run('player.robot'),'garbin');
  run('completeLevel()');assert.notEqual(run('mode'),'end');
  run('boss.active=true;hitBoss(boss,999);save();reset(true)');assert.equal(run('boss.dead'),true);
- run('player.x=LEVEL.exit+1;update(1/120)');assert.equal(run('mode'),'end');run('reset(true)');assert.equal(run('mode'),'end');
+ run('player.x=LEVEL.exit+1;update(1/120)');assert.equal(run('mode'),'transition');run('reset(true)');assert.equal(run('mode'),'transition');
  run("$('again').onclick()");assert.equal(run('LEVEL.id'),4);assert.equal(run('boss.dead'),false);
 });
 test('boss preview, pause, death and charged damage use the actual game loop',()=>{
@@ -59,7 +59,7 @@ test('boss preview, pause, death and charged damage use the actual game loop',()
 test('first boss can be defeated with real Garbin shots and opens the exit',()=>{
  const run=game();run("$('dev-boss').onclick();player.x=5800;keys.add('fire');for(let i=0;i<3000;i++)update(1/120)");
  assert.equal(run('boss.dead'),true);assert.ok(run('player.health')>0);assert.equal(run('saved().bossDefeated'),true);
- run('player.x=LEVEL.exit+1;update(1/120)');assert.equal(run('mode'),'end');
+ run('player.x=LEVEL.exit+1;update(1/120)');assert.equal(run('mode'),'transition');
 });
 test('Dellinger shots destroy barriers through the real collision loop',()=>{
  const run=game();run('reset(false,2);player.x=350;player.y=440;fire(true);for(let i=0;i<15;i++)update(1/120)');
@@ -82,4 +82,28 @@ test('a defeated boss draws nothing, including after loading a saved victory',()
  const run=game();run('reset(false,4);boss.active=true;hitBoss(boss,999);bossSprite={};drawBoss();save();reset(true);drawBoss()');
  // Rendering context deliberately has no draw methods: any ghost draw would throw.
  assert.equal(run('boss.dead'),true);
+});
+test('chapters 4 through 8 retain robot, transitions, save and final victory',()=>{
+ const run=game();run('reset(false,4);boss.active=true;hitBoss(boss,999);completeLevel();reset(true)');
+ for(let id=5;id<=8;id++){
+  assert.equal(run('mode'),'transition');run("$('skip').onclick()");
+  assert.equal(run('LEVEL.id'),id);assert.equal(run('player.robot'),id%2?'dellinger':'garbin');
+  assert.equal(run('saved().levelId'),id);
+  if(id<8)run('completeLevel();reset(true)');
+ }
+ run('completeLevel()');assert.equal(run('mode'),'play');
+ run('boss.active=true;hitBoss(boss,999);darkFrames=[{}];drawBoss();save();reset(true);drawBoss();completeLevel()');
+ assert.equal(run('mode'),'end');run('reset(true)');assert.equal(run('mode'),'end');
+ run("$('again').onclick()");assert.equal(run('LEVEL.id'),8);assert.equal(run('boss.hp'),330);
+});
+test('dark boss preview, pause, respawn and shots from either side use the real loop',()=>{
+ const run=game();run("$('dev-boss-two').onclick();update(1/120);pause()");
+ const timer=run('boss.timer');run('update(1)');assert.equal(run('boss.timer'),timer);
+ run('resume();respawn()');assert.equal(run('boss.hp'),330);assert.equal(run('checkpoint'),1);assert.equal(run('boss.active'),false);
+ for(const face of [-1,1]){
+  run(`boss.active=true;boss.hidden=false;boss.state='recover';boss.timer=5;boss.x=7000;player.x=${face===1?6840:7310};player.y=460;player.face=${face};shots=[];shotCooldown=0;fire(true);for(let i=0;i<30;i++)update(1/120)`);
+ }
+ assert.equal(run('boss.hp'),306);
+ run('boss.active=true;boss.hidden=true;boss.state="vanish";boss.timer=5;player.x=6840;player.face=1;shots=[];fire(true);for(let i=0;i<30;i++)update(1/120)');
+ assert.equal(run('boss.hp'),306);
 });

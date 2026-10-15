@@ -20,7 +20,7 @@ export function extractProps(img,regions,chroma='magenta',preserveCells=false){
 // Cache the assembled structures once; gameplay keeps its original collision geometry.
 export function buildPlatform(p,theme,parts){
  const canvas=document.createElement('canvas');canvas.width=Math.ceil(p.w);canvas.height=Math.max(100,720-p.y+36);
- const c=canvas.getContext('2d'),top=36,deck=parts[theme===2?1:0];
+ const c=canvas.getContext('2d'),top=36,deck=parts[[2,5,7].includes(theme)?1:0];
  const draw=(index,x,y,w,h)=>c.drawImage(parts[index],x,y,w,h);
  if(p.w>300){
   // Structural work stays beneath the walkable edge and inside the platform footprint.
@@ -35,7 +35,7 @@ export function buildPlatform(p,theme,parts){
  // Repeat complete deck sections; distribute widths evenly to avoid a squeezed end tile.
  const count=Math.max(1,Math.ceil(p.w/210)),width=p.w/count;
  for(let i=0;i<count;i++)c.drawImage(deck,i*width,top,width,45);
- c.strokeStyle=theme===2?'#e7c278':'#d7b18a';c.lineWidth=1.5;c.beginPath();c.moveTo(0,top+1);c.lineTo(p.w,top+1);c.stroke();
+ c.strokeStyle=[2,5,7].includes(theme)?'#e7c278':'#d7b18a';c.lineWidth=1.5;c.beginPath();c.moveTo(0,top+1);c.lineTo(p.w,top+1);c.stroke();
  if(p.w>300){draw(7,10,top+18,14,23);draw(7,p.w-25,top+18,14,23);}
  return canvas;
 }

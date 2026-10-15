@@ -1,6 +1,6 @@
 # GORDIAN — El despertar
 
-Cuatro niveles de un juego de plataformas lateral para navegador y móvil horizontal. Prototipo de aficionado inspirado en Gordian; los personajes pertenecen a sus titulares originales.
+Ocho niveles de un juego de plataformas lateral para navegador y móvil horizontal. Prototipo de aficionado inspirado en Gordian; los personajes pertenecen a sus titulares originales.
 
 ## Ejecutar
 
@@ -19,7 +19,7 @@ Con Node.js 20 o posterior: `npm start`. Abrir `http://localhost:4173`. No requi
 
 ## Estado
 
-Incluye Victor Town con Protesser (6200 unidades) y la cantera de Santore con Dellinger (6400 unidades). Hay acoplamiento frontal animado de 11 segundos, con encaje de extremidades, cierre de armadura por etapas y giro a perfil, omisión de la secuencia, enemigos blindados y barreras destructibles. Dellinger tiene 150 de salud, menor velocidad y doble daño por disparo. Cada nivel tiene dos puntos de control. Se guardan el nivel, los objetos recogidos, enemigos derrotados, barreras destruidas y progreso de campaña en el navegador. Se recuperan partidas del primer prototipo. Los niveles 3 y 4 están implementados con Protesser y Garbin, fondos propios y el primer jefe en el nivel 4. Los niveles 5–12 y los jefes 8/12 están pendientes.
+Incluye Victor Town con Protesser (6200 unidades) y la cantera de Santore con Dellinger (6400 unidades). Hay acoplamiento frontal animado de 11 segundos, con encaje de extremidades, cierre de armadura por etapas y giro a perfil, omisión de la secuencia, enemigos blindados y barreras destructibles. Dellinger tiene 150 de salud, menor velocidad y doble daño por disparo. Cada nivel tiene dos puntos de control. Se guardan el nivel, los objetos recogidos, enemigos derrotados, barreras destruidas y progreso de campaña en el navegador. Se recuperan partidas del primer prototipo. Los niveles 3 y 4 están implementados con Protesser y Garbin, fondos propios y el primer jefe en el nivel 4. Los niveles 5–8 y el jefe del 8 también están implementados. Quedan pendientes los niveles 9–12 y el jefe final.
 
 ## Estructura
 
@@ -35,12 +35,12 @@ La hoja de poses usa fondo croma, eliminado al cargar. El arte es una primera in
 
 ## Ampliación
 
-Crear un objeto de nivel con plataformas, enemigos, puntos de control y robot asignado y añadirlo a `LEVELS`. El selector de desarrollo lo incorporará automáticamente. Se incluyen el desacoplamiento Dellinger → Protesser y el acoplamiento doble Protesser → Dellinger → Garbin; las transiciones posteriores al nivel 4 quedan pendientes. La campaña definida conserva el retorno entre tamaños y el combate final con Garbin. No hay servicios externos, cuentas ni analítica dentro del juego.
+Crear un objeto de nivel con plataformas, enemigos, puntos de control y robot asignado y añadirlo a `LEVELS`. El selector de desarrollo lo incorporará automáticamente. Se incluyen el desacoplamiento Dellinger → Protesser y el acoplamiento doble Protesser → Dellinger → Garbin; también se incluyen Garbin → Dellinger y Dellinger → Garbin para los niveles 4–8. La campaña definida conserva el retorno entre tamaños y el combate final con Garbin. No hay servicios externos, cuentas ni analítica dentro del juego.
 
 
 ## Grupos enemigos
 
-A (militar) aparece en el nivel 1. B (insectoide) aparece en el nivel 2. C (industrial) aparece en el nivel 3 y D (asedio) en el nivel 4. Cada grupo tiene cuatro unidades en pares de poses reposo/disparo. La galería `enemy-gallery.html`, accesible desde el menú de desarrollo, permite compararlos. `ENEMY_GROUP_PLAN` define las mezclas desde el nivel 5 y los seis grupos en los niveles 11–12; E y F están pendientes de diseño. Este plan no desbloquea niveles sin implementar.
+A (militar) aparece en el nivel 1. B (insectoide) aparece en el nivel 2. C (industrial) aparece en el nivel 3 y D (asedio) en el nivel 4. Cada grupo tiene cuatro unidades en pares de poses reposo/disparo. La galería `enemy-gallery.html`, accesible desde el menú de desarrollo, permite compararlos. `ENEMY_GROUP_PLAN` define las mezclas desde el nivel 5 y los seis grupos en los niveles 11–12; E (reactores) y F (legión oscura) aparecen en los niveles 6–8. Este plan no desbloquea niveles sin implementar.
 
 La ampliación del territorio de los niveles a aproximadamente el triple está pendiente para la etapa final; ver `ROADMAP.md`.
 
@@ -50,5 +50,13 @@ Las casillas de entrada/salida y los puntos de control tienen arte industrial pr
 
 Nivel 3: Túneles de infiltración, Protesser y grupo C. Nivel 4: Bastión de acero, Garbin y grupo D, con el Centinela de Acero al final. El jefe tiene dos fases y cuatro ataques anunciados: láser alto (agacharse), impacto marcado (moverse) onda baja (saltar) y ráfaga dirigida de tres o cuatro proyectiles (esquivar). El orden de ataque y las pausas varían; el jefe avanza y retrocede en la arena, manteniendo espacio delante del jugador. La segunda fase aumenta la velocidad y acorta las pausas. El punto de control anterior permite reintentar con vida completa; el jefe recupera toda su vida tras la muerte del jugador. La salida solo se abre al derrotarlo.
 
-El selector permite comenzar en cualquiera de los cuatro niveles. La vista de transición usa el nivel seleccionado y el botón «Probar jefe 01» empieza directamente en la arena. Las partidas antiguas que completaron el nivel 2 continúan hacia el 3. Arte y prompts: CHAPTER34-ART.md.
+El selector permite comenzar en cualquiera de los ocho niveles. La vista de transición usa el nivel seleccionado y el botón «Probar jefe 01» empieza directamente en la arena. Las partidas antiguas que completaron el nivel 2 continúan hacia el 3. Arte y prompts: CHAPTER34-ART.md.
 El jefe anima sus patas según su desplazamiento y desaparece completamente al ser derrotado. Las cajas usan versiones industriales intacta y dañada. Recursos y prompts: WALK-CRATE-ART.md.
+
+## Capítulos 5–8
+
+5: Fundición de Santore, Dellinger, grupos A/B/C. 6: Presa del crepúsculo, Garbin, grupos B/D/E. 7: Corazón del reactor, Dellinger, grupos A/C/E. 8: Ciudadela del eclipse, Garbin, grupos B/D/F y Dellinger Oscuro como jefe 2. Cada escenario tiene fondo, recorrido, enemigos y dos puntos de control propios.
+
+El jefe oscuro tiene alas negras y rojas, detalles dorados y una altura visual aproximada de tres Garbin. Desaparece, reaparece detrás (o en el lado libre si no hay espacio) y anuncia ráfagas, barridos bajos y golpes verticales de espada. Segunda fase a media vida. El menú permite probar ambos jefes directamente. Las partidas que terminaron el nivel 4 continúan hacia el 5. Arte, recursos y prompts en CHAPTER58-ART.md.
+
+Validación: 56 pruebas automatizadas, incluyendo rutas, puntos de control, transiciones, guardado, ataques de ambos jefes y doble salto.

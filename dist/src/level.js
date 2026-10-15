@@ -1,6 +1,7 @@
+import {CHAPTER58} from './chapter58.js';
 import {ENEMY_GROUP_PLAN} from './enemies.js';
 export const ROBOTS={protesser:{speed:310,jump:740,width:38,height:90,maxHealth:100},dellinger:{speed:240,jump:650,width:55,height:120,maxHealth:150},garbin:{speed:190,jump:590,width:80,height:160,maxHealth:220}};
-export const CAMPAIGN=['protesser','dellinger','protesser','garbin','dellinger','garbin','dellinger','garbin','dellinger','protesser','dellinger','garbin'].map((robot,i)=>({id:i+1,robot,boss:[3,7,11].includes(i),available:i<4,enemyGroups:ENEMY_GROUP_PLAN[i]}));
+export const CAMPAIGN=['protesser','dellinger','protesser','garbin','dellinger','garbin','dellinger','garbin','dellinger','protesser','dellinger','garbin'].map((robot,i)=>({id:i+1,robot,boss:[3,7,11].includes(i),available:i<8,enemyGroups:ENEMY_GROUP_PLAN[i]}));
 export const LEVEL={id:1,title:'Victor Town',robot:'protesser',width:6200,spawn:{x:150,y:470},exit:5940,
  platforms:[
  [0,560,720],[840,525,440],[1400,560,540],[2050,490,330],[2500,550,420],[3040,500,430],[3590,560,510],[4210,505,410],[4730,550,450],[5320,500,880],
@@ -30,6 +31,6 @@ export const FORTRESS={id:4,title:'Bastión de acero',robot:'garbin',background:
  checkpoints:[{x:3470,y:390},{x:5380,y:400}],
  pickups:[{x:640,y:440},{x:1300,y:420},{x:2130,y:440},{x:2950,y:410},{x:3770,y:430},{x:4650,y:410},{x:5430,y:475}],
  boss:{name:'CENTINELA DE ACERO',x:6160,floor:560,w:500,h:340,left:5520,trigger:5580}};
-export const LEVELS=[LEVEL,QUARRY,TUNNELS,FORTRESS];
+export const LEVELS=[LEVEL,QUARRY,TUNNELS,FORTRESS,...CHAPTER58];
 export function overlaps(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
 export function moveBody(p,platforms,dt){const previousBottom=p.y+p.h;p.x+=p.vx*dt;p.y+=p.vy*dt;p.grounded=false;for(const s of platforms){if(p.vy>=0&&previousBottom<=s.y+1&&p.y+p.h>=s.y&&p.x+p.w>s.x&&p.x<s.x+s.w){p.y=s.y-p.h;p.vy=0;p.grounded=true;}}}

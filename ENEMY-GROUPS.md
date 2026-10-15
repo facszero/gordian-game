@@ -29,3 +29,5 @@ All eight sprites from one coherent industrial family, meaningful idle/fire diff
 Preserve all eight robots, colors, poses, positions and the 4 by 2 grid. Change ONLY the gray white checkerboard background to flat solid magenta #ff00ff, including gaps between limbs. No gradients, checkerboards or shadows. Preserve small muzzle flashes.
 
 Grupo D — Asedio: tanque, escarabajo de ataque, artillero pesado y nave de asedio. Implementado en nivel 4; comparte acero azul, bronce y luces rojas con el jefe escorpión.
+
+Grupos E (reactores: plata, teal y cobre) y F (legión oscura: negro y carmesí) implementados. Se mezclan desde los niveles 6 y 8 respectivamente, según el plan. Recursos y prompts en CHAPTER58-ART.md.

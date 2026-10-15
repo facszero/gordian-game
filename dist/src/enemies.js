@@ -8,8 +8,8 @@ export const ENEMY_GROUPS={
  B:{name:'Grupo enemigos B',theme:'Insectoide',asset:'enemy-group-b',available:true},
  C:{name:'Grupo enemigos C',theme:'Industrial',asset:'enemy-group-c',available:true},
  D:{name:'Grupo enemigos D',theme:'Asedio',asset:'enemy-group-d',available:true},
- E:{name:'Grupo enemigos E',theme:'Por definir',available:false},
- F:{name:'Grupo enemigos F',theme:'Por definir',available:false}
+ E:{name:'Grupo enemigos E',theme:'Reactores',asset:'enemy-group-e',available:true},
+ F:{name:'Grupo enemigos F',theme:'Legión oscura',asset:'enemy-group-f',available:true}
 };
 // Campaign plan only; this does not unlock or implement future levels.
 export const ENEMY_GROUP_PLAN=[['A'],['B'],['C'],['D'],['A','B','C'],['B','D','E'],['A','C','E'],['B','D','F'],['A','C','E','F'],['A','B','D','F'],['A','B','C','D','E','F'],['A','B','C','D','E','F']];
