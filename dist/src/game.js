@@ -5,9 +5,9 @@ import {enemySpec,enemyMuzzle,groupForEnemy,ENEMY_GROUPS} from './enemies.js';
 import {COUPLING_DURATION,couplingState,ease} from './coupling.js';
 import {DEVELOPMENT_MODE} from './config.js';
 import {LEVELS,ROBOTS,GRAVITY,moveBody,overlaps} from './level.js';
-import {setStance,playerShot,shotBounds} from './combat.js';
+import {setStance,playerShot,shotBounds,garbinUpHeight} from './combat.js';
 import {normalizeSave,blockHorizontal} from './campaign.js';
-let LEVEL=LEVELS[0],unlocked=1,transitionTime=0,barriers=[],boss=null,bossSprite=null,bossWalkFrames=[],crateFrames=[],darkFrames=[];
+let LEVEL=LEVELS[0],unlocked=1,transitionTime=0,barriers=[],boss=null,bossSprite=null,bossWalkFrames=[],crateFrames=[],darkFrames=[],garbinUpFrames=[];
 const $=id=>document.getElementById(id),canvas=$('game'),ctx=canvas.getContext('2d'),W=1280,H=720;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let mode='menu',beforePause='play',clock=0,elapsed=0,cam=0,shake=0,intro=0,toastUntil=0,checkpoint=-1,kills=0,cells=0,energy=100,last=0,acc=0,soundOn=true,ac=null,musicTick=0;
@@ -85,7 +85,11 @@ function platform(p){
  if(!platformCache.has(key))platformCache.set(key,buildPlatform(p,LEVEL.id,industrialParts));
  ctx.drawImage(platformCache.get(key),p.x,p.y-36);
 }
-function robot(x,y,frame=4,scale=1,face=1,alpha=1,height=90,aimUp=false,unit=LEVEL.robot){const frames=spriteFrames[unit];if(!frames?.length)return;const f=frames[frame];ctx.save();ctx.globalAlpha=alpha;ctx.translate(x+ROBOTS[unit].width/2*scale,y+height*scale);ctx.scale(face*scale,scale);const targetH=height<ROBOTS[unit].height?height*1.21:height*1.145,targetW=f.width/f.height*targetH;if(aimUp){const splitX=f.width*.54,splitY=f.height*.34,dx=-targetW*.5,dy=-targetH;ctx.drawImage(f,0,splitY,f.width,f.height-splitY,dx,dy+targetH*.34,targetW,targetH*.66);ctx.drawImage(f,0,0,splitX,splitY,dx,dy,targetW*.54,targetH*.34);ctx.save();ctx.translate(dx+targetW*.54,dy+targetH*.23);ctx.rotate(-Math.PI/2);ctx.drawImage(f,splitX,0,f.width-splitX,splitY,0,-targetH*.23,targetW*.46,targetH*.34);ctx.restore();}else ctx.drawImage(f,-targetW*.5,-targetH,targetW,targetH);ctx.restore();}
+function robot(x,y,frame=4,scale=1,face=1,alpha=1,height=90,aimUp=false,unit=LEVEL.robot){const frames=spriteFrames[unit];if(!frames?.length)return;if(aimUp&&unit==='garbin'&&garbinUpFrames.length){
+ const crouched=height<ROBOTS.garbin.height,f=garbinUpFrames[crouched?1:0],h=garbinUpHeight(height,crouched),w=f.width/f.height*h;
+ ctx.save();ctx.globalAlpha=alpha;ctx.translate(x+ROBOTS.garbin.width/2*scale,y+height*scale);ctx.scale(face*scale,scale);
+ ctx.drawImage(f,-w*(crouched?.57:.414),-h,w,h);ctx.restore();return;
+}const f=frames[frame];ctx.save();ctx.globalAlpha=alpha;ctx.translate(x+ROBOTS[unit].width/2*scale,y+height*scale);ctx.scale(face*scale,scale);const targetH=height<ROBOTS[unit].height?height*1.21:height*1.145,targetW=f.width/f.height*targetH;if(aimUp){const splitX=f.width*.54,splitY=f.height*.34,dx=-targetW*.5,dy=-targetH;ctx.drawImage(f,0,splitY,f.width,f.height-splitY,dx,dy+targetH*.34,targetW,targetH*.66);ctx.drawImage(f,0,0,splitX,splitY,dx,dy,targetW*.54,targetH*.34);ctx.save();ctx.translate(dx+targetW*.54,dy+targetH*.23);ctx.rotate(-Math.PI/2);ctx.drawImage(f,splitX,0,f.width-splitX,splitY,0,-targetH*.23,targetW*.46,targetH*.34);ctx.restore();}else ctx.drawImage(f,-targetW*.5,-targetH,targetW,targetH);ctx.restore();}
 function hangar(x,y,arrival=false){
  const f=stationParts[arrival?1:0];if(!f)return;
  const height=LEVEL.robot==='garbin'?280:LEVEL.robot==='dellinger'?230:205,width=f.width/f.height*height;
@@ -180,16 +184,25 @@ function drawDarkBoss(){
    const m=darkMuzzle(boss);line(m.x,m.y,boss.targetX,boss.targetY,'#ffc297',2);
    ellipse(boss.targetX,boss.targetY,12,12,'#ffbb9638');
   }else{
-   const h=darkSword(boss);rect(h.x,boss.floor-7,h.w,7,'#ff7686');
-   ctx.save();ctx.globalAlpha=.15;rect(h.x,h.y,h.w,h.h,'#ff7686');ctx.restore();
+   const h=darkSword(boss);
+   line(h.x,boss.floor-4,h.x+h.w,boss.floor-4,'#ff986f',3);
+   for(const edge of [h.x,h.x+h.w])line(edge,boss.floor-14,edge,boss.floor+1,'#ffd7b6',2);
   }
  }
  for(const h of boss.hazards){
-  ctx.save();ctx.globalAlpha=.65;rect(h.x,h.y,h.w,h.h,'#f56982');ctx.restore();
-  if(boss.attack==='cleave')line(h.x+h.w/2,h.y,h.x+h.w/2,h.y+h.h,'#ffe7d6',8);
-  else line(h.x,h.y+35,h.x+h.w,h.y+75,'#ffe7d6',7);
+  ctx.save();ctx.strokeStyle='#ffd7c2';ctx.lineWidth=5;ctx.shadowColor='#ff624c';ctx.shadowBlur=12;
+  ctx.beginPath();
+  if(boss.attack==='cleave'){
+   const cx=h.x+h.w/2;ctx.moveTo(cx-18,h.y);ctx.quadraticCurveTo(cx+14,h.y+h.h*.5,cx,h.y+h.h);ctx.stroke();
+   for(let i=-2;i<=2;i++)line(cx,boss.floor,cx+i*18,boss.floor-10-Math.abs(i)*8,'#ffb174',2);
+  }else{
+   const from=boss.face>0?h.x:h.x+h.w,to=boss.face>0?h.x+h.w:h.x;
+   ctx.moveTo(from,h.y+15);ctx.quadraticCurveTo((from+to)/2,h.y+h.h,to,h.y+45);ctx.stroke();
+  }
+  ctx.restore();
  }
 }
+
 function drawGarbinTransition(t){
  const reverse=LEVEL.robot==='garbin',duration=transitionDuration();
  const phase=reverse?duration-t:t;
@@ -260,11 +273,12 @@ function keySprites(img,unit,rows=2,preserveCells=false,chroma='green'){spriteFr
 window.addEventListener('keydown',e=>{if(maps[e.code]){e.preventDefault();keys.add(maps[e.code]);}if(e.code==='Escape'&&!e.repeat){mode==='pause'?resume():pause();}});window.addEventListener('keyup',e=>{keys.delete(maps[e.code]);});window.addEventListener('blur',()=>{keys.clear();touch.clear();pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});window.addEventListener('resize',()=>{if(innerHeight>innerWidth)pause();});
 for(const button of document.querySelectorAll('[data-action]')){const release=e=>{e.preventDefault();touch.delete(button.dataset.action);button.classList.remove('active');};button.addEventListener('pointerdown',e=>{e.preventDefault();button.setPointerCapture(e.pointerId);touch.add(button.dataset.action);button.classList.add('active');});button.addEventListener('pointerup',release);button.addEventListener('pointercancel',release);button.addEventListener('lostpointercapture',release);}
 $('start').onclick=()=>{activateAudio();reset(false,DEVELOPMENT_MODE?Number($('dev-level').value):1);};$('preview-transition').onclick=()=>{activateAudio();reset(false,Math.min(LEVELS.length-1,Number($('dev-level').value)||1));beginTransition();};$('continue').onclick=()=>{activateAudio();reset(true);};$('resume').onclick=resume;$('pause').onclick=pause;$('restart').onclick=()=>reset(false,LEVEL.id);$('again').onclick=()=>reset(false,LEVEL.id);$('dev-boss').onclick=()=>{activateAudio();reset(false,4);checkpoint=1;respawn();player.x=LEVEL.boss.trigger;cam=LEVEL.boss.left;save();};$('dev-boss-two').onclick=()=>{activateAudio();reset(false,8);checkpoint=1;respawn();player.x=LEVEL.boss.left+520;cam=LEVEL.boss.left;save();};$('skip').onclick=finishTransition;$('level-two').onclick=()=>{activateAudio();reset(false,2);};$('sound').onclick=()=>{activateAudio();soundOn=!soundOn;$('sound').textContent='SONIDO '+(soundOn?'ON':'OFF');};$('fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('game-shell').requestFullscreen();}catch{toast('Usa la opción de pantalla completa del navegador');}};
-Promise.all(['canyon','protesser','dellinger','quarry','coupling-front','enemy-army','enemy-group-b','enemy-group-c','industrial-props','energy-atom','companion','stations','hangar-background','garbin','boss-scorpion','enemy-group-d','fortress','tunnels','boss-walk','industrial-crates','dark-dellinger','enemy-group-e','enemy-group-f','foundry','dam','reactor','eclipse'].map(name=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{assets[name]=img;resolve();};img.onerror=()=>reject(new Error(name));img.src='assets/'+name+'.webp';}))).then(()=>{industrialParts=extractProps(assets['industrial-props'],INDUSTRIAL_REGIONS);
+Promise.all(['canyon','protesser','dellinger','quarry','coupling-front','enemy-army','enemy-group-b','enemy-group-c','industrial-props','energy-atom','companion','stations','hangar-background','garbin','boss-scorpion','enemy-group-d','fortress','tunnels','boss-walk','industrial-crates','dark-dellinger','garbin-up','enemy-group-e','enemy-group-f','foundry','dam','reactor','eclipse'].map(name=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{assets[name]=img;resolve();};img.onerror=()=>reject(new Error(name));img.src='assets/'+name+'.webp';}))).then(()=>{industrialParts=extractProps(assets['industrial-props'],INDUSTRIAL_REGIONS);
 stationParts=extractProps(assets.stations,[[0,0,.5,.5],[.5,0,.5,.5],[0,.5,.5,.5],[.5,.5,.5,.5]]);
 catFrames=extractProps(assets.companion,[[0,0,.285,.5],[.285,0,.22,.5],[.505,0,.24,.5],[.745,0,.255,.5],[0,.5,.255,.5],[.255,.5,.285,.5],[.54,.5,.23,.5],[.77,.5,.23,.5]]);
 bossSprite=extractProps(assets['boss-scorpion'],[[0,0,1,1]])[0];
 bossWalkFrames=extractProps(assets['boss-walk'],[[0,.016,.5,.467],[.5,.016,.5,.467],[0,.516,.5,.467],[.5,.516,.5,.467]],'magenta',true);
+garbinUpFrames=extractProps(assets['garbin-up'],[[0,0,.5,1],[.5,0,.5,1]]);
 darkFrames=extractProps(assets['dark-dellinger'],[[0,0,.5,.5],[.5,0,.5,.5],[0,.5,.5,.5],[.5,.5,.5,.5]]);
 crateFrames=extractProps(assets['industrial-crates'],[[0,0,.5,1],[.5,0,.5,1]]);
 spriteFrames.garbin=extractProps(assets.garbin,[[0,0,.25,.305],[.25,0,.25,.305],[.5,0,.25,.305],[.75,0,.25,.305],[0,.305,.24,.325],[.24,.305,.26,.325],[.5,.305,.25,.325],[.75,.305,.25,.325],[0,.63,.265,.37],[.265,.63,.27,.37],[.535,.63,.25,.37],[.785,.63,.215,.37]],'green');
