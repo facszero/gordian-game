@@ -1,5 +1,5 @@
 export function createBoss(config,defeated=false){
- return config?{...config,homeX:config.x,direction:-1,moving:false,hp:defeated?0:180,maxHp:180,active:false,dead:defeated,state:'idle',timer:1,cycle:0,attack:'beam',targetX:0,targetY:0,hazards:[],flash:0,age:0,bag:[],rounds:0}:null;
+ return config?{...config,homeX:config.x,direction:-1,moving:false,walkDistance:0,hp:defeated?0:180,maxHp:180,active:false,dead:defeated,state:'idle',timer:1,cycle:0,attack:'beam',targetX:0,targetY:0,hazards:[],flash:0,age:0,bag:[],rounds:0}:null;
 }
 export function bossBounds(b){return {x:b.x+100,y:b.floor-175,w:b.w-150,h:175};}
 export function hitBoss(b,amount){
@@ -18,6 +18,7 @@ export function updateBoss(b,dt,player,random=Math.random){
  if(!b.active){if(player.x<b.trigger)return [];b.active=true;b.state='recover';b.timer=1.2;}
  const fast=b.hp<=90;
  b.moving=b.state!=='attack';
+ const previousX=b.x;
  if(b.moving){
   const minX=Math.max(b.homeX-210,player.x+player.w+110),maxX=b.homeX+50;
   const next=b.x+b.direction*(fast?90:60)*dt;
@@ -26,6 +27,7 @@ export function updateBoss(b,dt,player,random=Math.random){
   else if(next>maxX){b.x=maxX;b.direction=-1;}
   else b.x=next;
  }
+ b.walkDistance+=b.x-previousX;b.moving=Math.abs(b.x-previousX)>.001;
  b.timer-=dt;if(b.timer>0)return [];
  if(b.state==='recover'){
   if(!b.bag.length)b.bag=['beam','shell','wave','burst'];

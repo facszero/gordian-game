@@ -9,7 +9,7 @@ Con Node.js 20 o posterior: `npm start`. Abrir `http://localhost:4173`. No requi
 ## Controles
 
 - Flechas o A/D: movimiento.
-- Z o espacio: salto de altura variable.
+- Z o espacio: salto de altura variable. Soltar y volver a pulsar en el aire activa un segundo salto para cualquiera de los tres robots; se recupera al aterrizar. También funciona con el botón táctil y el mando.
 - Flecha abajo o S: agacharse en el suelo, con menor altura de colisión y movimiento lento. Soltar para levantarse; saltar también levanta al robot.
 - Flecha arriba o W + disparo: disparar verticalmente, también en el aire o con disparo potente.
 - En móvil y mando: arriba apunta y abajo agacha; el salto mantiene su botón independiente.
@@ -51,3 +51,4 @@ Las casillas de entrada/salida y los puntos de control tienen arte industrial pr
 Nivel 3: Túneles de infiltración, Protesser y grupo C. Nivel 4: Bastión de acero, Garbin y grupo D, con el Centinela de Acero al final. El jefe tiene dos fases y cuatro ataques anunciados: láser alto (agacharse), impacto marcado (moverse) onda baja (saltar) y ráfaga dirigida de tres o cuatro proyectiles (esquivar). El orden de ataque y las pausas varían; el jefe avanza y retrocede en la arena, manteniendo espacio delante del jugador. La segunda fase aumenta la velocidad y acorta las pausas. El punto de control anterior permite reintentar con vida completa; el jefe recupera toda su vida tras la muerte del jugador. La salida solo se abre al derrotarlo.
 
 El selector permite comenzar en cualquiera de los cuatro niveles. La vista de transición usa el nivel seleccionado y el botón «Probar jefe 01» empieza directamente en la arena. Las partidas antiguas que completaron el nivel 2 continúan hacia el 3. Arte y prompts: CHAPTER34-ART.md.
+El jefe anima sus patas según su desplazamiento y desaparece completamente al ser derrotado. Las cajas usan versiones industriales intacta y dañada. Recursos y prompts: WALK-CRATE-ART.md.

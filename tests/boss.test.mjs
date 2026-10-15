@@ -46,6 +46,13 @@ test('attack bag includes bursts and random intervals vary',()=>{
  }
  assert.notEqual(snapshots[0],snapshots[1]);
 });
+test('walk animation follows signed displacement and freezes for attacks and death',()=>{
+ const b=createBoss(FORTRESS.boss),p={x:5580,y:400,w:80,h:160};
+ updateBoss(b,.1,p,()=>.5);assert.ok(b.walkDistance<0);assert.ok(b.moving);
+ b.direction=1;const before=b.walkDistance;updateBoss(b,.1,p,()=>.5);assert.ok(b.walkDistance>before);
+ b.state='attack';b.timer=1;const stopped=b.walkDistance;updateBoss(b,.1,p,()=>.5);assert.equal(b.walkDistance,stopped);assert.equal(b.moving,false);
+ hitBoss(b,999);updateBoss(b,1,p,()=>.5);assert.equal(b.walkDistance,stopped);
+});
 test('Garbin shots hit boss body; phase two accelerates and death clears damage',()=>{
  const b=createBoss(FORTRESS.boss);b.active=true;
  for(const crouch of [false,true]){const p={robot:'garbin',x:5700,y:400,w:80,h:160,face:1,grounded:true};setStance(p,crouch,160);const s=playerShot(p);s.x=b.x+150;assert.ok(overlaps(shotBounds(s),bossBounds(b)));assert.equal(s.damage,3);}

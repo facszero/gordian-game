@@ -1,6 +1,6 @@
 // Atlas regions are normalized because the props intentionally have different proportions.
 export const INDUSTRIAL_REGIONS=[[0,0,.31,.5],[.31,0,.31,.5],[.62,0,.18,.5],[.8,0,.2,.5],[0,.5,.31,.5],[.31,.5,.15,.5],[.46,.5,.36,.5],[.82,.5,.18,.5]];
-export function extractProps(img,regions,chroma='magenta'){
+export function extractProps(img,regions,chroma='magenta',preserveCells=false){
  const sheet=document.createElement('canvas');sheet.width=img.width;sheet.height=img.height;
  const ctx=sheet.getContext('2d',{willReadFrequently:true});ctx.drawImage(img,0,0);
  const pixels=ctx.getImageData(0,0,img.width,img.height),d=pixels.data;
@@ -11,6 +11,7 @@ export function extractProps(img,regions,chroma='magenta'){
   let left=w,top=h,right=-1,bottom=-1;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(d[((oy+y)*img.width+ox+x)*4+3]>150){left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);}
   if(right<left)throw Error('Empty environment sprite');
+  if(preserveCells){left=0;top=0;right=w-1;bottom=h-1;}
   const sprite=document.createElement('canvas');sprite.width=right-left+1;sprite.height=bottom-top+1;
   sprite.getContext('2d').drawImage(sheet,ox+left,oy+top,sprite.width,sprite.height,0,0,sprite.width,sprite.height);return sprite;
  });

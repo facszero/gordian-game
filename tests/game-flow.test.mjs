@@ -65,3 +65,21 @@ test('Dellinger shots destroy barriers through the real collision loop',()=>{
  const run=game();run('reset(false,2);player.x=350;player.y=440;fire(true);for(let i=0;i<15;i++)update(1/120)');
  assert.equal(run('barriers[0].dead'),true);assert.equal(run('saved().destroyed[0]'),0);
 });
+
+for(const id of [1,2,4])for(const input of ['keys','touch'])test(`level ${id}: ${input} gets one extra jump per landing, never on hold`,()=>{
+ const run=game();run(`reset(false,${id});mode='play';update(1/120);${input}.add('jump');update(1/120)`);
+ assert.ok(run('player.vy')<0);assert.equal(run('airJumpsLeft'),1);
+ run('for(let i=0;i<12;i++)update(1/120)');assert.equal(run('airJumpsLeft'),1);
+ run(`${input}.delete('jump');update(1/120)`);const before=run('player.vy');
+ run(`${input}.add('jump');update(1/120)`);assert.equal(run('airJumpsLeft'),0);assert.ok(run('player.vy')<before);
+ run(`for(let i=0;i<12;i++)update(1/120);${input}.delete('jump');update(1/120)`);const third=run('player.vy');
+ run(`${input}.add('jump');update(1/120)`);assert.ok(run('player.vy')>third);assert.equal(run('airJumpsLeft'),0);
+ run(`${input}.clear();for(let i=0;i<300&&!player.grounded;i++)update(1/120);update(1/120)`);
+ assert.equal(run('player.grounded'),true);assert.equal(run('airJumpsLeft'),1);
+ run('airJumpsLeft=0;respawn()');assert.equal(run('airJumpsLeft'),1);assert.equal(run('jumpBuffer'),0);
+});
+test('a defeated boss draws nothing, including after loading a saved victory',()=>{
+ const run=game();run('reset(false,4);boss.active=true;hitBoss(boss,999);bossSprite={};drawBoss();save();reset(true);drawBoss()');
+ // Rendering context deliberately has no draw methods: any ghost draw would throw.
+ assert.equal(run('boss.dead'),true);
+});
