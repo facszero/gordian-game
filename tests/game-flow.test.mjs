@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import * as enemyDesign from '../dist/src/enemies.js';
+import * as environmentArt from '../dist/src/environment.js';
 import * as level from '../dist/src/level.js';
 import * as combat from '../dist/src/combat.js';
 import * as coupling from '../dist/src/coupling.js';
@@ -12,7 +13,7 @@ import * as campaign from '../dist/src/campaign.js';
 function game(){
  const nodes=new Map(),storage=new Map();
  const node=id=>{if(!nodes.has(id))nodes.set(id,{style:{},hidden:true,textContent:'',value:'2',focus(){},getContext(){return {};}});return nodes.get(id);};
- const context=vm.createContext({...enemyDesign,...level,...combat,...campaign,...coupling,DEVELOPMENT_MODE:true,
+ const context=vm.createContext({...environmentArt,...enemyDesign,...level,...combat,...campaign,...coupling,DEVELOPMENT_MODE:true,
   document:{getElementById:node,querySelector:node,querySelectorAll:()=>[],addEventListener(){}},
   window:{addEventListener(){}},matchMedia:()=>({matches:false}),innerHeight:720,innerWidth:1280,
   navigator:{getGamepads:()=>[]},performance:{now:()=>0},requestAnimationFrame(){},Image:class {},

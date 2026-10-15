@@ -31,7 +31,7 @@ Incluye Victor Town con Protesser (6200 unidades) y la cantera de Santore con De
 - `dist/style.css`: interfaz adaptable.
 - `tests`: comprobaciones de física y recorrido. Ejecutar `npm test`.
 
-La hoja de poses usa fondo croma, eliminado al cargar. El arte es una primera interpretación del concepto: requiere una pasada adicional de consistencia y animación. Los enemigos usan un atlas propio con cuatro variantes de la misma familia visual: centinela ligero, explorador aéreo, centinela bípedo blindado y dron pesado. Las plataformas usan dibujo procedural. Ver ENEMY-ART.md para las referencias de diseño y el estudio de animación ambiental pendiente. El juego puede alojarse como sitio estático sirviendo `dist/`.
+La hoja de poses usa fondo croma, eliminado al cargar. El arte es una primera interpretación del concepto: requiere una pasada adicional de consistencia y animación. Los enemigos usan un atlas propio con cuatro variantes de la misma familia visual: centinela ligero, explorador aéreo, centinela bípedo blindado y dron pesado. Las plataformas se ensamblan con piezas ilustradas de acero, remaches, vigas y tuberías; las cápsulas de energía muestran un emblema atómico. La geometría de colisión y el recorrido se conservan. Ver ENEMY-ART.md para las referencias de diseño y el estudio de animación ambiental pendiente. El juego puede alojarse como sitio estático sirviendo `dist/`.
 
 ## Ampliación
 
@@ -41,3 +41,5 @@ Crear un objeto de nivel con plataformas, enemigos, puntos de control y robot as
 ## Grupos enemigos
 
 A (militar) aparece en el nivel 1. B (insectoide) aparece en el nivel 2. C (industrial) está creado y reservado para el futuro nivel 3. Cada grupo tiene cuatro unidades en pares de poses reposo/disparo. La galería `enemy-gallery.html`, accesible desde el menú de desarrollo, permite compararlos. `ENEMY_GROUP_PLAN` define las mezclas desde el nivel 5 y los seis grupos en los niveles 11–12; D, E y F están pendientes de diseño. Este plan no desbloquea niveles sin implementar.
+
+La ampliación del territorio de los niveles a aproximadamente el triple está pendiente para la etapa final; ver `ROADMAP.md`.
