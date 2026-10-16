@@ -1,6 +1,8 @@
 # Versión web e instalación Android
 
-Sitio configurado: https://gordian-game.genialbadge2.chatgpt.site
+Destino: GitHub Pages. URL prevista después del primer despliegue exitoso: https://facszero.github.io/gordian-game/
+
+Activar en Settings → Pages → Build and deployment → Source: GitHub Actions. El flujo `.github/workflows/pages.yml` verifica el juego y publica `dist` con cada cambio en `main` o `codex/first-playable-level`. Si GitHub crea restricciones de entorno, autorizar la rama de desarrollo en Settings → Environments → github-pages. La configuración previa de Sites permanece registrada pero no se utiliza para este despliegue.
 
 Interfaz: franja superior reservada para energía, misión/jefe y herramientas; controles y paneles de estilo metálico azul/cian/dorado. La barra del jefe reemplaza el indicador de misión durante el combate.
 
