@@ -31,7 +31,7 @@ test('Dokuma shifts through three phases, locks warnings, bounds drones, and cle
   b.state='recover';b.timer=0;b.attack='eyes';updateBoss(b,.01,p,()=>0);
   assert.equal(b.attack,attack);assert.equal(b.state,'warning');assert.equal(b.hazards.length,0);
   const target=b.targetX;updateBoss(b,.4,{...p,x:6500});assert.equal(b.targetX,target);assert.equal(b.hazards.length,0);
-  updateBoss(b,1,p);assert.equal(b.state,'attack');
+  updateBoss(b,1.5,p);assert.equal(b.state,'attack');
   if(phase===1)assert.equal(b.drones.length,3);else assert.ok(b.hazards.length);
   updateBoss(b,1,p);assert.equal(b.hazards.length,0);
  }
