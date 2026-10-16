@@ -47,11 +47,11 @@ test('Dokuma preview, damage, pause and retry run through the actual game loop',
  run('boss.active=true;hitBoss(boss,999);dokumaFrames=[{}];drawBoss()');assert.equal(run('boss.dead'),true);
 });
 
-test('real shots release one supply per pair, collection heals once and retry removes transient supplies',()=>{
+test('real shots release one supply per orb, collection heals once and retry removes transient supplies',()=>{
  const run=game();run("$('dev-boss-final').onclick();update(1/120);player.x=6200;player.y=460;player.health=100;energy=40;enemies.forEach(e=>e.dead=true);boss.timer=100;pickups=[]");
  for(let i=0;i<2;i++)run("boss.drones.push({x:6350,y:500,baseY:500,w:64,h:64,hp:1,age:0,timer:100,vx:0,entry:1});fire();for(let t=0;t<35;t++)update(1/120)");
- assert.equal(run('boss.orbsDestroyed'),2);assert.equal(run('pickups.length'),1);
- run('player.x=pickups[0].x;for(let t=0;t<150;t++)update(1/120)');assert.equal(run('player.health'),125);assert.ok(run('energy')>=65);assert.equal(run('pickups[0].taken'),true);
+ assert.equal(run('boss.orbsDestroyed'),2);assert.equal(run('pickups.length'),2);
+ run('player.x=pickups[0].x;for(let t=0;t<150;t++)update(1/120)');assert.equal(run('player.health'),150);assert.ok(run('energy')>=65);assert.equal(run('pickups[0].taken'),true);
  run('save()');assert.equal(run('saved().collected.length'),0);
  run('respawn()');assert.equal(run('pickups.length'),0);assert.equal(run('boss.orbsDestroyed'),undefined);
 });

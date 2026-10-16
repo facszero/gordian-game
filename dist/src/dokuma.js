@@ -9,12 +9,23 @@ export function dokumaSummonPose(b){
  return {from:0,to:0,blend:0};
 }
 export function dokumaPalm(b,index){return {x:b.left+850+(index%2?270:-270),y:b.floor-560};}
+// The fist travels during the warning, reaches the hitbox on impact, then retracts.
+export function dokumaFistPose(b){
+ if(b.fistStart===undefined||b.dead)return null;
+ const t=b.age-b.fistStart,windup=b.fistWindup;
+ if(t<0||t>=windup+.95)return null;
+ const smooth=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);};
+ const reach=t<windup?smooth((t/windup-.35)/.65):t<windup+.5?1:1-smooth((t-windup-.5)/.45);
+ const lift=Math.sin(Math.min(1,t/windup)*Math.PI)*90*(1-reach);
+ const w=110+80*reach,h=160+140*reach;
+ const homeX=b.left+820,homeY=b.floor-420;
+ return {x:homeX+(b.fistTargetX-95-homeX)*reach,y:homeY+(b.floor-300-homeY)*reach-lift,w,h,alpha:Math.min(smooth(t/.12),smooth((windup+.95-t)/.15))};
+}
 // Only destroyed drones count; clearing them on a phase change never creates supplies.
 export function hitDokumaDrone(b,d,damage){
  if(!b?.active||b.dead||d.dead)return null;
  d.hp-=damage;if(d.hp>0)return null;d.dead=true;
  b.orbsDestroyed=(b.orbsDestroyed||0)+1;
- if(b.orbsDestroyed%2)return null;
  return {bossDrop:true,taken:false,x:Math.max(b.left+55,Math.min(b.right-100,d.x)),y:Math.max(110,Math.min(b.floor-32,d.y)),vy:0,floor:b.floor};
 }
 export function updateBossDrop(p,dt){
@@ -26,7 +37,7 @@ export function updateDokuma(b,dt,p,random=Math.random){
  b.age+=dt;b.flash=Math.max(0,b.flash-dt);b.drones??=[];
  if(!b.active){if(p.x<b.trigger)return [];b.active=true;b.state='recover';b.timer=1.5;b.phase=1;}
  const phase=dokumaPhase(b);
- if(phase!==b.phase){b.phase=phase;b.state='shift';b.timer=1.8;b.hazards=[];b.drones=[];b.summonStart=undefined;return [];}
+ if(phase!==b.phase){b.phase=phase;b.state='shift';b.timer=1.8;b.hazards=[];b.drones=[];b.summonStart=undefined;b.fistStart=undefined;return [];}
  const shots=[];
  for(const d of b.drones){
   if(d.dead)continue;
@@ -43,7 +54,9 @@ export function updateDokuma(b,dt,p,random=Math.random){
   const pool=attacks.filter(a=>a!==b.attack);b.attack=pool[Math.floor(random()*pool.length)];
   b.targetX=Math.max(b.left+100,Math.min(b.right-150,p.x+p.w/2));b.targetY=p.y+p.h*.5;
   b.state='warning';b.timer=b.attack==='drones'?SUMMON_WARNING:phase===3?.95:1.25;
-  if(b.attack==='drones')b.summonStart=b.age;return shots;
+  if(b.attack==='drones')b.summonStart=b.age;
+  if(b.attack==='fist'){b.fistStart=b.age;b.fistWindup=b.timer;b.fistTargetX=b.targetX;}
+  return shots;
  }
  if(b.state==='warning'){
   b.state='attack';b.timer=b.attack==='eyes'?.65:.5;
@@ -68,8 +81,13 @@ export function drawDokuma(ctx,b,frames,reduced,summonFrames=[]){
   const pose=dokumaSummonPose(b),size=820,anchors=[.925,.925,.882,.882];
   const drawPose=index=>ctx.drawImage(summonFrames[index],cx-size/2,b.floor-size*anchors[index],size,size);
   if(reduced)drawPose(pose.blend<.5?pose.from:pose.to);
-  else {const blend=Math.max(0,(pose.blend-.8)/.2);ctx.globalAlpha=1-blend;drawPose(pose.from);ctx.globalAlpha=blend;drawPose(pose.to);}
+  else {ctx.globalAlpha=1-pose.blend;drawPose(pose.from);ctx.globalAlpha=pose.blend;drawPose(pose.to);}
  }else ctx.drawImage(f,cx-w/2,b.floor-h,w,h);ctx.restore();
+ const fistPose=dokumaFistPose(b);
+ if(fistPose){
+  const fist=frames[1];ctx.save();ctx.globalAlpha=fistPose.alpha;
+  ctx.drawImage(fist,0,fist.height*.32,fist.width*.46,fist.height*.48,fistPose.x,fistPose.y,fistPose.w,fistPose.h);ctx.restore();
+ }
  const mark=(x,y,x2,y2,color,width=3)=>{ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x2,y2);ctx.stroke();};
  if(b.state==='warning'){
   ctx.save();ctx.globalAlpha=reduced?.8:.65+Math.sin(b.age*15)*.2;
@@ -83,8 +101,6 @@ export function drawDokuma(ctx,b,frames,reduced,summonFrames=[]){
    for(const offset of [-12,12]){mark(cx+offset,b.floor-h*.7,b.right-30,b.floor-110,'#ff8ca2',4);}
    mark(hazard.x,b.floor-110,b.right,b.floor-110,'#ffcfdd',12);
   }else if(b.attack==='fist'){
-   // A cropped armored fist from the close pose descends at the marked position.
-   const fist=frames[1];ctx.drawImage(fist,0,fist.height*.32,fist.width*.46,fist.height*.48,hazard.x,hazard.y,190,300);
    mark(hazard.x,b.floor-4,hazard.x+hazard.w,b.floor-4,'#ddffb0',9);
   }else{
    for(let i=0;i<5;i++){const x=hazard.x+i*hazard.w/4;ctx.strokeStyle='#76dca1';ctx.lineWidth=12;ctx.beginPath();ctx.moveTo(x,b.floor);ctx.quadraticCurveTo(x-30,b.floor-90,x+25,b.floor-70);ctx.stroke();}
