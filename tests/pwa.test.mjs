@@ -13,6 +13,7 @@ test('offline bundle includes every declared resource and both install icons',as
  for(const file of w.cached)assert.ok(existsSync('dist/'+file.slice(2)),file);
  for(const file of ['./index.html','./src/game.js','./interface.css','./icons/icon-192.png','./icons/icon-512.png'])assert.ok(w.cached.includes(file));
  assert.ok(!w.cached.some(file=>file.includes('preview')));
+ assert.ok(!w.cached.some(file=>file.startsWith('./assets/')&&!file.endsWith('.webp')));
  const manifest=JSON.parse(readFileSync('dist/manifest.json','utf8'));assert.equal(manifest.orientation,'landscape');assert.equal(manifest.display,'standalone');
 });
 test('offline navigation works under a hosting subpath; other origins are untouched',async()=>{
