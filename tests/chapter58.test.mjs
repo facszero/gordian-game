@@ -54,6 +54,6 @@ test('sword attacks are escapable and death removes hazards',()=>{
 });
 test('old chapter-four completion resumes campaign and chapter eight completes only after boss victory',()=>{
  assert.equal(normalizeSave({levelId:4,stage:'complete',bossDefeated:true}).stage,'transition');
- assert.equal(normalizeSave({levelId:8,stage:'complete',bossDefeated:false}).stage,'play');
- assert.equal(normalizeSave({levelId:8,stage:'complete',bossDefeated:true}).stage,'complete');
+ assert.equal(normalizeSave({levelId:8,stage:'complete',bossDefeated:false}).stage,'transition');
+ assert.equal(normalizeSave({levelId:8,stage:'complete',bossDefeated:true}).stage,'transition');
 });

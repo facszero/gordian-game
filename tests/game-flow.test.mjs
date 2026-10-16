@@ -1,3 +1,4 @@
+import * as dokumaArt from '../dist/src/dokuma.js';
 import * as bossLogic from '../dist/src/boss.js';
 import * as companionArt from '../dist/src/companion.js';
 import test from 'node:test';
@@ -14,8 +15,8 @@ import * as campaign from '../dist/src/campaign.js';
 // Exercise the actual game loop without a rendering surface or audio device.
 function game(){
  const nodes=new Map(),storage=new Map();
- const node=id=>{if(!nodes.has(id))nodes.set(id,{style:{},hidden:true,textContent:'',value:'2',focus(){},getContext(){return {};}});return nodes.get(id);};
- const context=vm.createContext({...bossLogic,...companionArt,...environmentArt,...enemyDesign,...level,...combat,...campaign,...coupling,DEVELOPMENT_MODE:true,updateBoss:(b,dt,p)=>bossLogic.updateBoss(b,dt,p,()=>.5),
+ const node=id=>{if(!nodes.has(id))nodes.set(id,{style:{},hidden:true,textContent:'',value:id==='dev-phase'?'1':'2',focus(){},getContext(){return {};}});return nodes.get(id);};
+ const context=vm.createContext({...bossLogic,...dokumaArt,...companionArt,...environmentArt,...enemyDesign,...level,...combat,...campaign,...coupling,DEVELOPMENT_MODE:true,updateBoss:(b,dt,p)=>bossLogic.updateBoss(b,dt,p,()=>.5),
   document:{getElementById:node,querySelector:node,querySelectorAll:()=>[],addEventListener(){}},
   window:{addEventListener(){}},matchMedia:()=>({matches:false}),innerHeight:720,innerWidth:1280,
   navigator:{getGamepads:()=>[]},performance:{now:()=>0},requestAnimationFrame(){},Image:class {},
@@ -24,6 +25,27 @@ function game(){
  vm.runInContext(fs.readFileSync(new URL('../dist/src/game.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,''),context);
  return code=>vm.runInContext(code,context);
 }
+
+test('final chapter advances through all robots, persists elite kills and ends only after Dokuma',()=>{
+ const run=game();run('reset(false,8);boss.active=true;hitBoss(boss,999);completeLevel();reset(true);finishTransition()');
+ assert.equal(run('LEVEL.id'),9);assert.equal(run('player.robot'),'protesser');
+ run('completeLevel();finishTransition()');assert.equal(run('LEVEL.id'),10);assert.equal(run('player.robot'),'dellinger');
+ run('completeLevel()');assert.equal(run('mode'),'play');
+ run('elites[0].active=true;hitBoss(elites[0],999);save();reset(true);elites[1].active=true;elites[1].hp=1;respawn()');
+ assert.equal(run('elites[0].dead'),true);assert.equal(run('elites[1].hp'),60);
+ run('elites[1].active=true;hitBoss(elites[1],999);completeLevel();reset(true);finishTransition()');assert.equal(run('LEVEL.id'),11);assert.equal(run('player.robot'),'garbin');
+ run('for(const e of elites){e.active=true;hitBoss(e,999);}completeLevel();finishTransition()');assert.equal(run('LEVEL.id'),12);
+ run('completeLevel()');assert.equal(run('mode'),'play');
+ run('boss.active=true;hitBoss(boss,999);completeLevel();reset(true)');assert.equal(run('mode'),'end');assert.equal(run('saved().stage'),'complete');
+});
+
+test('Dokuma preview, damage, pause and retry run through the actual game loop',()=>{
+ const run=game();run("$('dev-boss-final').onclick();update(1/120);pause()");const timer=run('boss.timer');
+ run('update(1)');assert.equal(run('boss.timer'),timer);
+ run('resume();player.x=6500;player.y=460;fire(true);for(let i=0;i<60;i++)update(1/120)');assert.ok(run('boss.hp')<540);
+ run('respawn()');assert.equal(run('boss.hp'),540);assert.equal(run('boss.active'),false);
+ run('boss.active=true;hitBoss(boss,999);dokumaFrames=[{}];drawBoss()');assert.equal(run('boss.dead'),true);
+});
 test('finishing level one transitions and automatically enters Dellinger level',()=>{
  const run=game();run('reset();mode="play";player.x=LEVEL.exit+1;update(1/120)');
  assert.equal(run('mode'),'transition');assert.equal(run('saved().stage'),'transition');
@@ -93,7 +115,7 @@ test('chapters 4 through 8 retain robot, transitions, save and final victory',()
  }
  run('completeLevel()');assert.equal(run('mode'),'play');
  run('boss.active=true;hitBoss(boss,999);darkFrames=[{}];drawBoss();save();reset(true);drawBoss();completeLevel()');
- assert.equal(run('mode'),'end');run('reset(true)');assert.equal(run('mode'),'end');
+ assert.equal(run('mode'),'transition');run('reset(true)');assert.equal(run('mode'),'transition');
  run("$('again').onclick()");assert.equal(run('LEVEL.id'),8);assert.equal(run('boss.hp'),330);
 });
 test('dark boss preview, pause, respawn and shots from either side use the real loop',()=>{

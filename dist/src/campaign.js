@@ -11,6 +11,7 @@ export function normalizeSave(data) {
     checkpoint:Number.isInteger(data.checkpoint)?Math.max(-1,Math.min(level.checkpoints.length-1,data.checkpoint)):-1,
     kills:count(data.kills),cells:count(data.cells),elapsed:count(data.elapsed),
     defeated:ids(data.defeated,level.enemies.length),collected:ids(data.collected,level.pickups.length),
+    elitesDefeated:ids(data.elitesDefeated,(level.elites||[]).length),
     destroyed:ids(data.destroyed,(level.barriers||[]).length),
     bossDefeated:Boolean(level.boss&&data.bossDefeated===true),
     stage:(data.stage==='transition'||data.stage==='complete')&&levelId<LEVELS.length?'transition':data.stage==='complete'&&levelId===LEVELS.length&&data.bossDefeated===true?'complete':'play'};

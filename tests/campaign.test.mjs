@@ -31,5 +31,5 @@ test('save validation migrates v1 and preserves progression and transition',()=>
  const save=normalizeSave({levelId:2,unlocked:2,checkpoint:1,kills:8,collected:[0,2,2,99],defeated:[1],destroyed:[0],stage:'complete'});
  assert.equal(save.levelId,2);assert.equal(save.unlocked,2);assert.equal(save.checkpoint,1);assert.deepEqual(save.collected,[0,2]);assert.equal(save.stage,'transition');
  assert.equal(normalizeSave({levelId:1,stage:'transition',unlocked:2}).stage,'transition');
- const invalid=normalizeSave({levelId:99,checkpoint:99,kills:-5,unlocked:99});assert.equal(invalid.levelId,1);assert.equal(invalid.checkpoint,1);assert.equal(invalid.kills,0);assert.equal(invalid.unlocked,8);
+ const invalid=normalizeSave({levelId:99,checkpoint:99,kills:-5,unlocked:99});assert.equal(invalid.levelId,1);assert.equal(invalid.checkpoint,1);assert.equal(invalid.kills,0);assert.equal(invalid.unlocked,12);
 });

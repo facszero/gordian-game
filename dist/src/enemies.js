@@ -12,7 +12,7 @@ export const ENEMY_GROUPS={
  F:{name:'Grupo enemigos F',theme:'Legión oscura',asset:'enemy-group-f',available:true}
 };
 // Campaign plan only; this does not unlock or implement future levels.
-export const ENEMY_GROUP_PLAN=[['A'],['B'],['C'],['D'],['A','B','C'],['B','D','E'],['A','C','E'],['B','D','F'],['A','C','E','F'],['A','B','D','F'],['A','B','C','D','E','F'],['A','B','C','D','E','F']];
+export const ENEMY_GROUP_PLAN=[['A'],['B'],['C'],['D'],['A','B','C'],['B','D','E'],['A','C','E'],['B','D','F'],['A','B','C','D','E','F'],['A','B','C','D','E','F'],['A','B','C','D','E','F'],['A','B','C','D','E','F']];
 export function groupForEnemy(levelId,index=0){const groups=ENEMY_GROUP_PLAN[levelId-1];if(!groups)throw Error('Unknown level');return groups[index%groups.length];}
 export function enemySpec(type,levelId,group=groupForEnemy(levelId),robot=levelId===4?'garbin':[1,3].includes(levelId)?'protesser':'dellinger'){
  if(!ENEMY_GROUPS[group]?.available)throw Error('Enemy group not implemented: '+group);

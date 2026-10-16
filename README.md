@@ -1,6 +1,6 @@
 # GORDIAN — El despertar
 
-Ocho niveles de un juego de plataformas lateral para navegador y móvil horizontal. Prototipo de aficionado inspirado en Gordian; los personajes pertenecen a sus titulares originales.
+Doce niveles de un juego de plataformas lateral para navegador y móvil horizontal. Prototipo de aficionado inspirado en Gordian; los personajes pertenecen a sus titulares originales.
 
 ## Ejecutar
 
@@ -19,7 +19,7 @@ Con Node.js 20 o posterior: `npm start`. Abrir `http://localhost:4173`. No requi
 
 ## Estado
 
-Incluye Victor Town con Protesser (6200 unidades) y la cantera de Santore con Dellinger (6400 unidades). Hay acoplamiento frontal animado de 11 segundos, con encaje de extremidades, cierre de armadura por etapas y giro a perfil, omisión de la secuencia, enemigos blindados y barreras destructibles. Dellinger tiene 150 de salud, menor velocidad y doble daño por disparo. Cada nivel tiene dos puntos de control. Se guardan el nivel, los objetos recogidos, enemigos derrotados, barreras destruidas y progreso de campaña en el navegador. Se recuperan partidas del primer prototipo. Los niveles 3 y 4 están implementados con Protesser y Garbin, fondos propios y el primer jefe en el nivel 4. Los niveles 5–8 y el jefe del 8 también están implementados. Quedan pendientes los niveles 9–12 y el jefe final.
+Incluye Victor Town con Protesser (6200 unidades) y la cantera de Santore con Dellinger (6400 unidades). Hay acoplamiento frontal animado de 11 segundos, con encaje de extremidades, cierre de armadura por etapas y giro a perfil, omisión de la secuencia, enemigos blindados y barreras destructibles. Dellinger tiene 150 de salud, menor velocidad y doble daño por disparo. Cada nivel tiene puntos de control. Se guardan el nivel, los objetos recogidos, enemigos derrotados, barreras destruidas y progreso de campaña en el navegador. Se recuperan partidas del primer prototipo. Los niveles 3 y 4 están implementados con Protesser y Garbin, fondos propios y el primer jefe en el nivel 4. Los niveles 5–8 y el jefe del 8 también están implementados. Los niveles 9–12 completan la campaña: Protesser, Dellinger, Garbin y Garbin. Los niveles 10 y 11 incluyen dos élites de un tercio de vida/daño; el 12 culmina con Grandmaster Dokuma (Evolved), drones, rayos oculares, puños y tentáculos. El menú de desarrollo permite probar cada fase del jefe final. Se conservan las derrotas de élites al continuar o reaparecer.
 
 ## Estructura
 

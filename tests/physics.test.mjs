@@ -12,5 +12,5 @@ test('every main-route jump is reachable with Protesser',()=>{
  }
 });
 test('platforms allow ascent from below and catch falling body',()=>{const p={x:15,y:110,w:20,h:30,vx:0,vy:-300};moveBody(p,[{x:0,y:100,w:100}],.1);assert.equal(p.grounded,false);p.y=40;p.vy=300;moveBody(p,[{x:0,y:100,w:100}],.2);assert.equal(p.y,70);assert.equal(p.grounded,true);});
-test('campaign retains the agreed bosses and final robot',()=>{assert.equal(CAMPAIGN.length,12);assert.deepEqual(CAMPAIGN.filter(x=>x.boss).map(x=>x.id),[4,8,12]);assert.equal(CAMPAIGN[11].robot,'garbin');assert.equal(CAMPAIGN.filter(x=>x.available).length,8);});
+test('campaign retains the agreed bosses and final robot',()=>{assert.equal(CAMPAIGN.length,12);assert.deepEqual(CAMPAIGN.filter(x=>x.boss).map(x=>x.id),[4,8,12]);assert.equal(CAMPAIGN[11].robot,'garbin');assert.equal(CAMPAIGN.filter(x=>x.available).length,12);});
 
