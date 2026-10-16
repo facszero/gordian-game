@@ -9,7 +9,7 @@ import {DEVELOPMENT_MODE} from './config.js';
 import {LEVELS,ROBOTS,GRAVITY,moveBody,overlaps} from './level.js';
 import {setStance,playerShot,shotBounds,garbinUpHeight} from './combat.js';
 import {normalizeSave,blockHorizontal} from './campaign.js';
-let elites=[],dokumaFrames=[],dokumaSummonFrames=[];
+let elites=[],dokumaFrames=[],dokumaSummonFrames=[],dokumaPunchFrames=[];
 let LEVEL=LEVELS[0],unlocked=1,transitionTime=0,barriers=[],boss=null,bossSprite=null,bossWalkFrames=[],crateFrames=[],darkFrames=[],garbinUpFrames=[];
 const $=id=>document.getElementById(id),canvas=$('game'),ctx=canvas.getContext('2d'),W=1280,H=720;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -153,7 +153,7 @@ function enemySprite(e){
 }
 function drawBoss(subject=boss){
  const boss=subject;
- if(boss?.kind==='dokuma'){drawDokuma(ctx,boss,dokumaFrames,reduced,dokumaSummonFrames);return;}
+ if(boss?.kind==='dokuma'){drawDokuma(ctx,boss,dokumaFrames,reduced,dokumaSummonFrames,dokumaPunchFrames);return;}
  if(boss?.kind==='dark'){drawDarkBoss(boss);return;}
  if(!boss||boss.dead||!bossSprite||boss.x>cam+W+100)return;
  ctx.save();
@@ -315,8 +315,9 @@ function keySprites(img,unit,rows=2,preserveCells=false,chroma='green'){spriteFr
 window.addEventListener('keydown',e=>{if(maps[e.code]){e.preventDefault();keys.add(maps[e.code]);}if(e.code==='Escape'&&!e.repeat){mode==='pause'?resume():pause();}});window.addEventListener('keyup',e=>{keys.delete(maps[e.code]);});window.addEventListener('blur',()=>{keys.clear();touch.clear();pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});window.addEventListener('resize',()=>{if(innerHeight>innerWidth)pause();});
 for(const button of document.querySelectorAll('[data-action]')){const release=e=>{e.preventDefault();touch.delete(button.dataset.action);button.classList.remove('active');};button.addEventListener('pointerdown',e=>{e.preventDefault();button.setPointerCapture(e.pointerId);touch.add(button.dataset.action);button.classList.add('active');});button.addEventListener('pointerup',release);button.addEventListener('pointercancel',release);button.addEventListener('lostpointercapture',release);}
 $('start').onclick=()=>{activateAudio();reset(false,DEVELOPMENT_MODE?Number($('dev-level').value):1);};$('preview-transition').onclick=()=>{activateAudio();reset(false,Math.min(LEVELS.length-1,Number($('dev-level').value)||1));beginTransition();};$('continue').onclick=()=>{activateAudio();reset(true);};$('resume').onclick=resume;$('pause').onclick=pause;$('restart').onclick=()=>reset(false,LEVEL.id);$('again').onclick=()=>reset(false,LEVEL.id);$('dev-boss').onclick=()=>{activateAudio();reset(false,4);checkpoint=1;respawn();player.x=LEVEL.boss.trigger;cam=LEVEL.boss.left;save();};$('dev-boss-two').onclick=()=>{activateAudio();reset(false,8);checkpoint=1;respawn();player.x=LEVEL.boss.left+520;cam=LEVEL.boss.left;save();};$('dev-boss-final').onclick=()=>{activateAudio();reset(false,12);checkpoint=1;respawn();player.x=LEVEL.boss.trigger;boss.hp=Number($('dev-phase').value)===3?180:Number($('dev-phase').value)===2?360:540;cam=LEVEL.boss.left;save();};$('skip').onclick=finishTransition;$('level-two').onclick=()=>{activateAudio();reset(false,2);};$('sound').onclick=()=>{activateAudio();soundOn=!soundOn;ac?.setEnabled(soundOn);$('sound').textContent='SONIDO '+(soundOn?'ON':'OFF');};$('fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('game-shell').requestFullscreen();}catch{toast('Usa la opción de pantalla completa del navegador');}};
-Promise.all(['canyon','protesser','dellinger','quarry','coupling-front','enemy-army','enemy-group-b','enemy-group-c','industrial-props','energy-atom','companion','stations','hangar-background','garbin','boss-scorpion','enemy-group-d','fortress','tunnels','boss-walk','industrial-crates','dark-dellinger','garbin-up','enemy-group-e','enemy-group-f','foundry','dam','reactor','eclipse','dokuma','dokuma-summon'].map(name=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{assets[name]=img;resolve();};img.onerror=()=>reject(new Error(name));img.src='assets/'+name+'.webp';}))).then(()=>{industrialParts=extractProps(assets['industrial-props'],INDUSTRIAL_REGIONS);
+Promise.all(['canyon','protesser','dellinger','quarry','coupling-front','enemy-army','enemy-group-b','enemy-group-c','industrial-props','energy-atom','companion','stations','hangar-background','garbin','boss-scorpion','enemy-group-d','fortress','tunnels','boss-walk','industrial-crates','dark-dellinger','garbin-up','enemy-group-e','enemy-group-f','foundry','dam','reactor','eclipse','dokuma','dokuma-summon','dokuma-punch'].map(name=>new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>{assets[name]=img;resolve();};img.onerror=()=>reject(new Error(name));img.src='assets/'+name+'.webp';}))).then(()=>{industrialParts=extractProps(assets['industrial-props'],INDUSTRIAL_REGIONS);
 dokumaSummonFrames=extractProps(assets['dokuma-summon'],[[0,0,.5,.5],[.5,0,.5,.5],[0,.5,.5,.5],[.5,.5,.5,.5]],'magenta',true);
+dokumaPunchFrames=extractProps(assets['dokuma-punch'],Array.from({length:6},(_,i)=>[i%3/3,Math.floor(i/3)/2,1/3,.5]),'magenta',true);
 dokumaFrames=extractProps(assets.dokuma,[[0,0,.53,.5],[.53,0,.47,.5],[0,.5,.53,.5],[.53,.5,.47,.5]]);
 stationParts=extractProps(assets.stations,[[0,0,.5,.5],[.5,0,.5,.5],[0,.5,.5,.5],[.5,.5,.5,.5]]);
 catFrames=extractProps(assets.companion,[[0,0,.285,.5],[.285,0,.22,.5],[.505,0,.24,.5],[.745,0,.255,.5],[0,.5,.255,.5],[.255,.5,.285,.5],[.54,.5,.23,.5],[.77,.5,.23,.5]]);

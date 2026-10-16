@@ -1,6 +1,6 @@
 export const dokumaPhase=b=>b.hp>b.maxHp*2/3?1:b.hp>b.maxHp/3?2:3;
 // The reactor is reachable by a grounded Garbin shot in every phase.
-export const dokumaBounds=b=>({x:b.left+(b.phase===1?760:900),y:b.floor-280,w:220,h:270});
+export const dokumaBounds=b=>{const pose=dokumaBodyPose(b);return {x:pose?pose.x+pose.size*.65-110:b.left+(b.phase===1?760:900),y:b.floor-280,w:220,h:270};};
 export const SUMMON_WARNING=1.8;
 export function dokumaSummonPose(b){
  if(b.summonStart===undefined)return {from:0,to:0,blend:0};
@@ -20,6 +20,15 @@ export function dokumaFistPose(b){
  const w=110+80*reach,h=160+140*reach;
  const homeX=b.left+820,homeY=b.floor-420;
  return {x:homeX+(b.fistTargetX-95-homeX)*reach,y:homeY+(b.floor-300-homeY)*reach-lift,w,h,alpha:Math.min(smooth(t/.12),smooth((windup+.95-t)/.15))};
+}
+export function dokumaBodyPose(b){
+ const fist=dokumaFistPose(b);if(!fist)return null;
+ const t=b.age-b.fistStart,w=b.fistWindup;
+ const keys=[[0,0],[w*.25,1],[w*.6,2],[w*.83,3],[w,4],[w+.5,4],[w+.72,5],[w+.95,0]];
+ let from=0,to=0,blend=0;
+ for(let i=1;i<keys.length;i++)if(t<keys[i][0]){from=keys[i-1][1];to=keys[i][1];blend=Math.max(0,1-(keys[i][0]-t)/.08);break;}
+ const reach=(fist.w-110)/80,size=1020,home=b.left+1000-size*.65;
+ return {from,to,blend,size,x:home+(b.fistTargetX-size*.2-home)*reach,y:b.floor-size*.9-12*Math.sin(reach*Math.PI)};
 }
 // Only destroyed drones count; clearing them on a phase change never creates supplies.
 export function hitDokumaDrone(b,d,damage){
@@ -72,22 +81,23 @@ export function updateDokuma(b,dt,p,random=Math.random){
  b.hazards=[];b.state='recover';b.timer=phase===3?1.2:1.6;return shots;
 }
 
-export function drawDokuma(ctx,b,frames,reduced,summonFrames=[]){
+export function drawDokuma(ctx,b,frames,reduced,summonFrames=[],punchFrames=[]){
  if(!b||b.dead||!b.active||!frames.length)return;
  const phase=b.phase||1,pose=phase===1?0:phase===2?1:2,f=frames[pose];
  const h=phase===1?570:715,w=f.width/f.height*h,cx=b.left+(phase===1?850:1000);
  ctx.save();if(b.flash>0)ctx.filter='brightness(1.7)';
- if(phase===1&&summonFrames.length){
+ if(phase>1&&punchFrames.length){
+  const pose=dokumaBodyPose(b)||{from:0,to:0,blend:0,size:1020,x:cx-1020*.65,y:b.floor-1020*.9};
+  const anchors=[.865,.865,.865,.815,.815,.815];
+  const draw=index=>ctx.drawImage(punchFrames[index],pose.x,pose.y+( .9-anchors[index])*pose.size,pose.size,pose.size);
+  if(reduced)draw(pose.blend<.5?pose.from:pose.to);
+  else {ctx.globalAlpha=1-pose.blend;draw(pose.from);if(pose.blend){ctx.globalAlpha=pose.blend;draw(pose.to);}}
+ }else if(phase===1&&summonFrames.length){
   const pose=dokumaSummonPose(b),size=820,anchors=[.925,.925,.882,.882];
   const drawPose=index=>ctx.drawImage(summonFrames[index],cx-size/2,b.floor-size*anchors[index],size,size);
   if(reduced)drawPose(pose.blend<.5?pose.from:pose.to);
   else {ctx.globalAlpha=1-pose.blend;drawPose(pose.from);ctx.globalAlpha=pose.blend;drawPose(pose.to);}
  }else ctx.drawImage(f,cx-w/2,b.floor-h,w,h);ctx.restore();
- const fistPose=dokumaFistPose(b);
- if(fistPose){
-  const fist=frames[1];ctx.save();ctx.globalAlpha=fistPose.alpha;
-  ctx.drawImage(fist,0,fist.height*.32,fist.width*.46,fist.height*.48,fistPose.x,fistPose.y,fistPose.w,fistPose.h);ctx.restore();
- }
  const mark=(x,y,x2,y2,color,width=3)=>{ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x2,y2);ctx.stroke();};
  if(b.state==='warning'){
   ctx.save();ctx.globalAlpha=reduced?.8:.65+Math.sin(b.age*15)*.2;
