@@ -26,3 +26,22 @@ body{font-family:Bahnschrift,'Arial Narrow',Arial,sans-serif}
 @media(max-width:650px) and (orientation:landscape){.unit{width:145px}.tools #sound{display:none}#boss-hud{width:40%;left:54%}.mission{left:54%;width:39%}.unit strong{font-size:13px}.menu-copy{max-width:78%}}
 
 #dev-phase{min-width:0;background:#132d40;color:#d5e5ed;border:1px solid #5f7e94;border-radius:3px;padding:5px;font-size:10px}
+
+/* Landscape handhelds: preserve the canvas aspect ratio and reclaim HUD space. */
+@media (orientation:landscape) and (pointer:coarse), (orientation:landscape) and (max-height:520px){
+ :root{--deck:44px}
+ #hud{top:2px;height:40px;left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right))}
+ .unit{width:160px;padding:3px 9px;position:relative}
+ .unit .eyebrow{display:none}.unit strong{font-size:12px;margin:0 0 4px;letter-spacing:1px}
+ .unit small{position:absolute;right:9px;top:4px;font-size:6px;letter-spacing:0}.health{height:8px}
+ .mission{height:38px;padding:3px 8px;width:34%;left:50%}.mission small{font-size:7px}.mission strong{font-size:9px;margin:3px 0;letter-spacing:.5px}
+ .tools button{height:36px;min-width:36px}.tools #sound{display:block;font-size:6px;max-width:48px;padding:3px}
+ #boss-hud{top:2px;height:38px;width:38%;left:50%;padding:3px 8px}#boss-hud strong{font-size:7px}#boss-hud>div{height:6px;margin-top:3px}#boss-phase{font-size:6px;margin-top:2px}
+ #touch{left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));align-items:flex-end}
+ #touch .directions{grid-template-columns:44px 44px 44px;grid-template-rows:44px 44px 44px;gap:3px}
+ #touch .directions button{width:44px;height:44px}
+ #touch .actions{flex-direction:column;align-items:center;gap:8px}
+ #touch .actions button{width:54px;height:54px;font-size:25px}#touch .actions .charge{width:46px;height:46px}
+ #hint{max-width:calc(100% - 320px);white-space:normal;font-size:9px;padding:5px 8px;bottom:10px;pointer-events:none}
+ #toast{max-width:60%;font-size:9px}
+}
