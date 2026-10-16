@@ -1,0 +1,10 @@
+{
+  "id":"./", "name":"Gordian — El despertar", "short_name":"Gordian",
+  "description":"Ocho niveles de acción y plataformas con Protesser, Dellinger y Garbin.",
+  "lang":"es", "start_url":"./", "scope":"./", "display":"standalone",
+  "orientation":"landscape", "background_color":"#050b14", "theme_color":"#0b1b2c",
+  "icons":[
+    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}
