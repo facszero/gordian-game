@@ -55,6 +55,21 @@ test('real shots release one supply per orb, collection heals once and retry rem
  run('save()');assert.equal(run('saved().collected.length'),0);
  run('respawn()');assert.equal(run('pickups.length'),0);assert.equal(run('boss.orbsDestroyed'),undefined);
 });
+test('Dokuma preserves damage across Garbin, Dellinger and Protesser, then resets on final defeat',()=>{
+ const run=game();run("$('dev-boss-final').onclick();boss.active=true;boss.hp=280;invulnerable=0;damage(999)");
+ assert.equal(run('player.robot'),'dellinger');assert.equal(run('player.health'),150);assert.equal(run('player.w'),55);assert.equal(run('mode'),'play');assert.equal(run('boss.hp'),280);
+ run('damage(999)');assert.equal(run('player.health'),150);
+ run('fire();');assert.equal(run('shots.at(-1).damage'),2);assert.equal(run('shotCooldown'),.24);
+ run("player.grounded=true;keys.add('right');update(1/120)");assert.equal(run('player.vx'),240);
+ run('invulnerable=0;damage(999)');assert.equal(run('player.robot'),'protesser');assert.equal(run('player.health'),100);assert.equal(run('boss.hp'),280);
+ run('fire()');assert.equal(run('shots.at(-1).damage'),1);
+ run('invulnerable=0;damage(999)');assert.equal(run('mode'),'dead');run('respawn()');assert.equal(run('player.robot'),'garbin');assert.equal(run('player.w'),80);assert.equal(run('player.h'),160);assert.equal(run('boss.hp'),540);
+});
+test('reserve robots only apply during the live final boss, and a fall ejects onto its arena',()=>{
+ const run=game();run('reset(false,12);invulnerable=0;damage(999)');assert.equal(run('mode'),'dead');
+ run('respawn();boss.active=true;player.y=900;update(1/120)');assert.equal(run('player.robot'),'dellinger');assert.equal(run('player.y+player.h'),run('boss.floor'));
+ run('reset(false,4);boss.active=true;invulnerable=0;damage(999)');assert.equal(run('mode'),'dead');assert.equal(run('player.robot'),'garbin');
+});
 test('finishing level one transitions and automatically enters Dellinger level',()=>{
  const run=game();run('reset();mode="play";player.x=LEVEL.exit+1;update(1/120)');
  assert.equal(run('mode'),'transition');assert.equal(run('saved().stage'),'transition');
