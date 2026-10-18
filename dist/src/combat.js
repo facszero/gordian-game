@@ -13,6 +13,7 @@ export function playerShot(player, charged=false) {
   const speed=charged?900:780, length=charged?55:24, thickness=charged?20:7;
   const up=Boolean(player.aimUp);
   return {
+    robot:player.robot||'protesser',charged,
     x:player.x+player.w/2+(up?0:player.face*(player.w/2+11)),
     y:up&&player.robot==='garbin'?player.y+player.h-garbinUpHeight(player.h,player.crouching):player.y+(up?-10:player.crouching?player.h/3:player.h*28/90),
     w:up?thickness:length, h:up?length:thickness,

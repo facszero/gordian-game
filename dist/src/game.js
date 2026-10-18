@@ -1,3 +1,4 @@
+import {drawPlayerShot,drawShotEffects,shotEffect,updateShotEffects,WEAPON_COLORS} from './weapons.js';
 import {createGameAudio} from './audio.js';
 import {drawDokuma,hitDokumaDrone,updateBossDrop} from './dokuma.js';
 import {createBoss,updateBoss,hitBoss,bossBounds,darkMuzzle,darkSword} from './boss.js';
@@ -14,6 +15,7 @@ let LEVEL=LEVELS[0],unlocked=1,transitionTime=0,barriers=[],boss=null,bossSprite
 const $=id=>document.getElementById(id),canvas=$('game'),ctx=canvas.getContext('2d'),W=1280,H=720;
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let mode='menu',beforePause='play',clock=0,elapsed=0,cam=0,shake=0,intro=0,toastUntil=0,checkpoint=-1,kills=0,cells=0,energy=100,last=0,acc=0,soundOn=true,ac=null,musicTick=0;
+let weaponEffects=[];
 let player,enemies=[],shots=[],particles=[],pickups=[],keys=new Set(),touch=new Set(),prevJump=false,airJumpsLeft=1,chargeLatch=false,jumpBuffer=0,coyote=0,shotCooldown=0,chargeCooldown=0,invulnerable=0,respawnTimer=0;
 const platformCache=new Map();let industrialParts=[],energySprite=null,stationParts=[],catFrames=[],companion=null;
 const assets={};let spriteFrames={};
@@ -31,7 +33,7 @@ function toast(s,duration=3){$('toast').textContent=s;toastUntil=clock+duration;
 function reset(continuing=false,levelId=1){
  const data=continuing?saved():null;LEVEL=LEVELS.find(l=>l.id===(data?.levelId||levelId))||LEVELS[0];
  unlocked=Math.max(LEVEL.id,saved()?.unlocked||1);checkpoint=data?.checkpoint??-1;kills=data?.kills||0;cells=data?.cells||0;elapsed=data?.elapsed||0;
- energy=100;shots=[];particles=[];pickups=LEVEL.pickups.map((p,id)=>({...p,id,taken:data?.collected.includes(id)||false}));
+ energy=100;shots=[];weaponEffects=[];particles=[];pickups=LEVEL.pickups.map((p,id)=>({...p,id,taken:data?.collected.includes(id)||false}));
  barriers=(LEVEL.barriers||[]).map((b,id)=>({...b,id,hp:6,dead:data?.destroyed.includes(id)||false}));
  const spec=ROBOTS[LEVEL.robot],pos=checkpoint>=0?LEVEL.checkpoints[checkpoint]:LEVEL.spawn;
  player={...pos,robot:LEVEL.robot,w:spec.width,h:spec.height,vx:0,vy:0,grounded:false,health:spec.maxHealth,face:1,crouching:false,aimUp:false};
@@ -64,12 +66,13 @@ function releaseInnerRobot(fell=false){
  keys.clear();touch.clear();shots=shots.filter(s=>s.friendly);burst(player.x+player.w/2,player.y+player.h/2,'#83efff',36);
  toast(old.toUpperCase()+' DESTRUIDO · '+next.toUpperCase()+' ACTIVO',3);sound('coupling');hud();return true;
 }
-function respawn(){pickups=pickups.filter(p=>!p.bossDrop);elites=elites.map((b,i)=>b.dead?b:createBoss(LEVEL.elites[i]));airJumpsLeft=1;prevJump=false;jumpBuffer=0;coyote=0;if(boss&&!boss.dead)boss=createBoss(LEVEL.boss);const pos=checkpoint>=0?LEVEL.checkpoints[checkpoint]:LEVEL.spawn;Object.assign(player,pos,{robot:LEVEL.robot,w:ROBOTS[LEVEL.robot].width,vx:0,vy:0,health:ROBOTS[LEVEL.robot].maxHealth,h:ROBOTS[LEVEL.robot].height,crouching:false,aimUp:false});energy=100;shots=[];invulnerable=2;mode='play';cam=Math.max(0,player.x-330);toast('PUNTO DE CONTROL RESTAURADO',2);}
+function respawn(){weaponEffects=[];pickups=pickups.filter(p=>!p.bossDrop);elites=elites.map((b,i)=>b.dead?b:createBoss(LEVEL.elites[i]));airJumpsLeft=1;prevJump=false;jumpBuffer=0;coyote=0;if(boss&&!boss.dead)boss=createBoss(LEVEL.boss);const pos=checkpoint>=0?LEVEL.checkpoints[checkpoint]:LEVEL.spawn;Object.assign(player,pos,{robot:LEVEL.robot,w:ROBOTS[LEVEL.robot].width,vx:0,vy:0,health:ROBOTS[LEVEL.robot].maxHealth,h:ROBOTS[LEVEL.robot].height,crouching:false,aimUp:false});energy=100;shots=[];invulnerable=2;mode='play';cam=Math.max(0,player.x-330);toast('PUNTO DE CONTROL RESTAURADO',2);}
 function pause(){if(!['play','intro','transition'].includes(mode))return;beforePause=mode;mode='pause';keys.clear();touch.clear();$('pause-menu').hidden=false;$('skip').hidden=true;}
 function resume(){if(innerHeight>innerWidth)return;$('pause-menu').hidden=true;mode=beforePause;$('skip').hidden=mode!=='transition';last=performance.now();acc=0;canvas.focus();}
 function input(){let a=new Set([...keys,...touch]);const gp=navigator.getGamepads?.()[0];if(gp){if(gp.axes[1]<-.4||gp.buttons[12]?.pressed)a.add('up');if(gp.axes[1]>.4||gp.buttons[13]?.pressed)a.add('crouch');if(gp.axes[0]<-.25||gp.buttons[14]?.pressed)a.add('left');if(gp.axes[0]>.25||gp.buttons[15]?.pressed)a.add('right');if(gp.buttons[0]?.pressed)a.add('jump');if(gp.buttons[2]?.pressed||gp.buttons[7]?.pressed)a.add('fire');if(gp.buttons[1]?.pressed)a.add('charge');}return a;}
-function fire(charged=false){const shot=playerShot(player,charged),{x,y}=shot;shots.push(shot);shotCooldown=player.robot==='garbin'?.3:player.robot==='dellinger'?.24:.17;if(charged){energy-=35;chargeCooldown=.65;shake=reduced?0:3;}sound(charged?'charge':'shot');burst(x,y,'#83efff',charged?12:3);}
-function update(dt){clock+=dt;if(clock>toastUntil)$('toast').textContent='';if(mode==='menu'||mode==='pause'||mode==='end')return;if(innerHeight>innerWidth){pause();return;}if(mode==='transition'){transitionTime+=dt;if(transitionTime>=transitionDuration())finishTransition();return;}if(mode==='dead'){respawnTimer-=dt;if(respawnTimer<=0)respawn();return;}updateCompanion(companion,dt,cam);if(mode==='intro'){intro+=dt;player.x=150;player.y=470;if(intro>4){mode='play';toast('PROTESSER ACTIVO · ALCANZA EL HANGAR',3);sound('ready');}return;}
+function shotImpact(s){if(s.friendly){weaponEffects.push(shotEffect(s,'impact'));burst(s.x,s.y,WEAPON_COLORS[s.robot||'protesser'][0],s.charged?7:3);}}
+function fire(charged=false){const shot=playerShot(player,charged),{x,y}=shot;shots.push(shot);shotCooldown=player.robot==='garbin'?.3:player.robot==='dellinger'?.24:.17;if(charged){energy-=35;chargeCooldown=.65;shake=reduced?0:3;}sound(charged?'charge':'shot');weaponEffects.push(shotEffect(shot,'muzzle'));}
+function update(dt){clock+=dt;if(clock>toastUntil)$('toast').textContent='';if(mode==='menu'||mode==='pause'||mode==='end')return;if(innerHeight>innerWidth){pause();return;}weaponEffects=updateShotEffects(weaponEffects,dt);if(mode==='transition'){transitionTime+=dt;if(transitionTime>=transitionDuration())finishTransition();return;}if(mode==='dead'){respawnTimer-=dt;if(respawnTimer<=0)respawn();return;}updateCompanion(companion,dt,cam);if(mode==='intro'){intro+=dt;player.x=150;player.y=470;if(intro>4){mode='play';toast('PROTESSER ACTIVO · ALCANZA EL HANGAR',3);sound('ready');}return;}
 elapsed+=dt;energy=Math.min(100,energy+dt*7);invulnerable=Math.max(0,invulnerable-dt);shotCooldown-=dt;chargeCooldown-=dt;shake=Math.max(0,shake-dt*30);
 const a=input(),jump=a.has('jump');player.aimUp=a.has('up');setStance(player,a.has('crouch'),ROBOTS[player.robot].height);if(player.grounded)airJumpsLeft=1;if(jump&&!prevJump)jumpBuffer=.13;prevJump=jump;jumpBuffer-=dt;coyote=player.grounded?.1:coyote-dt;player.vx=(Number(a.has('right'))-Number(a.has('left')))*ROBOTS[player.robot].speed*(player.crouching?.4:1);if(player.vx)player.face=Math.sign(player.vx);if(jumpBuffer>0&&(coyote>0||(airJumpsLeft>0&&player.vy!==0))){
  const airJump=coyote<=0;if(airJump)airJumpsLeft--;
@@ -91,12 +94,12 @@ if(boss&&!boss.dead){
 }
 for(const s of shots){s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;if(s.friendly){
  const drone=boss?.drones?.find(d=>!d.dead&&overlaps(shotBounds(s),d));
- if(drone){s.life=0;const drop=hitDokumaDrone(boss,drone,s.damage);if(drone.dead)burst(drone.x,drone.y,'#68ffb5',16);if(drop){pickups.push(drop);toast('RECARGA LIBERADA · +25 SALUD / ENERGÍA',2);}continue;}
+ if(drone){s.life=0;shotImpact(s);const drop=hitDokumaDrone(boss,drone,s.damage);if(drone.dead)burst(drone.x,drone.y,'#68ffb5',16);if(drop){pickups.push(drop);toast('RECARGA LIBERADA · +25 SALUD / ENERGÍA',2);}continue;}
  const elite=elites.find(b=>b.active&&!b.dead&&!b.hidden&&overlaps(shotBounds(s),bossBounds(b)));
- if(elite){s.life=0;if(hitBoss(elite,s.damage)){kills++;burst(elite.x+130,elite.floor-150,'#8feacb',35);toast(elite.name+' DERROTADO',3);shots=shots.filter(p=>p.friendly);save();}continue;}
+ if(elite){s.life=0;shotImpact(s);if(hitBoss(elite,s.damage)){kills++;burst(elite.x+130,elite.floor-150,'#8feacb',35);toast(elite.name+' DERROTADO',3);shots=shots.filter(p=>p.friendly);save();}continue;}
  if(boss?.active&&!boss.dead&&!boss.hidden&&overlaps(shotBounds(s),bossBounds(boss))){
- s.life=0;if(hitBoss(boss,s.damage)){shots=shots.filter(p=>p.friendly);kills++;burst(boss.x+240,boss.floor-140,'#ffc476',60);toast(boss.name+' DERROTADO · SALIDA ABIERTA',4);save();}else burst(s.x,s.y,'#ffc476',4);continue;
-}for(const b of barriers){if(!b.dead&&overlaps(shotBounds(s),b)){b.hp-=s.damage;s.life=0;burst(s.x,s.y,'#ffb466',6);if(b.hp<=0){b.dead=true;burst(b.x+30,b.y+40,'#ffc476',28);save();}break;}}if(s.life<=0)continue;for(const e of enemies){if(!e.dead&&overlaps(shotBounds(s),e)){e.hp-=s.damage;s.life=0;burst(s.x,s.y,'#ffcc7a',6);if(e.hp<=0){e.dead=true;kills++;save();burst(e.x+25,e.y+20,'#ffb466',25);sound('explosion');shake=reduced?0:5;}break;}}}else if(overlaps(shotBounds(s),player)){damage(s.damage||12);s.life=0;}}
+ s.life=0;shotImpact(s);if(hitBoss(boss,s.damage)){shots=shots.filter(p=>p.friendly);kills++;burst(boss.x+240,boss.floor-140,'#ffc476',60);toast(boss.name+' DERROTADO · SALIDA ABIERTA',4);save();}continue;
+}for(const b of barriers){if(!b.dead&&overlaps(shotBounds(s),b)){b.hp-=s.damage;s.life=0;shotImpact(s);if(b.hp<=0){b.dead=true;burst(b.x+30,b.y+40,'#ffc476',28);save();}break;}}if(s.life<=0)continue;for(const e of enemies){if(!e.dead&&overlaps(shotBounds(s),e)){e.hp-=s.damage;s.life=0;shotImpact(s);if(e.hp<=0){e.dead=true;kills++;save();burst(e.x+25,e.y+20,'#ffb466',25);sound('explosion');shake=reduced?0:5;}break;}}}else if(overlaps(shotBounds(s),player)){damage(s.damage||12);s.life=0;shotImpact(s);}}
 shots=shots.filter(s=>s.life>0);for(const p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=300*dt;p.life-=dt;}particles=particles.filter(p=>p.life>0);cam+=((boss?.active?boss.left:Math.max(0,Math.min(LEVEL.width-W,player.x-W*.32)))-cam)*Math.min(1,dt*5);
 if(player.x>LEVEL.exit){completeLevel();return;}
 hud();$('hint').textContent=LEVEL.id>=5?chapterHint():LEVEL.id>=3?(boss?.active?(boss.state==='warning'?(boss.attack==='beam'?'LÁSER ALTO · ↓ AGÁCHATE':boss.attack==='shell'?'IMPACTO MARCADO · MUÉVETE':boss.attack==='burst'?'RÁFAGA DE '+boss.rounds+' DISPAROS · ESQUIVA':'ONDA BAJA · SALTA'):'DISPARA AL CUERPO · C / ϟ PARA CARGA'):boss?.dead?'SALIDA ABIERTA →':LEVEL.id===4?'GARBIN · RUMBO AL BASTIÓN →':'PROTESSER · INFILTRACIÓN EN LOS TÚNELES →'):LEVEL.id===2?(player.x<900?'DELLINGER · DISPARA PARA ROMPER LAS BARRERAS':player.x>5700?'ALCANZA LA SALIDA →':'CANTERA · ↑ APUNTA A LOS DRONES · ↓ ESQUIVA'):player.x<680?'SALTA EL CAÑÓN · Z / ESPACIO':player.x<1600?'↓ AGACHARSE · ↑ + DISPARO ARRIBA':player.x>5500?'ALCANZA EL HANGAR →':'VICTOR TOWN · RUMBO AL HANGAR →';}
@@ -144,7 +147,7 @@ for(const e of enemies){if(!e.dead&&e.x>cam-100&&e.x<cam+W+100)enemySprite(e);}
 if(mode==='menu'){robot(290,410,4,1.55);}
 else if(mode==='intro'){robot(150,470,4,1,1,intro>2.3?1:.6);if(intro>2.4){ctx.globalAlpha=Math.max(0,1-(intro-2.4));rect(130,455,80,105,'#9cf5ff');ctx.globalAlpha=1;}}
 else if(player){let frame=player.crouching?7:player.aimUp?4:!player.grounded?6:Math.abs(player.vx)>10?Math.floor(clock*11)%4:shotCooldown>.08?5:4;robot(player.x,player.y,frame,1,player.face,invulnerable>0&&Math.floor(clock*12)%2?.45:1,player.h,player.aimUp,player.robot);}
-for(const s of shots){ctx.save();ctx.shadowBlur=s.friendly?18:12;ctx.shadowColor=s.friendly?'#53dcff':'#ff755a';ellipse(s.x,s.y,s.w/2,s.h/2,s.friendly?'#a4f7ff':'#ff9a68');line(s.x-s.vx*.025,s.y-s.vy*.025,s.x,s.y,s.friendly?'#52c9ff':'#fb5f50',Math.min(s.w,s.h)*.55);ctx.restore();}for(const p of particles){ctx.globalAlpha=Math.min(1,p.life*2);rect(p.x,p.y,3,3,p.color);}ctx.globalAlpha=1;ctx.restore();
+for(const s of shots){if(s.friendly){drawPlayerShot(ctx,s,clock,reduced);continue;}ctx.save();ctx.shadowBlur=reduced?0:12;ctx.shadowColor='#ff755a';ellipse(s.x,s.y,s.w/2,s.h/2,'#ff9a68');line(s.x-s.vx*.025,s.y-s.vy*.025,s.x,s.y,'#fb5f50',Math.min(s.w,s.h)*.55);ctx.restore();}drawShotEffects(ctx,weaponEffects,reduced);for(const p of particles){ctx.globalAlpha=Math.min(1,p.life*2);rect(p.x,p.y,3,3,p.color);}ctx.globalAlpha=1;ctx.restore();
 for(let i=0;i<24;i++){const x=(i*137+clock*13)%W,y=(i*71)%H;ellipse(x,y,1,1,'#ffdbab45');}if(mode==='intro'){text(intro<2.5?'DAIGO → PROTESSER':'SINCRONIZACIÓN COMPLETA',W/2,610,23,'#a9f6ff','center');}}
 function barrier(b){
  const frame=crateFrames[b.hp<6?1:0];if(frame)ctx.drawImage(frame,b.x,b.y,b.w,b.h);
