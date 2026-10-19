@@ -1,3 +1,4 @@
+import * as nucleus from '../dist/src/nucleus.js';
 import * as weaponArt from '../dist/src/weapons.js';
 import * as dokumaArt from '../dist/src/dokuma.js';
 import * as bossLogic from '../dist/src/boss.js';
@@ -17,7 +18,7 @@ import * as campaign from '../dist/src/campaign.js';
 function game(){
  const nodes=new Map(),storage=new Map();
  const node=id=>{if(!nodes.has(id))nodes.set(id,{style:{},hidden:true,textContent:'',value:id==='dev-phase'?'1':'2',focus(){},getContext(){return {};}});return nodes.get(id);};
- const context=vm.createContext({...weaponArt,...bossLogic,...dokumaArt,...companionArt,...environmentArt,...enemyDesign,...level,...combat,...campaign,...coupling,DEVELOPMENT_MODE:true,updateBoss:(b,dt,p)=>bossLogic.updateBoss(b,dt,p,()=>.5),
+ const context=vm.createContext({...nucleus,...weaponArt,...bossLogic,...dokumaArt,...companionArt,...environmentArt,...enemyDesign,...level,...combat,...campaign,...coupling,DEVELOPMENT_MODE:true,updateBoss:(b,dt,p)=>bossLogic.updateBoss(b,dt,p,()=>.5),
   document:{getElementById:node,querySelector:node,querySelectorAll:()=>[],addEventListener(){}},
   window:{addEventListener(){}},matchMedia:()=>({matches:false}),innerHeight:720,innerWidth:1280,
   navigator:{getGamepads:()=>[]},performance:{now:()=>0},requestAnimationFrame(){},Image:class {},
@@ -27,6 +28,24 @@ function game(){
  return code=>vm.runInContext(code,context);
 }
 
+test('only a Dellinger victory over Dokuma unlocks the extra arena, including after reload',()=>{
+ for(const robot of ['garbin','dellinger','protesser']){
+  const run=game();run(`reset(false,12);mode='play';boss.active=true;boss.hp=1;player.robot='${robot}';invulnerable=100;
+   const target=bossBounds(boss);shots=[{friendly:true,robot:player.robot,x:target.x+20,y:target.y+20,w:20,h:10,vx:0,vy:0,life:1,damage:10}];update(1/120);save();reset(true);completeLevel()`);
+  assert.equal(run('LEVEL.id'),robot==='dellinger'?13:12);
+  assert.equal(run('mode'),robot==='dellinger'?'play':'end');
+  if(robot==='dellinger'){assert.equal(run('player.robot'),'garbin');assert.equal(run('player.health'),220);assert.equal(run('LEVEL.enemies.length'),0);}
+ }
+});
+test('extra arena armor chain, retry, pause continuation and final victory run through real loop',()=>{
+ const run=game();run("$('dev-nucleus').onclick();update(1/120);boss.hp=100;invulnerable=0;damage(999)");
+ assert.equal(run('player.robot'),'dellinger');assert.equal(run('boss.hp'),100);
+ run('invulnerable=0;damage(999)');assert.equal(run('player.robot'),'protesser');
+ run('invulnerable=0;damage(999);respawn()');assert.equal(run('player.robot'),'garbin');assert.equal(run('boss.hp'),330);
+ run('pause();returnToMenu();reset(true)');assert.equal(run('LEVEL.id'),13);
+ run('boss.active=true;hitBoss(boss,999);update(1/120);completeLevel();reset(true)');
+ assert.equal(run('mode'),'end');assert.equal(run("$('again').textContent"),'REPETIR COMBATE EXTRA');
+});
 test('pause returns to menu, preserves checkpoint and restores transitions on continue',()=>{
  const run=game();
  run("reset(false,2);checkpoint=3;enemies[0].dead=true;keys.add('fire');pause();$('main-menu').onclick()");
