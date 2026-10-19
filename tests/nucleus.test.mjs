@@ -19,6 +19,19 @@ test('nucleus cycles all three telegraphed attacks, locks aim and stops after de
  hitBoss(b,999);assert.deepEqual(updateBoss(b,1,p),[]);
  let draws=0;drawNucleus({drawImage(){draws++;}},b,[{},{}]);assert.equal(draws,0);
 });
+test('every second chest attack charges a Garbin-sized burst with locked aim and fury',()=>{
+ const b=createBoss(NUCLEUS.boss),p={x:140,y:400,w:80,h:160};let large=0,ordinary=0;
+ for(let i=0;i<6000;i++){
+  const shots=updateBoss(b,1/120,p);
+  for(const shot of shots){
+   if(shot.reactorBurst){large++;assert.equal(shot.h,ROBOTS.garbin.height);assert.equal(shot.damage,28);assert.ok(b.rageBlend>.9);}
+   else if(b.attack==='chest')ordinary++;
+  }
+ }
+ assert.ok(large>=2);assert.ok(ordinary>=6);
+ b.mega=true;b.state='warning';b.timer=.8;b.targetX=140;b.targetY=450;
+ updateBoss(b,.2,{...p,x:500,y:100});assert.equal(b.targetX,140);assert.equal(b.targetY,450);
+});
 test('head tracks smoothly and shot origins follow its transform',()=>{
  const b=createBoss(NUCLEUS.boss),p={x:150,y:500,w:80,h:160};updateBoss(b,.01,p);
  const a=b.headAngle,m=nucleusMuzzles(b).eyes;updateBoss(b,1/120,{...p,y:100});

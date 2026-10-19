@@ -15,3 +15,9 @@ Fondo y atlas generados con la herramienta integrada image_gen a partir de la re
 ## Equilibrado inicial
 
 330 puntos de vida; tres fases. Pecho: abanico de 3/5 proyectiles. Ojos: tres disparos con puntería fijada. Hombros: dos descargas dobles. Avisos de 1,4 segundos y pausas entre ataques. Una recarga de +25 salud/energía cada ciclo completo de los tres ataques; máximo tres recargas temporales sin recoger. Sin enemigos comunes ni recorrido previo. El dinosaurio queda pendiente.
+
+## Furia y descarga de reactor
+
+Recurso adicional: `dist/assets/nucleus-rage.webp`, generado con image_gen integrado. Expresión de furia interpolada durante la carga y el disparo de una descarga grande cada segundo ataque de pecho. Proyectil de 180 × 160 unidades, daño 28, aviso de 2,2 segundos y puntería fijada durante los últimos 0,9 segundos.
+
+Prompt: Edit this exact game atlas. Change ONLY the facial expression of the detached robot head on the RIGHT: furious angry open-mouth mechanical roar, sharply angry glowing red eyes, open mouth showing squared silver metal teeth and dark red interior, like a raging anime mecha. Preserve helmet silhouette, horns, head position, scale, perspective, neck, all armor, color, linework and green background EXACTLY. Keep the entire headless torso on the left completely unchanged. No new parts, no text, no extra heads. Same canvas size. Flat chroma green #00ff00 background unchanged. The neutral and angry head will swap at identical coordinates in a game, so exact registration is essential.

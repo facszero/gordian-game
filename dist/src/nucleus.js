@@ -16,17 +16,20 @@ export function nucleusMuzzles(b){
 export function updateNucleus(b,dt,p){
  if(b.dead)return [];
  b.active=true;b.age+=dt;b.flash=Math.max(0,b.flash-dt);b.hazards=[];
+ b.rageTimer=Math.max(0,(b.rageTimer||0)-dt);
+ const furious=b.mega&&(b.state==='warning'||b.state==='firing')||b.rageTimer>0;
+ b.rageBlend=Math.max(0,Math.min(1,(b.rageBlend||0)+(furious?dt*5:-dt*3)));
  b.phase=b.hp>b.maxHp*2/3?1:b.hp>b.maxHp/3?2:3;
  if(b.state==='idle'){b.state='recover';b.timer=2;}
  // Tracking stops before firing, so the warning remains dodgeable.
- if(b.state==='recover'||b.state==='warning'&&b.timer>.35){
+ if(b.state==='recover'||b.state==='warning'&&b.timer>(b.mega?.9:.35)){
   b.targetX=p.x+p.w/2;b.targetY=p.y+p.h*.45;
   const angle=Math.max(-.3,Math.min(.28,-Math.atan2(b.targetY-214,907-b.targetX)*.6));
   b.headAngle=(b.headAngle||0)+(angle-(b.headAngle||0))*Math.min(1,dt*4);
  }
  b.timer-=dt;if(b.timer>0)return [];
  if(b.state==='recover'){
-  b.attack=['chest','eyes','shoulders'][b.cycle%3];b.cycle++;b.state='warning';b.timer=1.4;
+  b.attack=['chest','eyes','shoulders'][b.cycle%3];b.cycle++;b.mega=b.attack==='chest'&&b.cycle%6===4;b.state='warning';b.timer=b.mega?2.2:1.4;
   b.rounds=b.attack==='eyes'?3:b.attack==='shoulders'?2:1;return [];
  }
  const muzzles=nucleusMuzzles(b),shots=[];
@@ -34,7 +37,8 @@ export function updateNucleus(b,dt,p){
   const angle=Math.atan2(b.targetY-m.y,b.targetX-m.x)+spread;
   shots.push({...m,w:18,h:18,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:6,damage:16,friendly:false,boss:true,nucleus:true});
  };
- if(b.attack==='chest')for(const offset of (b.phase===3?[-.32,-.16,0,.16,.32]:[-.2,0,.2]))emit(muzzles.chest,offset,240);
+ if(b.mega){emit(muzzles.chest,0,260);Object.assign(shots[0],{w:180,h:160,damage:28,reactorBurst:true});b.rageTimer=.8;}
+ else if(b.attack==='chest')for(const offset of (b.phase===3?[-.32,-.16,0,.16,.32]:[-.2,0,.2]))emit(muzzles.chest,offset,240);
  else if(b.attack==='eyes')emit(muzzles.eyes,0,340);
  else for(const m of muzzles.shoulders)emit(m,0,210);
  b.rounds--;
@@ -47,15 +51,33 @@ export function drawNucleus(ctx,b,parts,reduced=false){
  ctx.save();ctx.filter=b.flash>0?'brightness(1.6)':'none';
  ctx.drawImage(parts[0],p.x,p.y,p.w,p.h);
  ctx.save();ctx.translate(p.neckX,p.neckY);ctx.rotate(p.angle);
- ctx.drawImage(parts[1],-135,-228,245,240);ctx.restore();ctx.restore();
+ const blend=parts[2]?(b.rageBlend||0):0;
+ ctx.globalAlpha=1-blend;ctx.drawImage(parts[1],-135,-228,245,240);
+ if(blend>0){ctx.globalAlpha=blend;ctx.drawImage(parts[2],-135,-228,245,240);}ctx.restore();ctx.restore();
  // Reactor glow remains visible as the target through the foreground platforms.
  ctx.save();ctx.strokeStyle='#f5a0ff';ctx.lineWidth=2;ctx.globalAlpha=.45;
  ctx.beginPath();ctx.arc(m.chest.x,m.chest.y,47+(reduced?0:Math.sin(b.age*4)*3),0,Math.PI*2);ctx.stroke();
  if(b.state==='warning'){
   const ports=b.attack==='chest'?[m.chest]:b.attack==='eyes'?[m.eyes]:m.shoulders;
+  if(b.mega){
+   const charge=Math.max(0,1-b.timer/2.2);ctx.globalAlpha=.25+charge*.55;ctx.fillStyle='#e855ff';
+   ctx.shadowColor='#e855ff';ctx.shadowBlur=reduced?0:25;ctx.beginPath();ctx.arc(m.chest.x,m.chest.y,35+charge*45,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+  }
   ctx.globalAlpha=.65;ctx.strokeStyle=b.attack==='eyes'?'#ff566f':'#ed93ff';ctx.setLineDash([8,12]);
   for(const o of ports){ctx.beginPath();ctx.moveTo(o.x,o.y);ctx.lineTo(b.targetX,b.targetY);ctx.stroke();}
   ctx.setLineDash([]);
  }
+ ctx.restore();
+}
+export function drawReactorBurst(ctx,s,time,reduced=false){
+ ctx.save();ctx.translate(s.x,s.y);
+ const pulse=reduced?1:1+Math.sin(time*16)*.04;
+ const glow=ctx.createRadialGradient(0,0,8,0,0,90);
+ glow.addColorStop(0,'#fff5ff');glow.addColorStop(.28,'#ffc9ff');glow.addColorStop(.65,'#ed54ff');glow.addColorStop(1,'#7c16bd00');
+ ctx.fillStyle=glow;ctx.shadowColor='#da38ff';ctx.shadowBlur=reduced?0:24;
+ ctx.beginPath();ctx.ellipse(0,0,s.w/2*pulse,s.h/2*pulse,0,0,Math.PI*2);ctx.fill();
+ const speed=Math.hypot(s.vx,s.vy)||1,dx=-s.vx/speed,dy=-s.vy/speed;
+ ctx.strokeStyle='#ee8dff';ctx.lineWidth=5;
+ for(const offset of [-35,0,35]){ctx.beginPath();ctx.moveTo(dx*35-dy*offset,dy*35+dx*offset);ctx.lineTo(dx*150-dy*offset*.4,dy*150+dx*offset*.4);ctx.stroke();}
  ctx.restore();
 }
