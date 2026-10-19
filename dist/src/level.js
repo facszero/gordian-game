@@ -1,7 +1,9 @@
 import {CHAPTER912} from './chapter912.js';
 import {CHAPTER58} from './chapter58.js';
 import {ENEMY_GROUP_PLAN} from './enemies.js';
-export const ROBOTS={protesser:{speed:310,jump:740,width:38,height:90,maxHealth:100},dellinger:{speed:240,jump:650,width:55,height:120,maxHealth:150},garbin:{speed:190,jump:590,width:80,height:160,maxHealth:220}};
+// Under shared gravity, jump height scales with launch speed squared.
+const jumpForHeight=height=>740*Math.sqrt(height/90);
+export const ROBOTS={protesser:{speed:310,jump:740,width:38,height:90,maxHealth:100},dellinger:{speed:240,jump:jumpForHeight(120),width:55,height:120,maxHealth:150},garbin:{speed:190,jump:jumpForHeight(160),width:80,height:160,maxHealth:220}};
 export const CAMPAIGN=['protesser','dellinger','protesser','garbin','dellinger','garbin','dellinger','garbin','protesser','dellinger','garbin','garbin'].map((robot,i)=>({id:i+1,robot,boss:[3,7,11].includes(i),available:true,enemyGroups:ENEMY_GROUP_PLAN[i]}));
 export const LEVEL={id:1,title:'Victor Town',robot:'protesser',width:6200,spawn:{x:150,y:470},exit:5940,
  platforms:[

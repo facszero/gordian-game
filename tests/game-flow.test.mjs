@@ -71,6 +71,25 @@ test('reserve robots only apply during the live final boss, and a fall ejects on
  run('respawn();boss.active=true;player.y=900;update(1/120)');assert.equal(run('player.robot'),'dellinger');assert.equal(run('player.y+player.h'),run('boss.floor'));
  run('reset(false,4);boss.active=true;invulnerable=0;damage(999)');assert.equal(run('mode'),'dead');assert.equal(run('player.robot'),'garbin');
 });
+test('crouching quarters incoming projectile damage without weakening player shots or contact damage',()=>{
+ for(const id of [1,2,4]){
+  const run=game();run(`reset(false,${id});mode='play';invulnerable=0;player.grounded=true;setStance(player,true,ROBOTS[player.robot].height)`);
+  const max=run('player.health'),normal=run('playerShot(player).damage');
+  run('damage(40,true)');assert.equal(run('player.health'),max-10);
+  run('invulnerable=0;damage(40)');assert.equal(run('player.health'),max-50);
+  run('setStance(player,false,ROBOTS[player.robot].height);invulnerable=0;damage(12,true)');assert.equal(run('player.health'),max-62);assert.equal(run('playerShot(player).damage'),normal);
+ }
+});
+test('held jump apex scales with robot height using real game physics',()=>{
+ const heights=[];
+ for(const id of [1,2,4]){
+  const run=game();run(`reset(false,${id});mode='play';enemies=[];boss=null;elites=[];barriers=[];LEVEL={...LEVEL,platforms:[{x:0,y:700,w:10000,h:30}],checkpoints:[],pickups:[]};player.x=200;player.y=700-player.h;player.grounded=true;keys.add('jump');update(1/120)`);
+  const bodyHeight=run('player.h');let apex=run('700-player.y-player.h');
+  for(let i=0;i<150&&run('player.vy')<0;i++){run('update(1/120)');apex=Math.max(apex,run('700-player.y-player.h'));}
+  heights.push(apex/bodyHeight);
+ }
+ assert.ok(heights.every(h=>Math.abs(h-heights[0])<.015));assert.equal(level.ROBOTS.protesser.jump,740);
+});
 test('finishing level one transitions and automatically enters Dellinger level',()=>{
  const run=game();run('reset();mode="play";player.x=LEVEL.exit+1;update(1/120)');
  assert.equal(run('mode'),'transition');assert.equal(run('saved().stage'),'transition');
