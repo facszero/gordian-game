@@ -1,4 +1,4 @@
-// Final chapter: compact routes remain deliberate; the planned length expansion is deferred.
+// Base layouts; level.js extends the non-boss routes for the playable campaign.
 const decks=rows=>rows.map(([x,y,w])=>({x,y,w,h:30}));
 function patrols(platforms){return platforms.flatMap((p,i)=>[
  ['turret',p.x+310,p.y],

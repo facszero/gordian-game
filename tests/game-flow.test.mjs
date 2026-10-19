@@ -27,6 +27,19 @@ function game(){
  return code=>vm.runInContext(code,context);
 }
 
+test('pause returns to menu, preserves checkpoint and restores transitions on continue',()=>{
+ const run=game();
+ run("reset(false,2);checkpoint=3;enemies[0].dead=true;keys.add('fire');pause();$('main-menu').onclick()");
+ assert.equal(run('mode'),'menu');assert.equal(run("$('menu').hidden"),false);
+ for(const id of ['pause-menu','hud','touch','boss-hud','skip'])assert.equal(run(`$('${id}').hidden`),true);
+ assert.equal(run('keys.size+touch.size'),0);
+ const elapsed=run('elapsed');run('update(1)');assert.equal(run('elapsed'),elapsed);
+ run("$('continue').onclick()");assert.equal(run('mode'),'play');assert.equal(run('checkpoint'),3);
+ assert.equal(run('player.x'),run('LEVEL.checkpoints[3].x'));assert.equal(run('enemies[0].dead'),true);
+ run('beginTransition();pause();returnToMenu();reset(true)');assert.equal(run('mode'),'transition');
+ run('finishTransition()');assert.equal(run('LEVEL.id'),3);
+});
+
 test('final chapter advances through all robots, persists elite kills and ends only after Dokuma',()=>{
  const run=game();run('reset(false,8);boss.active=true;hitBoss(boss,999);completeLevel();reset(true);finishTransition()');
  assert.equal(run('LEVEL.id'),9);assert.equal(run('player.robot'),'protesser');
