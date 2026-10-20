@@ -26,7 +26,7 @@ function sampleMock(){
 test('recordings load once, bound overlap, release and preserve distinct robot profiles',async()=>{
  const c=sampleMock();let requests=0;const a=createWeaponSamples(c,c.destination,async()=>{requests++;return {ok:true,arrayBuffer:async()=>new ArrayBuffer(1)};});
  assert.equal(a.play('shot','protesser'),false);
- await Promise.all([a.load(),a.load()]);assert.equal(requests,4);
+ await Promise.all([a.load(),a.load()]);assert.equal(requests,7);
  for(let i=0;i<10;i++)assert.equal(a.play('shot','protesser'),true);
  assert.equal(c.sources.filter(s=>!s.disconnected).length,3);
  a.play('charge','garbin');assert.equal(c.sources.at(-1).playbackRate.value,.75);
@@ -48,4 +48,20 @@ test('sample excerpts normalize peaks and fade both edges',()=>{
 test('rapid overlapping effects have a bounded voice count',()=>{
  const c=mock(),a=createGameAudio(c);for(let i=0;i<100;i++)a.play('explosion');assert.equal(c.sources.length,48);
  for(const n of [...c.sources])n.onended();a.play('jump');assert.ok(c.sources.length>48);
+});
+test('hostile sound flood is throttled even when recordings are unavailable',()=>{
+ const c=mock(),a=createGameAudio(c);
+ for(let i=0;i<100;i++)a.play(i%2?'enemyLight':'enemyHeavy','garbin',.3);
+ assert.equal(c.sources.length,2);
+ c.currentTime=.1;a.play('enemyLight');assert.equal(c.sources.length,4);
+ a.stop();assert.ok(c.sources.every(s=>s.disconnected));
+ a.play('enemyLight');assert.equal(c.sources.length,6);
+});
+test('enemy sample voices are capped independently of player shots and boss beams',async()=>{
+ const c=sampleMock(),a=createWeaponSamples(c,c.destination,async()=>({ok:true,arrayBuffer:async()=>new ArrayBuffer(1)}));
+ await a.load();a.play('shot','protesser');
+ for(let i=0;i<30;i++)a.play(i%2?'enemyHeavy':'enemyLight','garbin',.3);
+ assert.equal(c.sources.filter(s=>!s.disconnected).length,4);
+ a.play('iceBeam','garbin');assert.equal(c.sources.filter(s=>!s.disconnected).length,5);
+ a.stop();assert.ok(c.sources.every(s=>s.disconnected));
 });

@@ -1,3 +1,4 @@
+import * as enemyAudio from '../dist/src/enemy-audio.js';
 import * as cryodrax from '../dist/src/cryodrax.js';
 import * as story from '../dist/src/story.js';
 import * as nucleus from '../dist/src/nucleus.js';
@@ -20,7 +21,7 @@ import * as campaign from '../dist/src/campaign.js';
 function game(development=true){
  const nodes=new Map(),storage=new Map();
  const node=id=>{if(!nodes.has(id))nodes.set(id,{style:{},hidden:true,textContent:'',value:id==='dev-phase'?'1':'2',focus(){},getContext(){return {};}});return nodes.get(id);};
- const context=vm.createContext({...story,...cryodrax,...nucleus,...weaponArt,...bossLogic,...dokumaArt,...companionArt,...environmentArt,...enemyDesign,...level,...combat,...campaign,...coupling,DEVELOPMENT_MODE:development,updateBoss:(b,dt,p)=>bossLogic.updateBoss(b,dt,p,()=>.5),
+ const context=vm.createContext({...enemyAudio,...story,...cryodrax,...nucleus,...weaponArt,...bossLogic,...dokumaArt,...companionArt,...environmentArt,...enemyDesign,...level,...combat,...campaign,...coupling,DEVELOPMENT_MODE:development,updateBoss:(b,dt,p)=>bossLogic.updateBoss(b,dt,p,()=>.5),
   document:{getElementById:node,querySelector:node,querySelectorAll:()=>[],addEventListener(){}},
   window:{addEventListener(){}},matchMedia:()=>({matches:false}),innerHeight:720,innerWidth:1280,
   navigator:{getGamepads:()=>[]},performance:{now:()=>0},requestAnimationFrame(){},Image:class {},

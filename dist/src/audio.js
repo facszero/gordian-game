@@ -1,4 +1,4 @@
-import {createWeaponSamples} from './weapon-audio.js';
+import {createWeaponSamples,ENEMY_AUDIO} from './weapon-audio.js';
 // Recorded weapons with an offline synthesized fallback.
 export function createGameAudio(context) {
   const master=context.createGain(), limiter=context.createDynamicsCompressor();
@@ -20,9 +20,18 @@ export function createGameAudio(context) {
     source.onended=()=>{source.disconnect();filter.disconnect();gain.disconnect();voices.delete(source);};
     source.start(t);source.stop(t+duration+.01);
   }
-  function play(name,robot='protesser') {
+  const lastEnemy=new Map();
+  function play(name,robot='protesser',volume=1) {
     if(!enabled||context.state==='suspended')return;
-    if(['shot','charge','reactorBurst'].includes(name)&&weapons.play(name,robot))return;
+    const hostile=!!ENEMY_AUDIO[name]||name==='bossWarning';
+    if(hostile){const key=name.startsWith('enemy')?'enemy':name,interval=name==='bossWarning'?.35:name.startsWith('enemy')?.09:.06;
+      if(context.currentTime-(lastEnemy.get(key)??-Infinity)<interval)return;lastEnemy.set(key,context.currentTime);}
+    if((['shot','charge','reactorBurst'].includes(name)||ENEMY_AUDIO[name])&&weapons.play(name,robot,volume))return;
+    if(hostile){if(name==='bossWarning'){layer(420,680,.24,.045,'triangle');return;}
+      const big=['scorpionBeam','dokumaBeam','iceBeam','bossImpact'].includes(name);
+      layer(big?140:700,big?35:110,big?.65:.17,(big?.16:.07)*volume,'sawtooth',0,2200);
+      layer(0,0,big?.5:.1,(big?.12:.04)*volume,'noise',0,2800);return;}
+
     if(name==='reactorBurst'){layer(120,28,.9,.2);layer(0,0,1.1,.15,'noise',0,1600);return;}
     const weight=robot==='garbin'?.55:robot==='dellinger'?.77:1;
     if(name==='shot'||name==='charge') {
@@ -47,6 +56,6 @@ export function createGameAudio(context) {
       [330,440,550,660,880].forEach((f,i)=>layer(f,f,.45,.08,'triangle',i*.12));
     }
   }
-  function stop(){weapons.stop();for(const source of [...voices]){try{source.stop();}catch{}source.onended();}}
+  function stop(){lastEnemy.clear();weapons.stop();for(const source of [...voices]){try{source.stop();}catch{}source.onended();}}
   return {play,stop,loadSamples:weapons.load,setEnabled(value){enabled=value;if(!value)stop();master.gain.cancelScheduledValues(context.currentTime);master.gain.setTargetAtTime(value?.65:0,context.currentTime,.01);},resume(){return context.resume();}};
 }
