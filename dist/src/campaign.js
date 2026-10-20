@@ -1,11 +1,12 @@
+import {CRYODRAX} from './cryodrax.js';
 import {NUCLEUS} from './nucleus.js';
 import {LEVELS} from './level.js';
 
 // Validate persisted data before it can select a level or checkpoint.
 export function normalizeSave(data) {
   if (!data || typeof data !== 'object') return null;
-  const levelId = [...LEVELS,NUCLEUS].some(l=>l.id===data.levelId) ? data.levelId : 1;
-  const level = [...LEVELS,NUCLEUS].find(l=>l.id===levelId);
+  const levelId = [...LEVELS,NUCLEUS,CRYODRAX].some(l=>l.id===data.levelId) ? data.levelId : 1;
+  const level = [...LEVELS,NUCLEUS,CRYODRAX].find(l=>l.id===levelId);
   const count = value => Number.isFinite(value) ? Math.max(0,Math.floor(value)) : 0;
   const ids = (value,max) => Array.isArray(value) ? [...new Set(value.filter(i=>Number.isInteger(i)&&i>=0&&i<max))] : [];
   return {version:2,levelId,victoryRobot:['protesser','dellinger','garbin'].includes(data.victoryRobot)?data.victoryRobot:null,unlocked:Math.max(Math.min(levelId,12),Math.min(LEVELS.length,count(data.unlocked)||1)),
@@ -25,3 +26,5 @@ export function blockHorizontal(body,previousX,barriers) {
     else if(previousX>=b.x+b.w && body.x<b.x+b.w){body.x=b.x+b.w;body.vx=0;}
   }
 }
+
+export function bonusLevelFor(robot){return robot==='dellinger'?13:robot==='protesser'?14:null;}
