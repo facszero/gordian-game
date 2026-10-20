@@ -1,4 +1,5 @@
 import * as cryodrax from '../dist/src/cryodrax.js';
+import * as story from '../dist/src/story.js';
 import * as nucleus from '../dist/src/nucleus.js';
 import * as weaponArt from '../dist/src/weapons.js';
 import * as dokumaArt from '../dist/src/dokuma.js';
@@ -16,10 +17,10 @@ import * as coupling from '../dist/src/coupling.js';
 import * as campaign from '../dist/src/campaign.js';
 
 // Exercise the actual game loop without a rendering surface or audio device.
-function game(){
+function game(development=true){
  const nodes=new Map(),storage=new Map();
  const node=id=>{if(!nodes.has(id))nodes.set(id,{style:{},hidden:true,textContent:'',value:id==='dev-phase'?'1':'2',focus(){},getContext(){return {};}});return nodes.get(id);};
- const context=vm.createContext({...cryodrax,...nucleus,...weaponArt,...bossLogic,...dokumaArt,...companionArt,...environmentArt,...enemyDesign,...level,...combat,...campaign,...coupling,DEVELOPMENT_MODE:true,updateBoss:(b,dt,p)=>bossLogic.updateBoss(b,dt,p,()=>.5),
+ const context=vm.createContext({...story,...cryodrax,...nucleus,...weaponArt,...bossLogic,...dokumaArt,...companionArt,...environmentArt,...enemyDesign,...level,...combat,...campaign,...coupling,DEVELOPMENT_MODE:development,updateBoss:(b,dt,p)=>bossLogic.updateBoss(b,dt,p,()=>.5),
   document:{getElementById:node,querySelector:node,querySelectorAll:()=>[],addEventListener(){}},
   window:{addEventListener(){}},matchMedia:()=>({matches:false}),innerHeight:720,innerWidth:1280,
   navigator:{getGamepads:()=>[]},performance:{now:()=>0},requestAnimationFrame(){},Image:class {},
@@ -33,6 +34,8 @@ test('winning robot unlocks the corresponding extra arena, including after reloa
  for(const robot of ['garbin','dellinger','protesser']){
   const run=game();run(`reset(false,12);mode='play';boss.active=true;boss.hp=1;player.robot='${robot}';invulnerable=100;
    const target=bossBounds(boss);shots=[{friendly:true,robot:player.robot,x:target.x+20,y:target.y+20,w:20,h:10,vx:0,vy:0,life:1,damage:10}];update(1/120);save();reset(true);completeLevel()`);
+  assert.equal(run('LEVEL.id'),12);assert.equal(run('mode'),'end');
+  run('continueEnding()');
   assert.equal(run('LEVEL.id'),robot==='dellinger'?13:robot==='protesser'?14:12);
   assert.equal(run('mode'),robot!=='garbin'?'play':'end');
   if(robot!=='garbin'){assert.equal(run('player.robot'),'garbin');assert.equal(run('player.health'),220);assert.equal(run('LEVEL.enemies.length'),0);}
@@ -45,7 +48,38 @@ for(const [button,id] of [['dev-nucleus',13],['dev-cryo',14]])test('extra '+id+'
  run('invulnerable=0;damage(999);respawn()');assert.equal(run('player.robot'),'garbin');assert.equal(run('boss.hp'),330);
  run('pause();returnToMenu();reset(true)');assert.equal(run('LEVEL.id'),id);
  run('boss.active=true;hitBoss(boss,999);update(1/120);completeLevel();reset(true)');
- assert.equal(run('mode'),'end');assert.equal(run("$('again').textContent"),'REPETIR COMBATE EXTRA');
+ assert.equal(run('mode'),'end');assert.equal(run("$('again').textContent"),'CONTINUAR →');
+ run('continueEnding()');assert.equal(run('endingPage'),'epilogue');
+ assert.match(run("$('ending-note').textContent"),/enemigos nunca/);
+ run('reset(true)');assert.equal(run('endingPage'),'epilogue');
+ run('continueEnding()');assert.equal(run('mode'),'menu');
+});
+test('four complete defeats exhaust the campaign and prevent continuation',()=>{
+ const run=game();run("reset(false,1);mode='play';enemies.forEach(e=>e.dead=true)");
+ for(let n=3;n>=0;n--){run('invulnerable=0;damage(999)');assert.equal(run('lives'),n);run('update(1.3)');}
+ assert.equal(run('mode'),'menu');assert.equal(run('saved()'),null);assert.equal(run("$('continue').hidden"),true);
+ run("$('continue').onclick()");assert.equal(run('mode'),'menu');
+ run("$('start').onclick()");assert.equal(run('lives'),4);
+});
+test('falls cost a life, pause and restart preserve it, only 8 to 9 restores four',()=>{
+ const run=game();run("reset(false,3);player.y=900;update(1/120)");assert.equal(run('lives'),3);
+ run('update(1.3);pause();returnToMenu();reset(true)');assert.equal(run('lives'),3);
+ run("pause();$('restart').onclick()");assert.equal(run('lives'),3);
+ run('finishTransition()');assert.equal(run('LEVEL.id'),4);assert.equal(run('lives'),3);
+ run('reset(false,8,true);lives=1;boss.active=true;hitBoss(boss,999);completeLevel();reset(true);finishTransition()');
+ assert.equal(run('LEVEL.id'),9);assert.equal(run('lives'),4);
+ run('lives=2;finishTransition()');assert.equal(run('lives'),2);
+});
+test('armor reserves do not cost lives and the extra inherits remaining attempts',()=>{
+ const run=game();run("reset(false,12);update(1/120);boss.active=true;lives=2;invulnerable=0;damage(999)");
+ assert.equal(run('player.robot'),'dellinger');assert.equal(run('lives'),2);
+ run("boss.active=true;hitBoss(boss,999);victoryRobot='dellinger';completeLevel();continueEnding()");
+ assert.equal(run('LEVEL.id'),13);assert.equal(run('lives'),2);
+});
+test('release and developer saves have distinct namespaces and release starts at level one',()=>{
+ const run=game(false);run("localStorage.setItem('gordian-v2',JSON.stringify({levelId:14,lives:1}));$('start').onclick()");
+ assert.equal(run('LEVEL.id'),1);assert.equal(run('lives'),4);assert.equal(run('SAVE_KEY'),'gordian-release-v1');
+ assert.equal(run("JSON.parse(localStorage.getItem('gordian-v2')).levelId"),14);
 });
 test('pause returns to menu, preserves checkpoint and restores transitions on continue',()=>{
  const run=game();
@@ -147,7 +181,7 @@ test('four-level progression, new transition saves and boss victory persist',()=
  run('completeLevel()');assert.notEqual(run('mode'),'end');
  run('boss.active=true;hitBoss(boss,999);save();reset(true)');assert.equal(run('boss.dead'),true);
  run('player.x=LEVEL.exit+1;update(1/120)');assert.equal(run('mode'),'transition');run('reset(true)');assert.equal(run('mode'),'transition');
- run("$('again').onclick()");assert.equal(run('LEVEL.id'),4);assert.equal(run('boss.dead'),false);
+ run("pause();$('restart').onclick()");assert.equal(run('LEVEL.id'),4);assert.equal(run('boss.dead'),false);
 });
 test('boss preview, pause, death and charged damage use the actual game loop',()=>{
  const run=game();run("$('dev-boss').onclick()");assert.equal(run('checkpoint'),1);assert.equal(run('player.x'),5580);
@@ -193,7 +227,7 @@ test('chapters 4 through 8 retain robot, transitions, save and final victory',()
  run('completeLevel()');assert.equal(run('mode'),'play');
  run('boss.active=true;hitBoss(boss,999);darkFrames=[{}];drawBoss();save();reset(true);drawBoss();completeLevel()');
  assert.equal(run('mode'),'transition');run('reset(true)');assert.equal(run('mode'),'transition');
- run("$('again').onclick()");assert.equal(run('LEVEL.id'),8);assert.equal(run('boss.hp'),330);
+ run("pause();$('restart').onclick()");assert.equal(run('LEVEL.id'),8);assert.equal(run('boss.hp'),330);
 });
 test('dark boss preview, pause, respawn and shots from either side use the real loop',()=>{
  const run=game();run("$('dev-boss-two').onclick();update(1/120);pause()");

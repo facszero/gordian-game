@@ -4,12 +4,12 @@ import {LEVELS} from './level.js';
 
 // Validate persisted data before it can select a level or checkpoint.
 export function normalizeSave(data) {
-  if (!data || typeof data !== 'object') return null;
+  if (!data || typeof data !== 'object' || data.lives===0) return null;
   const levelId = [...LEVELS,NUCLEUS,CRYODRAX].some(l=>l.id===data.levelId) ? data.levelId : 1;
   const level = [...LEVELS,NUCLEUS,CRYODRAX].find(l=>l.id===levelId);
   const count = value => Number.isFinite(value) ? Math.max(0,Math.floor(value)) : 0;
   const ids = (value,max) => Array.isArray(value) ? [...new Set(value.filter(i=>Number.isInteger(i)&&i>=0&&i<max))] : [];
-  return {version:2,levelId,victoryRobot:['protesser','dellinger','garbin'].includes(data.victoryRobot)?data.victoryRobot:null,unlocked:Math.max(Math.min(levelId,12),Math.min(LEVELS.length,count(data.unlocked)||1)),
+  return {version:2,levelId,lives:Number.isInteger(data.lives)?Math.max(1,Math.min(4,data.lives)):4,endingPage:data.endingPage==='epilogue'?'epilogue':'victory',victoryRobot:['protesser','dellinger','garbin'].includes(data.victoryRobot)?data.victoryRobot:null,unlocked:Math.max(Math.min(levelId,12),Math.min(LEVELS.length,count(data.unlocked)||1)),
     checkpoint:Number.isInteger(data.checkpoint)?Math.max(-1,Math.min(level.checkpoints.length-1,data.checkpoint)):-1,
     kills:count(data.kills),cells:count(data.cells),elapsed:count(data.elapsed),
     defeated:ids(data.defeated,level.enemies.length),collected:ids(data.collected,level.pickups.length),
