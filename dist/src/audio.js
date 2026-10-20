@@ -1,8 +1,10 @@
-// Original, offline Web Audio effects. No external recordings required.
+import {createWeaponSamples} from './weapon-audio.js';
+// Recorded weapons with an offline synthesized fallback.
 export function createGameAudio(context) {
   const master=context.createGain(), limiter=context.createDynamicsCompressor();
   master.gain.value=.65;limiter.threshold.value=-12;limiter.ratio.value=8;
   master.connect(limiter);limiter.connect(context.destination);
+  const weapons=createWeaponSamples(context,master);
   const noise=context.createBuffer(1,context.sampleRate,context.sampleRate);
   const samples=noise.getChannelData(0);for(let i=0;i<samples.length;i++)samples[i]=Math.random()*2-1;
   let enabled=true;const voices=new Set();
@@ -19,7 +21,9 @@ export function createGameAudio(context) {
     source.start(t);source.stop(t+duration+.01);
   }
   function play(name,robot='protesser') {
-    if(!enabled)return;
+    if(!enabled||context.state==='suspended')return;
+    if(['shot','charge','reactorBurst'].includes(name)&&weapons.play(name,robot))return;
+    if(name==='reactorBurst'){layer(120,28,.9,.2);layer(0,0,1.1,.15,'noise',0,1600);return;}
     const weight=robot==='garbin'?.55:robot==='dellinger'?.77:1;
     if(name==='shot'||name==='charge') {
       const heavy=name==='charge';
@@ -43,5 +47,6 @@ export function createGameAudio(context) {
       [330,440,550,660,880].forEach((f,i)=>layer(f,f,.45,.08,'triangle',i*.12));
     }
   }
-  return {play,setEnabled(value){enabled=value;master.gain.cancelScheduledValues(context.currentTime);master.gain.setTargetAtTime(value?.65:0,context.currentTime,.01);},resume(){return context.resume();}};
+  function stop(){weapons.stop();for(const source of [...voices]){try{source.stop();}catch{}source.onended();}}
+  return {play,stop,loadSamples:weapons.load,setEnabled(value){enabled=value;if(!value)stop();master.gain.cancelScheduledValues(context.currentTime);master.gain.setTargetAtTime(value?.65:0,context.currentTime,.01);},resume(){return context.resume();}};
 }

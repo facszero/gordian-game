@@ -34,9 +34,10 @@ function save(stage='play'){try{localStorage.setItem(SAVE_KEY,JSON.stringify({ve
 function saved(){try{return normalizeSave(JSON.parse(localStorage.getItem(SAVE_KEY)||(DEVELOPMENT_MODE?localStorage.getItem('gordian-v1'):null)));}catch{return null;}}
 function hud(){ $('lives').textContent='VIDAS '+lives+' / 4'; $('boss-hud').hidden=!boss?.active;$('boss-health').style.width=(boss?boss.hp/boss.maxHp*100:100)+'%';document.querySelector('#boss-hud strong').textContent=boss?boss.name+(LEVEL.extra?' · EXTRA':' · JEFE 0'+(boss.number||1)):'';$('boss-phase').textContent='FASE '+(boss?.phase||(boss&&boss.hp<=boss.maxHp/2?2:1));document.querySelector('.unit strong').textContent=player.robot.toUpperCase();document.querySelector('.unit .eyebrow').textContent='SISTEMA ACTIVO / '+(LEVEL.extra?'EXTRA':String(LEVEL.id)).padStart(2,'0');document.querySelector('.mission small').textContent=LEVEL.extra?'COMBATE EXTRA':'NIVEL '+String(LEVEL.id).padStart(2,'0')+' / 12';document.querySelector('.mission strong').textContent=LEVEL.title.toUpperCase();$('health').style.width=player.health/ROBOTS[player.robot].maxHealth*100+'%';$('energy').textContent='ENERGÍA '+Math.floor(energy)+'%';$('progress').style.width=Math.min(100,player.x/LEVEL.exit*100)+'%';}
 function sound(name){if(soundOn&&ac)ac.play(name,player?.robot||LEVEL.robot);}
-function activateAudio(){try{ac??=createGameAudio(new AudioContext());ac.resume()?.catch(()=>{});}catch{}}
+function activateAudio(){try{ac??=createGameAudio(new AudioContext());ac.resume()?.catch(()=>{});ac.loadSamples();}catch{}}
 function toast(s,duration=3){$('toast').textContent=s;toastUntil=clock+duration;}
 function reset(continuing=false,levelId=1,preserveLives=false){
+ ac?.stop();
  const data=continuing?saved():null;LEVEL=[...LEVELS,NUCLEUS,CRYODRAX].find(l=>l.id===(data?.levelId||levelId))||LEVELS[0];
  lives=data?.lives??(preserveLives?lives:4);endingPage='victory';
  victoryRobot=data?.victoryRobot||null;bonusEndTimer=0;nucleusSupplyCycle=0;
@@ -85,6 +86,7 @@ function loseLife(){
  toast(lives?'SISTEMA DAÑADO · VIDAS RESTANTES: '+lives:'SIN VIDAS · FIN DE LA MISIÓN',2);
 }
 function showMainMenu(message=''){
+ ac?.stop();
  mode='menu';keys.clear();touch.clear();shots=[];weaponEffects=[];particles=[];shake=0;cam=0;
  for(const id of ['pause-menu','hud','touch','boss-hud','skip','end'])$(id).hidden=true;
  $('hint').textContent='';$('toast').textContent='';$('menu').hidden=false;$('menu-message').textContent=message;
@@ -102,8 +104,8 @@ function releaseInnerRobot(fell=false){
  keys.clear();touch.clear();shots=shots.filter(s=>s.friendly);burst(player.x+player.w/2,player.y+player.h/2,'#83efff',36);
  toast(old.toUpperCase()+' DESTRUIDO · '+next.toUpperCase()+' ACTIVO',3);sound('coupling');hud();return true;
 }
-function respawn(){weaponEffects=[];pickups=pickups.filter(p=>!p.bossDrop);elites=elites.map((b,i)=>b.dead?b:createBoss(LEVEL.elites[i]));airJumpsLeft=1;prevJump=false;jumpBuffer=0;coyote=0;if(boss&&!boss.dead)boss=createBoss(LEVEL.boss);bonusEndTimer=0;nucleusSupplyCycle=0;const pos=checkpoint>=0?LEVEL.checkpoints[checkpoint]:LEVEL.spawn;Object.assign(player,pos,{robot:LEVEL.robot,w:ROBOTS[LEVEL.robot].width,vx:0,vy:0,health:ROBOTS[LEVEL.robot].maxHealth,h:ROBOTS[LEVEL.robot].height,crouching:false,aimUp:false});energy=100;shots=[];invulnerable=2;mode='play';cam=Math.max(0,player.x-330);toast('PUNTO DE CONTROL RESTAURADO',2);}
-function pause(){if(!['play','intro','transition'].includes(mode))return;beforePause=mode;mode='pause';keys.clear();touch.clear();$('pause-menu').hidden=false;$('skip').hidden=true;}
+function respawn(){ac?.stop();weaponEffects=[];pickups=pickups.filter(p=>!p.bossDrop);elites=elites.map((b,i)=>b.dead?b:createBoss(LEVEL.elites[i]));airJumpsLeft=1;prevJump=false;jumpBuffer=0;coyote=0;if(boss&&!boss.dead)boss=createBoss(LEVEL.boss);bonusEndTimer=0;nucleusSupplyCycle=0;const pos=checkpoint>=0?LEVEL.checkpoints[checkpoint]:LEVEL.spawn;Object.assign(player,pos,{robot:LEVEL.robot,w:ROBOTS[LEVEL.robot].width,vx:0,vy:0,health:ROBOTS[LEVEL.robot].maxHealth,h:ROBOTS[LEVEL.robot].height,crouching:false,aimUp:false});energy=100;shots=[];invulnerable=2;mode='play';cam=Math.max(0,player.x-330);toast('PUNTO DE CONTROL RESTAURADO',2);}
+function pause(){if(!['play','intro','transition'].includes(mode))return;ac?.stop();beforePause=mode;mode='pause';keys.clear();touch.clear();$('pause-menu').hidden=false;$('skip').hidden=true;}
 function returnToMenu(){if(mode!=='pause')return;save(beforePause==='transition'?'transition':'play');showMainMenu();}
 function resume(){if(innerHeight>innerWidth)return;$('pause-menu').hidden=true;mode=beforePause;$('skip').hidden=mode!=='transition';last=performance.now();acc=0;canvas.focus();}
 function input(){let a=new Set([...keys,...touch]);const gp=navigator.getGamepads?.()[0];if(gp){if(gp.axes[1]<-.4||gp.buttons[12]?.pressed)a.add('up');if(gp.axes[1]>.4||gp.buttons[13]?.pressed)a.add('crouch');if(gp.axes[0]<-.25||gp.buttons[14]?.pressed)a.add('left');if(gp.axes[0]>.25||gp.buttons[15]?.pressed)a.add('right');if(gp.buttons[0]?.pressed)a.add('jump');if(gp.buttons[2]?.pressed||gp.buttons[7]?.pressed)a.add('fire');if(gp.buttons[1]?.pressed)a.add('charge');}return a;}
@@ -125,7 +127,7 @@ for(const elite of elites){
  if(elite.active){player.x=Math.max(elite.left+12,Math.min((elite.kind==='dark'?elite.right-12:elite.x)-player.w,player.x));for(const h of elite.hazards)if(overlaps(player,h))damage(26*elite.damageScale);}
 }
 if(boss&&!boss.dead){
- const wasActive=boss.active;shots.push(...updateBoss(boss,dt,player));
+ const wasActive=boss.active;const bossShots=updateBoss(boss,dt,player);shots.push(...bossShots);if(bossShots.some(s=>s.reactorBurst))sound('reactorBurst');
  if(LEVEL.extra&&boss.state==='recover'&&boss.cycle>0&&boss.cycle%3===0&&boss.cycle!==nucleusSupplyCycle){nucleusSupplyCycle=boss.cycle;pickups=pickups.filter(p=>!p.bossDrop||!p.taken);if(pickups.filter(p=>p.bossDrop&&!p.taken).length<3)pickups.push({bossDrop:true,taken:false,x:170,y:400,vy:0,floor:680});}
  if(!wasActive&&boss.active){shots=shots.filter(s=>s.friendly||s.boss);toast(boss.name+(LEVEL.extra?' · EXTRA':' · JEFE 0'+(boss.number||1)),3);}
  if(boss.active){player.x=Math.max(boss.left+12,Math.min((['dark','dokuma','nucleus','cryodrax'].includes(boss.kind)?boss.right-12:boss.x)-player.w,player.x));for(const h of boss.hazards)if(overlaps(player,h))damage(26);}
