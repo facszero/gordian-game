@@ -56,7 +56,7 @@ function reset(continuing=false,levelId=1,preserveLives=false){
 }
 function transitionDuration(){return LEVEL.id===8?20.8:LEVEL.id===11?10:LEVEL.id===3?15:COUPLING_DURATION;}
 function beginTransition(){sound('coupling');mode='transition';transitionTime=0;unlocked=Math.max(unlocked,LEVEL.id+1);keys.clear();touch.clear();$('touch').hidden=true;$('skip').hidden=false;$('skip').textContent='CONTINUAR →';$('boss-hud').hidden=true;$('hint').textContent='';toast([2,4,6,8].includes(LEVEL.id)?'DESACOPLAMIENTO AUTORIZADO':'ACOPLAMIENTO AUTORIZADO',3);save('transition');}
-function finishTransition(){if(LEVEL.id===8)lives=4;reset(false,Math.min(LEVELS.length,LEVEL.id+1),true);save();}
+function finishTransition(){if(LEVEL.id===4||LEVEL.id===8)lives=4;reset(false,Math.min(LEVELS.length,LEVEL.id+1),true);save();}
 function completeLevel(){
  if((boss&&!boss.dead)||elites.some(b=>!b.dead))return;
  if(LEVEL.id<LEVELS.length){beginTransition();return;}

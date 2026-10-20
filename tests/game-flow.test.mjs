@@ -61,11 +61,14 @@ test('four complete defeats exhaust the campaign and prevent continuation',()=>{
  run("$('continue').onclick()");assert.equal(run('mode'),'menu');
  run("$('start').onclick()");assert.equal(run('lives'),4);
 });
-test('falls cost a life, pause and restart preserve it, only 8 to 9 restores four',()=>{
+test('falls cost a life, pause and restart preserve it, chapters 5 and 9 restore four',()=>{
  const run=game();run("reset(false,3);player.y=900;update(1/120)");assert.equal(run('lives'),3);
  run('update(1.3);pause();returnToMenu();reset(true)');assert.equal(run('lives'),3);
  run("pause();$('restart').onclick()");assert.equal(run('lives'),3);
  run('finishTransition()');assert.equal(run('LEVEL.id'),4);assert.equal(run('lives'),3);
+ run('lives=1;boss.active=true;hitBoss(boss,999);completeLevel();reset(true);finishTransition()');
+ assert.equal(run('LEVEL.id'),5);assert.equal(run('lives'),4);assert.equal(run('saved().lives'),4);
+ run('lives=2;finishTransition()');assert.equal(run('LEVEL.id'),6);assert.equal(run('lives'),2);
  run('reset(false,8,true);lives=1;boss.active=true;hitBoss(boss,999);completeLevel();reset(true);finishTransition()');
  assert.equal(run('LEVEL.id'),9);assert.equal(run('lives'),4);
  run('lives=2;finishTransition()');assert.equal(run('lives'),2);
