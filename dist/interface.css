@@ -1,0 +1,51 @@
+/* Flight deck: a reserved HUD strip keeps every boss clear of the labels. */
+:root{--deck:92px;--ice:#73ddec;--gold:#f5bd67;--panel:#0b1b2c;--edge:#526d83}
+body{font-family:Bahnschrift,'Arial Narrow',Arial,sans-serif}
+.unit{line-height:1.1}.unit .eyebrow{display:block;line-height:1.2}
+#game-shell:has(#hud:not([hidden])){background:linear-gradient(#132a3e,#050b14 var(--deck))}
+#game-shell:has(#hud:not([hidden])) canvas{position:absolute;top:var(--deck);height:calc(100% - var(--deck))}
+#hud{inset: max(10px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) auto max(16px,env(safe-area-inset-left));height:70px;align-items:start;gap:16px}
+.unit,.mission,#boss-hud,.panel{background:linear-gradient(135deg,#183249f5,#091321f5 65%);border:1px solid var(--edge);box-shadow:inset 0 1px #b9eaff30,0 6px 22px #0005}
+.unit{width:250px;padding:8px 16px;border-left:3px solid var(--ice)}
+.unit strong{font-size:21px;margin:2px 0 5px;letter-spacing:2px}.unit .eyebrow{font-size:8px;letter-spacing:2px}.unit small{font-size:8px;margin-top:5px}.health{height:10px}
+.mission{position:absolute;left:50%;transform:translateX(-50%);width:32%;min-width:0;height:65px;padding:9px 12px;border-top:2px solid var(--gold);clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%,0 12px)}
+.mission strong{font-size:13px;letter-spacing:2px}.mission small{font-size:10px}.tools{margin-left:auto;gap:6px}.tools button{height:43px;min-width:43px;border:1px solid var(--edge);border-bottom:2px solid #92acba;background:linear-gradient(#233d52,#0a1727);border-radius:4px;padding:10px;box-shadow:inset 0 1px #d4f6ff26}.tools #sound{font-size:9px;max-width:78px;line-height:1.4}
+#game-shell:has(#boss-hud:not([hidden])) .mission{visibility:hidden}
+#boss-hud{left:50%;transform:translateX(-50%);top:max(10px,env(safe-area-inset-top));width:38%;height:65px;padding:9px 14px;border-top:2px solid #ff6c69;z-index:2;clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%,0 12px)}
+#boss-hud strong{display:block;font-size:11px;letter-spacing:1.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#boss-phase{float:none;display:block;font-size:8px;letter-spacing:2px;margin-top:4px;color:#f6aa9d}#boss-hud>div{height:9px;margin-top:5px;background:#210e19;border:1px solid #a96666}#boss-health{background:repeating-linear-gradient(90deg,#f65458 0,#f65458 19px,#a52b3e 19px,#a52b3e 21px);box-shadow:0 0 10px #f7465844;transition:width .15s}
+#toast,#boss-hud:not([hidden])~#toast{top:calc(var(--deck) + 10px);max-width:65%;padding:8px 14px;background:#071321d9;border-left:2px solid var(--gold);font-size:12px;letter-spacing:1px}#toast:empty,#hint:empty{display:none}
+#hint{border:1px solid #71889b55;border-left:2px solid var(--gold);border-radius:3px;letter-spacing:.7px}
+.overlay{padding:4% 6%;background:linear-gradient(90deg,#030b17f5,#081725d9 46%,#08172533)}
+.menu-copy{width:560px;max-width:58%;max-height:100%;overflow-y:auto;padding:10px 18px 16px 0}.menu-copy h1{font-size:clamp(52px,7vw,100px)}.subtitle{font-size:15px;letter-spacing:10px}.intro-copy{font-size:14px}.gold-rule{margin:18px 0}
+.primary,.secondary{border-radius:3px;min-height:44px;position:relative;transition:background .15s,box-shadow .15s;letter-spacing:1.5px}.primary{background:linear-gradient(120deg,#ffe2a1,#edab48);border:1px solid #ffe2a0;box-shadow:inset 0 1px #fff9,0 5px 20px #0005;font-size:12px}.primary:hover{box-shadow:0 0 20px #eab45c55;background:#ffe3a8}.secondary{background:linear-gradient(120deg,#193247eb,#0a1728eb);border-color:#5f7e94;color:#d5e5ed}.secondary:hover{background:#23445c;border-color:#8fdbe8}button:active{filter:brightness(1.2)}
+#dev-tools{padding:12px;border:1px solid #41647a;border-left:2px solid #68c6d5;background:#081725c9;border-radius:4px;display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:14px 0}#dev-tools label,#dev-level,.enemy-gallery-link,#preview-transition{grid-column:1/-1}#dev-tools label{margin:0;font-size:8px}#dev-level{max-width:none;border-radius:3px;background:#132d40;padding:10px;font-size:11px;min-height:40px}#dev-tools .secondary{min-width:0;min-height:36px;margin:0;padding:8px;font-size:8px;line-height:1.5;letter-spacing:.7px}.enemy-gallery-link{margin:2px 0;font-size:8px;letter-spacing:.7px}
+.panel{border-top:3px solid var(--gold);border-radius:5px;padding:30px 40px}.panel h2{font-weight:800;letter-spacing:3px}.center{background:#030b17cc}.edition{letter-spacing:2px}.menu-side>span{font-size:120px;-webkit-text-stroke:1px #91c5dd55;color:transparent}
+#touch{bottom:max(16px,env(safe-area-inset-bottom))}#touch button{background:radial-gradient(circle at 35% 25%,#33566eaa,#0a1c30dd 70%);border:1.5px solid #82b8d5;box-shadow:inset 0 0 0 5px #08162677,inset 0 1px 12px #b5eaff22,0 4px 12px #0005;text-shadow:0 0 10px #8ce2ff88}#touch .fire{background:radial-gradient(circle at 35% 25%,#705336aa,#142235e8 70%);box-shadow:inset 0 0 0 5px #08162677,0 0 15px #eab26422}#touch .directions button{border-radius:8px}#touch button.active{background:#3f839fdd;box-shadow:inset 0 0 12px #a5efff66}#touch .actions{gap:12px}
+.app-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px}.app-tools button{min-width:0;margin:0;min-height:36px;padding:8px 12px;font-size:9px}.app-status{display:block;font-size:10px;color:#9eb5c7;margin:8px 0;line-height:1.5;max-width:410px}.app-status:empty{display:none}
+@media(max-height:520px),(max-width:900px){:root{--deck:66px}#hud{top:max(5px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));height:55px}.unit{width:175px;padding:5px 10px}.unit strong{font-size:15px;margin:1px 0 3px}.unit .eyebrow{font-size:6px;letter-spacing:1px}.unit small{font-size:6px;margin-top:3px}.health{height:8px}.mission{height:51px;padding:5px 8px;width:31%}.mission small{font-size:8px;letter-spacing:1px}.mission strong{font-size:10px;letter-spacing:1px;margin:5px 0}.tools button{min-width:36px;height:36px;padding:6px}.tools #sound{font-size:7px;max-width:60px}#boss-hud{top:max(5px,env(safe-area-inset-top));height:51px;width:36%;padding:5px 10px}#boss-hud strong{font-size:8px;letter-spacing:.5px}#boss-phase{font-size:6px;margin-top:3px}#boss-hud>div{height:7px;margin-top:4px}#toast{font-size:10px;padding:5px 10px}.menu-copy{max-width:68%;width:510px;padding-top:5px}.menu-copy h1{font-size:48px;margin-bottom:12px}.menu-copy .subtitle{font-size:11px}.menu-copy .primary,.menu-copy .secondary{min-height:36px;padding:8px 12px}.overlay{padding:14px 5%}#dev-tools{padding:8px;margin:8px 0;gap:5px}.menu-copy .intro-copy,.menu-copy .gold-rule{display:none}.app-tools{margin-top:8px}.app-tools button{font-size:8px}.app-status{font-size:9px}.panel{max-height:100%;overflow-y:auto}.panel h2{font-size:23px}#touch .actions{gap:9px}}
+@media(max-width:650px) and (orientation:landscape){.unit{width:145px}.tools #sound{display:none}#boss-hud{width:40%;left:54%}.mission{left:54%;width:39%}.unit strong{font-size:13px}.menu-copy{max-width:78%}}
+
+#dev-phase{min-width:0;background:#132d40;color:#d5e5ed;border:1px solid #5f7e94;border-radius:3px;padding:5px;font-size:10px}
+
+/* Landscape handhelds: preserve the canvas aspect ratio and reclaim HUD space. */
+@media (orientation:landscape) and (pointer:coarse), (orientation:landscape) and (max-height:520px){
+ :root{--deck:44px}
+ #hud{top:2px;height:40px;left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right))}
+ .unit{width:160px;padding:3px 9px;position:relative}
+ .unit .eyebrow{display:none}.unit strong{font-size:12px;margin:0 0 4px;letter-spacing:1px}
+ .unit small{position:absolute;right:9px;top:4px;font-size:6px;letter-spacing:0}.health{height:8px}
+ .mission{height:38px;padding:3px 8px;width:34%;left:50%}.mission small{font-size:7px}.mission strong{font-size:9px;margin:3px 0;letter-spacing:.5px}
+ .tools button{height:36px;min-width:36px}.tools #sound{display:block;font-size:6px;max-width:48px;padding:3px}
+ #boss-hud{top:2px;height:38px;width:38%;left:50%;padding:3px 8px}#boss-hud strong{font-size:7px}#boss-hud>div{height:6px;margin-top:3px}#boss-phase{font-size:6px;margin-top:2px}
+ #touch{left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));align-items:flex-end}
+ #touch .directions{grid-template-columns:44px 44px 44px;grid-template-rows:44px 44px 44px;gap:3px}
+ #touch .directions button{width:44px;height:44px}
+ #touch .actions{flex-direction:column;align-items:center;gap:8px}
+ #touch .actions button{width:54px;height:54px;font-size:25px}#touch .actions .charge{width:46px;height:46px}
+ #hint{max-width:calc(100% - 320px);white-space:normal;font-size:9px;padding:5px 8px;bottom:10px;pointer-events:none}
+ #toast{max-width:60%;font-size:9px}
+}
+
+#lives{display:block;color:#f8cd84;font-size:9px;letter-spacing:1px;margin-top:3px}#menu-message{color:#ffcf8b;line-height:1.5;font-size:13px}#menu-message:empty{display:none}#end .panel{max-width:650px}#ending-note{display:block;line-height:1.7}#end .panel h2{font-size:clamp(19px,2.5vw,30px)}
+@media (orientation:landscape) and (max-height:520px),(orientation:landscape) and (pointer:coarse){#lives{font-size:7px;margin-top:1px;letter-spacing:.5px}.unit{padding-bottom:2px}#end .panel{padding:12px 24px}#ending-story{font-size:12px;line-height:1.55}}
+#dev-ending{min-width:0;background:#132d40;color:#d5e5ed;border:1px solid #5f7e94;border-radius:3px;padding:5px;font-size:10px}

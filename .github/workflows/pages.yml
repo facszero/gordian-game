@@ -1,0 +1,52 @@
+name: Publicar Gordian en GitHub Pages
+
+on:
+  push:
+    branches: [main, codex/first-playable-level]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Obtener el juego
+        uses: actions/checkout@v6
+      - name: Preparar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verificar juego y recursos offline
+        run: |
+          node --check dist/src/game.js
+          node --check dist/pwa.js
+          node --check dist/sw.js
+          node --test tests/*.test.mjs
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+      - name: Preparar archivos públicos
+        run: |
+          mkdir -p _site
+          cp -R dist/. _site/
+          find _site -name '*preview*' -type f -delete
+          touch _site/.nojekyll
+      - name: Subir juego
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - name: Publicar
+        id: deployment
+        uses: actions/deploy-pages@v4
