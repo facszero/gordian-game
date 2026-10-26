@@ -49,3 +49,5 @@ body{font-family:Bahnschrift,'Arial Narrow',Arial,sans-serif}
 #lives{display:block;color:#f8cd84;font-size:9px;letter-spacing:1px;margin-top:3px}#menu-message{color:#ffcf8b;line-height:1.5;font-size:13px}#menu-message:empty{display:none}#end .panel{max-width:650px}#ending-note{display:block;line-height:1.7}#end .panel h2{font-size:clamp(19px,2.5vw,30px)}
 @media (orientation:landscape) and (max-height:520px),(orientation:landscape) and (pointer:coarse){#lives{font-size:7px;margin-top:1px;letter-spacing:.5px}.unit{padding-bottom:2px}#end .panel{padding:12px 24px}#ending-story{font-size:12px;line-height:1.55}}
 #dev-ending{min-width:0;background:#132d40;color:#d5e5ed;border:1px solid #5f7e94;border-radius:3px;padding:5px;font-size:10px}
+
+#menu .game-version{display:inline-block;font-size:10px;font-weight:400;letter-spacing:.5px;color:#9eb5c7;margin-left:12px;vertical-align:middle;white-space:nowrap}

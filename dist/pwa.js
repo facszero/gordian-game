@@ -23,6 +23,5 @@ if('serviceWorker' in navigator){
     const ready=()=>{if(reg.waiting){updateButton.hidden=false;status.textContent='Nueva versión disponible. Actualízala desde este menú.';}};
     ready();
     reg.addEventListener('updatefound',()=>{const worker=reg.installing;worker?.addEventListener('statechange',()=>{if(worker.state==='installed'){ready();if(!navigator.serviceWorker.controller&&!installMessage)status.textContent='Juego descargado: listo para abrir sin conexión.';}});});
-    navigator.serviceWorker.ready.then(()=>{if(!reg.waiting&&!installMessage)status.textContent='Juego disponible sin conexión. El progreso se guarda en este dispositivo.';});
   }).catch(()=>{status.textContent='Puedes jugar en línea. La descarga para jugar sin conexión no se completó.';});
 }
