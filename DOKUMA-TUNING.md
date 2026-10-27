@@ -1,0 +1,15 @@
+# Dokuma: recargas y animación de invocación
+
+Por cada orbe destruido por disparos se genera una cápsula de la misma clase que las del nivel: +25 salud y +25 energía, respetando los máximos del robot. Cae a la plataforma dentro de la arena y permanece hasta recogerla. Los orbes eliminados por un cambio de fase no cuentan. El contador y las cápsulas temporales se reinician al reintentar; no se escriben como objetos fijos en la partida guardada.
+
+Dokuma se dibuja más grande: nueva primera fase frontal y aumento de las poses cercanas de 620 a 715 unidades de alto. Conserva 540 PV, el daño de sus ataques y el área vulnerable accesible a Garbin. La invocación tiene 1,8 s de preparación; eleva los brazos, cierra los puños y abre las manos para soltar tres orbes. Los orbes salen de las palmas y descienden antes de atacar. Movimiento reducido conserva poses sin fundidos.
+
+Arte: herramienta integrada imagegen, edición con preservación de identidad. Referencia: dist/assets/dokuma.webp. Archivo final: dist/assets/dokuma-summon.webp. Original generado: exec-78460a49-17ac-4bb1-9b72-24ae19bda074.png. Conversión a WebP con Sharp; cuatro celdas con croma magenta y registro de cintura individual en dokuma.js.
+
+Prompt utilizado:
+
+Game animation sprite sheet, identity-preserve edit. Reference image shows Grandmaster Dokuma: mechanical Cthulhu dark green black armor, gold angular crown and shoulder trims, purple bat wings, emerald reactor, red eyes and metal facial tentacles. Create FOUR consecutive FRONTAL waist-up poses of THIS SAME character, arranged strict equal 2x2 cells. TOP LEFT idle: arms lowered, elbows bent, open claw hands at waist. TOP RIGHT raising: arms lifted diagonally, elbows bent, fists closing at shoulder height. BOTTOM LEFT charge: both arms raised upward, CLOSED FISTS near either side above head, clearly clenched gold mechanical claws. BOTTOM RIGHT release: same arms raised, hands now WIDE OPEN, extended gold claw fingers, empty palms ready to release drones (DO NOT draw drones or energy orbs). All four have identical head, body, wings, scale and centered registration; ONLY arms/hands change. Chest reactor CLOSED in every pose as top-left reference. Complete wing tips and hands must fit INSIDE each cell with 8 percent empty margins. Waist cutoff same y in all cells. Flat pure magenta #ff00ff background, no dividing lines, no words, no scene, no cast shadows. Crisp detailed anime cel shading matches reference. Four equally sized square cells, full creature contained in each, no clipping.
+
+Validación: 79 pruebas automatizadas, incluyendo disparos reales contra dos orbes, una recarga por orbe, curación una sola vez, caída accesible, limpieza al reaparecer y sincronización de manos/orbes. Balance de dificultad pendiente de la siguiente prueba del jugador.
+
+El puño ahora anticipa su golpe con un recorrido continuo durante el aviso, alcanza el área de daño al impactar y se retira durante la recuperación. Los fundidos de invocación usan todo el tramo entre poses.
