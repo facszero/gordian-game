@@ -152,7 +152,16 @@ for(const s of shots){s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;if(s.friendly){
 shots=shots.filter(s=>s.life>0);for(const p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=300*dt;p.life-=dt;}particles=particles.filter(p=>p.life>0);cam+=((boss?.active?boss.left:Math.max(0,Math.min(LEVEL.width-W,player.x-W*.32)))-cam)*Math.min(1,dt*5);
 if(boss?.dead&&(LEVEL.extra||LEVEL.id===12)){bonusEndTimer+=dt;if(bonusEndTimer>2){completeLevel();return;}}
 if(player.x>LEVEL.exit){completeLevel();return;}
-hud();$('hint').textContent=LEVEL.id===14?(boss?.dead?'CRYODRAX DERROTADO':boss?.state==='warning'?{chest:'RAYO HELADO · CAMBIA DE ALTURA',mouth:'FRAGMENTOS DE HIELO · ESQUIVA',eyes:'MIRADA FIJADA · MUÉVETE'}[boss.attack]:'DISPARA AL REACTOR AZUL · USA LAS PLATAFORMAS'):LEVEL.extra?(boss?.dead?'NÚCLEO DESTRUIDO':boss?.state==='warning'?(boss.mega?'DESCARGA GIGANTE · CAMBIA DE PLATAFORMA':{chest:'REACTOR CARGANDO · CAMBIA DE ALTURA',eyes:'MIRADA FIJADA · MUÉVETE',shoulders:'HOMBROS ACTIVOS · ESQUIVA LA DESCARGA'}[boss.attack]):'DISPARA AL REACTOR VIOLETA · USA LAS PLATAFORMAS'):LEVEL.id>=5?chapterHint():LEVEL.id>=3?(boss?.active?(boss.state==='warning'?(boss.attack==='beam'?'LÁSER ALTO · ↓ AGÁCHATE':boss.attack==='shell'?'IMPACTO MARCADO · MUÉVETE':boss.attack==='burst'?'RÁFAGA DE '+boss.rounds+' DISPAROS · ESQUIVA':'ONDA BAJA · SALTA'):'DISPARA AL CUERPO · C / ϟ PARA CARGA'):boss?.dead?'SALIDA ABIERTA →':LEVEL.id===4?'GARBIN · RUMBO AL BASTIÓN →':'PROTESSER · INFILTRACIÓN EN LOS TÚNELES →'):LEVEL.id===2?(player.x<900?'DELLINGER · DISPARA PARA ROMPER LAS BARRERAS':player.x>5700?'ALCANZA LA SALIDA →':'CANTERA · ↑ APUNTA A LOS DRONES · ↓ ESQUIVA'):player.x<680?'SALTA EL CAÑÓN · Z / ESPACIO':player.x<1600?'↓ AGACHARSE · ↑ + DISPARO ARRIBA':player.x>5500?'ALCANZA EL HANGAR →':'VICTOR TOWN · RUMBO AL HANGAR →';}
+hud();$('hint').textContent=currentHint();}
+
+// Ayudas de combate conservadas para una futura opción de accesibilidad/dificultad.
+// Para restaurarlas, usar accessibleHint() y descomentar este bloque.
+/*
+function accessibleHint(){
+ return LEVEL.id===14?(boss?.dead?'CRYODRAX DERROTADO':boss?.state==='warning'?{chest:'RAYO HELADO · CAMBIA DE ALTURA',mouth:'FRAGMENTOS DE HIELO · ESQUIVA',eyes:'MIRADA FIJADA · MUÉVETE'}[boss.attack]:'DISPARA AL REACTOR AZUL · USA LAS PLATAFORMAS'):LEVEL.extra?(boss?.dead?'NÚCLEO DESTRUIDO':boss?.state==='warning'?(boss.mega?'DESCARGA GIGANTE · CAMBIA DE PLATAFORMA':{chest:'REACTOR CARGANDO · CAMBIA DE ALTURA',eyes:'MIRADA FIJADA · MUÉVETE',shoulders:'HOMBROS ACTIVOS · ESQUIVA LA DESCARGA'}[boss.attack]):'DISPARA AL REACTOR VIOLETA · USA LAS PLATAFORMAS'):LEVEL.id>=5?chapterHint():LEVEL.id>=3?(boss?.active?(boss.state==='warning'?(boss.attack==='beam'?'LÁSER ALTO · ↓ AGÁCHATE':boss.attack==='shell'?'IMPACTO MARCADO · MUÉVETE':boss.attack==='burst'?'RÁFAGA DE '+boss.rounds+' DISPAROS · ESQUIVA':'ONDA BAJA · SALTA'):'DISPARA AL CUERPO · C / ϟ PARA CARGA'):boss?.dead?'SALIDA ABIERTA →':LEVEL.id===4?'GARBIN · RUMBO AL BASTIÓN →':'PROTESSER · INFILTRACIÓN EN LOS TÚNELES →'):LEVEL.id===2?(player.x<900?'DELLINGER · DISPARA PARA ROMPER LAS BARRERAS':player.x>5700?'ALCANZA LA SALIDA →':'CANTERA · ↑ APUNTA A LOS DRONES · ↓ ESQUIVA'):player.x<680?'SALTA EL CAÑÓN · Z / ESPACIO':player.x<1600?'↓ AGACHARSE · ↑ + DISPARO ARRIBA':player.x>5500?'ALCANZA EL HANGAR →':'VICTOR TOWN · RUMBO AL HANGAR →';
+}
+*/
+
 
 function background(){const backdrop=assets[LEVEL.background||'canyon'];if(backdrop){const s=Math.max(W/backdrop.width,H/backdrop.height),w=backdrop.width*s*1.22,h=backdrop.height*s*1.22;ctx.drawImage(backdrop,-(cam/Math.max(1,LEVEL.width-W))*(w-W),-(h-H)*.35,w,h);}else rect(0,0,W,H,'#b36d63');const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#10223d18');g.addColorStop(.7,'#10223d10');g.addColorStop(1,'#071324bb');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);}
 function platform(p){
@@ -235,6 +244,7 @@ function drawBoss(subject=boss){
  }
  for(const h of boss.hazards){ctx.save();ctx.globalAlpha=.75;ctx.shadowBlur=25;ctx.shadowColor='#ff654c';rect(h.x,h.y,h.w,h.h,'#ff7955');ctx.restore();}
 }
+/* Ayudas de jefes y élites conservadas junto a accessibleHint().
 function chapterHint(){
  if(boss?.kind==='dokuma'&&boss.active){
   if(boss.state==='shift')return 'DOKUMA EVOLUCIONA · PREPARA EL SIGUIENTE ATAQUE';
@@ -246,6 +256,17 @@ function chapterHint(){
  if(boss.hidden)return 'SEÑAL DE TELETRANSPORTE · PREPARA EL GIRO';
  if(boss.state==='warning')return boss.attack==='ambush'?'RÁFAGA TRAS EL GIRO · MUÉVETE Y CONTRAATACA':boss.attack==='sword'?'BARRIDO BAJO · DOBLE SALTO':'ESPADA VERTICAL · SAL DE LA MARCA';
  return 'DISPARA AL CUERPO · VIGILA AMBOS LADOS';
+}
+*/
+
+function currentHint(){
+ if((boss?.active&&!boss.dead)||elites.some(b=>b.active&&!b.dead))return '';
+ if(LEVEL.id===14)return boss?.dead?'CRYODRAX DERROTADO':'';
+ if(LEVEL.extra)return boss?.dead?'NÚCLEO DESTRUIDO':'';
+ if(LEVEL.id>=5)return boss?.dead?'SALIDA ABIERTA →':LEVEL.robot.toUpperCase()+' · '+LEVEL.title.toUpperCase()+' →';
+ if(LEVEL.id>=3)return boss?.dead?'SALIDA ABIERTA →':LEVEL.id===4?'GARBIN · RUMBO AL BASTIÓN →':'PROTESSER · INFILTRACIÓN EN LOS TÚNELES →';
+ if(LEVEL.id===2)return player.x<900?'DELLINGER · DISPARA PARA ROMPER LAS BARRERAS':player.x>5700?'ALCANZA LA SALIDA →':'CANTERA · ↑ APUNTA A LOS DRONES · ↓ ESQUIVA';
+ return player.x<680?'SALTA EL CAÑÓN · Z / ESPACIO':player.x<1600?'↓ AGACHARSE · ↑ + DISPARO ARRIBA':player.x>5500?'ALCANZA EL HANGAR →':'VICTOR TOWN · RUMBO AL HANGAR →';
 }
 function drawDarkBoss(subject=boss){
  const boss=subject;
