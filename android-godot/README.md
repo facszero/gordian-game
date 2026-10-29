@@ -74,3 +74,10 @@ El APK utiliza el mismo identificador y clave de depuración que la entrega ante
 
 Corrige el recorte de las ocho piezas industriales: usa el umbral alpha > 150/255 de la web, eliminando márgenes casi transparentes que aplastaban el tablero y separaban visualmente sus soportes. Regenera las 40 plataformas sin cambiar sus colisiones. Añade 48 comprobaciones de márgenes y dimensiones al proceso de construcción. APK con versionCode 3 y la misma firma de depuración.
 
+
+## Revisión 0.1.3
+
+Aplica el recorte alpha > 150/255 a las ocho poses de enemy-army y añade la sombra de apoyo terrestre de la web. Mantiene posiciones y colisiones. Incorpora disparos enemigos ligeros y pesados con LivianaSimple1 y LivianaSimple2, offsets, duraciones, velocidades y filtros de weapon-audio.js. Atenúa por distancia, limita a tres voces y separa emisiones al menos 90 ms; pausa y segundo plano detienen las voces. La mezcla utiliza fragmentos MP3 directos, sin la normalización previa de amplitud de Web Audio, por lo que requiere ajustar a oído el balance en teléfono. Los sonidos de jefes no forman parte de este nivel.
+
+Validación: 51 comprobaciones de lógica, 11 de integración general, 56 de recorte/dimensiones y 10 de audio enemigo. Capturas de tanque en reposo y disparando revisadas. versionCode 4, misma firma de depuración.
+

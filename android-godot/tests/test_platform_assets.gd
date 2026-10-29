@@ -2,8 +2,9 @@ extends SceneTree
 ## Regression: nearly transparent WebP margins must not squeeze industrial parts.
 func _init():
 	var failures = 0
-	for index in 8:
-		var part = Image.load_from_file("res://assets/industrial-props_%d.png" % index)
+	for index in 16:
+		var atlas = "industrial-props" if index < 8 else "enemy-army"
+		var part = Image.load_from_file(ProjectSettings.globalize_path("res://assets/%s_%d.png" % [atlas,index%8]))
 		if part == null:
 			failures += 1
 			continue
@@ -15,7 +16,7 @@ func _init():
 			edges[2] = edges[2] or part.get_pixel(0,y).a > 150.0/255
 			edges[3] = edges[3] or part.get_pixel(part.get_width()-1,y).a > 150.0/255
 		if false in edges:
-			push_error("Transparent margin remains in industrial part %d" % index)
+			push_error("Transparent margin remains in %s part %d" % [atlas,index%8])
 			failures += 1
 	var level = JSON.parse_string(FileAccess.get_file_as_string("res://data/level1.json"))
 	for index in level.platforms.size():
@@ -24,5 +25,5 @@ func _init():
 		if platform == null or platform.get_size() != Vector2i(ceili(p.w),maxi(100,720-p.y+36)):
 			push_error("Platform dimensions differ from web: %d" % index)
 			failures += 1
-	print("Platform assets: 48 checks, %d failures" % failures)
+	print("Platform and enemy assets: 56 checks, %d failures" % failures)
 	quit(1 if failures else 0)

@@ -29,6 +29,19 @@ func run():
 		await process_frame
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("user://revision2-"+pose+".png")
+	game.sim.reset()
+	game.sim.mode = "play"
+	var enemy = game.sim.enemies.filter(func(e): return e.type == "turret")[0]
+	game.sim.camera = maxf(0,enemy.x-700)
+	game.sim.player.x = enemy.x-180
+	game.sim.player.y = enemy.y+enemy.h-90
+	game.sim.invulnerable = 0
+	for flash in [false,true]:
+		enemy.flash = 0.1 if flash else 0
+		game.queue_redraw()
+		await process_frame
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("user://enemy-grounding-%s.png" % str(flash))
 	game.queue_free()
 	await process_frame
 	await create_timer(0.15).timeout

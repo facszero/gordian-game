@@ -7,6 +7,7 @@ var pickups: Array = []
 var shots: Array = []
 var effects: Array = []
 var events: Array = []
+var enemy_cues: Array = []
 var mode = "menu"
 var before_pause = "play"
 var lives = 4
@@ -136,6 +137,7 @@ func fire(charged: bool):
 
 func update(dt: float, actions: Dictionary):
 	events.clear()
+	enemy_cues.clear()
 	if mode in ["menu","pause","complete","game_over"]: return
 	clock += dt
 	for effect in effects: effect.age += dt
@@ -228,6 +230,7 @@ func update(dt: float, actions: Dictionary):
 			var muzzle = Vector2(e.x+e.w/2+face*(e.w/2+9),e.y+e.h*e.muzzleY)
 			var velocity = (Vector2(player.x+19,player.y+player.h*0.45)-muzzle).normalized()*220
 			shots.append({"x":muzzle.x,"y":muzzle.y,"w":13,"h":10,"vx":velocity.x,"vy":velocity.y,"friendly":false,"damage":12,"life":4.0})
+			enemy_cues.append({"kind":"light" if e.type == "drone" else "heavy","x":muzzle.x})
 		if bounds(player).intersects(bounds(e)): hurt(18)
 	for s in shots:
 		s.x += s.vx*dt

@@ -13,7 +13,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Asset preparation failed' }
     & $taskEngine --headless --path android-godot --editor --import
     if ($LASTEXITCODE -ne 0) { throw 'Godot import failed' }
-    foreach ($taskTest in @('tests/test_level1.gd','tests/test_runtime.gd','tests/test_platform_assets.gd')) {
+    foreach ($taskTest in @('tests/test_level1.gd','tests/test_runtime.gd','tests/test_platform_assets.gd','tests/test_enemy_audio.gd')) {
         & $taskEngine --headless --path android-godot --script $taskTest
         if ($LASTEXITCODE -ne 0) { throw "Failed: $taskTest" }
     }

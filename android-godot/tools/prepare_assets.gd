@@ -27,7 +27,7 @@ func _init():
 			if not spec.get("preserve",false):
 				# WebP can leave nearly transparent pixels across the whole cell.
 				# Match environment.js's alpha > 150 bounds, not any nonzero alpha.
-				var bounds = industrial_bounds(frame) if key == "industrial-props" else frame.get_used_rect()
+				var bounds = industrial_bounds(frame) if key in ["industrial-props","enemy-army"] else frame.get_used_rect()
 				frame = frame.get_region(bounds)
 			if frame.save_png("res://assets/%s_%d.png" % [key,index]) != OK:
 				quit(1)
@@ -35,7 +35,7 @@ func _init():
 			index += 1
 	for key in ["canyon","hangar-background"]:
 		DirAccess.copy_absolute("res://../dist/assets/"+key+".webp","res://assets/"+key+".webp")
-	for key in ["IntroGordian","LivianaSimple1","PesadaSimple1"]:
+	for key in ["IntroGordian","LivianaSimple1","LivianaSimple2","PesadaSimple1"]:
 		DirAccess.copy_absolute("res://../dist/audio/"+key+".mp3","res://assets/"+key+".mp3")
 	prepare_platforms()
 	print("Assets prepared offline; no chroma processing during gameplay.")

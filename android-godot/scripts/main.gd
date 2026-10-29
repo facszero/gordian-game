@@ -14,6 +14,7 @@ var status: Label
 var music: AudioStreamPlayer
 var shot_audio: AudioStreamPlayer
 var charge_audio: AudioStreamPlayer
+var enemy_audio
 var synth: AudioStreamPlayer
 var sound_on = true
 var last_mode = ""
@@ -39,6 +40,8 @@ func _ready():
 	music = audio("IntroGordian",-14)
 	shot_audio = audio("LivianaSimple1",-10)
 	charge_audio = audio("PesadaSimple1",-10)
+	enemy_audio = preload("res://scripts/enemy_audio.gd").new()
+	add_child(enemy_audio)
 	synth = AudioStreamPlayer.new()
 	add_child(synth)
 	for kind in ["jump","pickup","checkpoint","hit","explosion"]:
@@ -221,6 +224,7 @@ func _physics_process(dt):
 		if event == "checkpoint":
 			toast = "PUNTO DE CONTROL · SISTEMAS RESTAURADOS"
 			toast_time = 3
+	for cue in sim.enemy_cues: enemy_audio.play_cue(cue.kind,cue.x,sim.player.x,sim.camera)
 	autosave += dt
 	if autosave >= 10 and sim.mode == "play":
 		persist()
@@ -232,6 +236,7 @@ func _physics_process(dt):
 	queue_redraw()
 
 func stop_effects():
+	if is_instance_valid(enemy_audio): enemy_audio.stop()
 	for node in [shot_audio,charge_audio,synth]:
 		if node: node.stop()
 
@@ -317,6 +322,7 @@ func _draw():
 	for e in sim.enemies:
 		if e.dead or absf(e.x-sim.camera-640)>800: continue
 		var tex = textures["enemy-army"][int(e.frame)+(1 if e.flash>0 else 0)]
+		if e.type != "drone": Visuals.oval(self,Vector2(e.x+e.w/2-sim.camera,e.y+e.h+1),Vector2(e.w*0.5,5),Color(0.016,0.043,0.082,0.6))
 		picture(tex,Rect2(e.x-10-sim.camera,e.y-3,e.w+20,e.h+3),sim.player.x+19 < e.x+e.w/2)
 		if e.timer < 0.4: draw_circle(Vector2(e.x+e.w/2-sim.camera,e.y-10),5,Color.ORANGE)
 	if sim.companion.active:
