@@ -20,16 +20,26 @@ func run():
 	var start_x = game.sim.player.x
 	var touch = InputEventScreenTouch.new()
 	touch.index = 0
-	touch.position = Vector2(180,620)
+	touch.position = game.controls.right.get_center()
 	touch.pressed = true
 	game._input(touch)
 	touch = InputEventScreenTouch.new()
 	touch.index = 1
-	touch.position = Vector2(1050,620)
+	touch.position = game.controls.fire.get_center()
 	touch.pressed = true
 	game._input(touch)
 	for i in 20: await physics_frame
 	expect(game.sim.player.x > start_x and game.sim.shots.size()>0,"Simultaneous touch movement + fire")
+	var drag = InputEventScreenDrag.new()
+	drag.index = 0
+	drag.position = game.controls.up.get_center()
+	game._input(drag)
+	for i in 25: await physics_frame
+	expect(game.sim.player.aim_up and game.sim.shots.any(func(s): return s.friendly and s.vy < 0),"Slide from right to up while firing")
+	drag.position = game.controls.crouch.get_center()
+	game._input(drag)
+	for i in 4: await physics_frame
+	expect(game.sim.player.crouching and not game.sim.player.aim_up,"Slide down changes stance without a stuck up input")
 	game.toggle_pause()
 	expect(game.sim.mode == "pause" and game.fingers.is_empty(),"Pause clears all touches")
 	expect(game.panel.visible,"Pause UI visible")
@@ -48,6 +58,6 @@ func run():
 	expect(game.sim.mode == "complete" and game.panel.visible,"Skip reaches completed level")
 	game.queue_free()
 	await process_frame
-	print("Godot runtime: 9 checks, %d failures" % failures)
+	print("Godot runtime: 11 checks, %d failures" % failures)
 	await create_timer(0.15).timeout
 	quit(1 if failures else 0)

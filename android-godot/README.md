@@ -6,7 +6,7 @@ Port nativo en Godot 4.7.2 (GDScript, renderizador Compatibility). El juego se e
 
 Todo el recorrido de Victor Town: 40 plataformas, 26 enemigos, 18 células, 5 checkpoints, cuatro vidas y llegada al hangar con secuencia de acoplamiento. Incluye introducción con acompañante, salto variable y doble salto, disparo normal/potente/vertical, agacharse, controles multitáctiles, teclado y mando, pausa y guardado local. Recuperar partida comienza en el último checkpoint, conservando vidas, enemigos derrotados y células recogidas. Al completar el acoplamiento termina el prototipo; no carga el nivel 2.
 
-Los datos geométricos proceden del nivel web completo. Esto no significa paridad exacta: la IA, algunos efectos, sonidos sintetizados y la representación del disparo vertical son implementaciones iniciales que requieren comparación y ajuste. El esquema de guardado es independiente de la versión web.
+Los datos geométricos proceden del nivel web completo. Esto no significa paridad exacta: la IA y algunos sonidos sintetizados son implementaciones iniciales que requieren comparación y ajuste. La revisión 0.1.1 incorpora el recorte y rotación del brazo elevado, los proyectiles y efectos verdes de Protesser y todas las capas de las plataformas, siguiendo el código web. El esquema de guardado es independiente de la versión web.
 
 ## Preparar y ejecutar
 
@@ -41,7 +41,7 @@ godot --headless --path android-godot --script tests/test_runtime.gd
 npm test
 ```
 
-Resultados del primer prototipo: 46 comprobaciones de simulación y guardado, 9 de integración, y 128 pruebas del juego web aprobadas. Las pruebas de simulación incluyen todos los huecos del recorrido principal. Se verificó renderizado de escritorio y firma APK v2/v3. Las pruebas de integración escriben un guardado de prueba: usar un perfil de usuario separado si se desea conservar una partida local.
+Resultados del primer prototipo: 51 comprobaciones de simulación y guardado, 11 de integración, y 128 pruebas del juego web aprobadas. Las pruebas de simulación incluyen todos los huecos del recorrido principal. Se verificó renderizado de escritorio y firma APK v2/v3. Las pruebas de integración escriben un guardado de prueba: usar un perfil de usuario separado si se desea conservar una partida local.
 
 Pendiente en teléfono físico: completar el nivel manualmente; comprobar multitáctil y comodidad de botones, muescas/barras del sistema, audio, rendimiento sostenido, pausa al bloquear/cambiar de app y restauración tras cerrar el proceso. Las pruebas automatizadas no sustituyen esta evaluación.
 
@@ -61,3 +61,11 @@ Pendiente en teléfono físico: completar el nivel manualmente; comprobar multit
 4. Preparar versión de publicación y pruebas de Google Play con requisitos vigentes en ese momento.
 
 Este prototipo Android no incluye exportador Nintendo Switch ni confirma compatibilidad de un proveedor de consolas.
+
+## Revisión 0.1.1
+
+Cruceta en la disposición web y acciones en columna (rayo, mira y salto), dibujadas como vectores para evitar diferencias de fuentes. Fondos al 7% de opacidad, símbolos al 68% y mayor contraste al pulsar. Se puede deslizar el dedo entre direcciones mientras se mantiene el disparo. Plataformas ensambladas fuera de la ejecución del juego y recortadas a su superficie original. Los efectos de disparo se pausan con el juego y se eliminan al reaparecer.
+
+El APK utiliza el mismo identificador y clave de depuración que la entrega anterior, con versionCode 2, para actualizar conservando los datos. Las capturas de revisión se pueden regenerar con 
+
+`godot --path android-godot --script tests/capture_visuals.gd`.

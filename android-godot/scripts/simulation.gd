@@ -5,6 +5,7 @@ var player: Dictionary
 var enemies: Array = []
 var pickups: Array = []
 var shots: Array = []
+var effects: Array = []
 var events: Array = []
 var mode = "menu"
 var before_pause = "play"
@@ -66,6 +67,7 @@ func respawn():
 	energy = 100
 	invulnerable = 2
 	shots.clear()
+	effects.clear()
 	air_jumps = 1
 	previous_jump = false
 	charge_latch = false
@@ -124,6 +126,8 @@ func fire(charged: bool):
 	var length = 55.0 if charged else 24.0
 	var thickness = 20.0 if charged else 7.0
 	shots.append({"x":player.x+19+(0 if up else player.face*30),"y":player.y+(-10 if up else player.h/3 if player.crouching else player.h*28/90),"w":thickness if up else length,"h":length if up else thickness,"vx":0.0 if up else player.face*speed,"vy":-speed if up else 0.0,"friendly":true,"damage":4 if charged else 1,"life":1.2})
+	shots.back()["charged"] = charged
+	add_effect(shots.back(),"muzzle")
 	cooldown = 0.17
 	if charged:
 		energy -= 35
@@ -134,6 +138,8 @@ func update(dt: float, actions: Dictionary):
 	events.clear()
 	if mode in ["menu","pause","complete","game_over"]: return
 	clock += dt
+	for effect in effects: effect.age += dt
+	effects = effects.filter(func(e): return e.age < e.duration)
 	if mode == "dead":
 		timer += dt
 		if timer >= 1.2:
@@ -232,6 +238,7 @@ func update(dt: float, actions: Dictionary):
 			for e in enemies:
 				if not e.dead and rect.intersects(bounds(e)):
 					e.hp -= s.damage
+					add_effect(s,"impact")
 					s.life = 0
 					if e.hp <= 0:
 						e.dead = true
@@ -249,6 +256,11 @@ func update(dt: float, actions: Dictionary):
 		timer = 0
 		shots.clear()
 		events.append("save")
+
+func add_effect(shot: Dictionary, kind: String):
+	var charged = shot.get("charged",false)
+	effects.append({"x":shot.x,"y":shot.y,"angle":atan2(shot.vy,shot.vx),"charged":charged,"kind":kind,"age":0.0,"duration":0.13 if kind == "muzzle" else 0.32 if charged else 0.19})
+	if effects.size() > 48: effects.pop_front()
 
 func update_companion(dt: float):
 	if not companion.get("active",false): return

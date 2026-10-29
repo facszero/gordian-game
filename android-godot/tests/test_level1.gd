@@ -112,6 +112,21 @@ func _init():
 				landed = true
 				break
 		check(landed,"Reachable main-route gap %d" % i)
+	s.reset()
+	s.mode = "play"
+	s.enemies.clear()
+	s.fire(true)
+	check(s.shots.back().charged and s.effects.back().kind == "muzzle","Charged shot has matching muzzle effect")
+	s.pause()
+	s.update(1.0,{})
+	check(s.effects.back().age == 0,"Pause freezes visual effects")
+	s.resume()
+	s.update(0.2,{})
+	check(s.effects.is_empty(),"Muzzle effects expire")
+	s.add_effect({"x":0,"y":0,"vx":0,"vy":-1,"charged":true},"impact")
+	check(s.effects.back().duration == 0.32,"Charged impact effect duration")
+	s.respawn()
+	check(s.effects.is_empty(),"Respawn clears effects")
 	DirAccess.remove_absolute(path)
 	print("Godot level 1: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

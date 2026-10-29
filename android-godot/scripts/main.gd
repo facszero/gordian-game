@@ -1,10 +1,11 @@
 extends Node2D
 const Simulation = preload("res://scripts/simulation.gd")
 const Saves = preload("res://scripts/save_store.gd")
+const Visuals = preload("res://scripts/visuals.gd")
 var sim
 var textures = {}
 var fingers = {}
-var controls = {"left":Rect2(28,570,100,110),"right":Rect2(140,570,100,110),"up":Rect2(255,480,95,90),"crouch":Rect2(255,585,95,95),"jump":Rect2(1140,565,110,115),"fire":Rect2(1008,565,110,115),"charge":Rect2(1020,455,110,95)}
+var controls = {"left":Rect2(28,508,84,84),"right":Rect2(204,508,84,84),"up":Rect2(116,420,84,84),"crouch":Rect2(116,596,84,84),"jump":Rect2(1160,588,92,92),"fire":Rect2(1160,484,92,92),"charge":Rect2(1168,396,76,76)}
 var font = ThemeDB.fallback_font
 var ui: Control
 var panel: PanelContainer
@@ -27,6 +28,8 @@ func _ready():
 	get_tree().quit_on_go_back = false
 	var data = JSON.parse_string(FileAccess.get_file_as_string("res://data/level1.json"))
 	sim = Simulation.new(data)
+	textures["platforms"] = []
+	for i in sim.level.platforms.size(): textures["platforms"].append(load("res://assets/platform_%d.png" % i))
 	for entry in [["protesser",8],["enemy-army",8],["stations",4],["industrial-props",8],["energy-atom",1],["coupling-front",12],["companion",8]]:
 		var frames = []
 		for i in entry[1]: frames.append(load("res://assets/%s_%d.png" % [entry[0],i]))
@@ -290,18 +293,11 @@ func _draw():
 	var size_bg = bg.get_size()*scale_bg
 	draw_texture_rect(bg,Rect2(-sim.camera/(sim.level.width-1280)*(size_bg.x-1280),-(size_bg.y-720)*0.35,size_bg.x,size_bg.y),false)
 	draw_rect(Rect2(0,0,1280,720),Color(0.03,0.07,0.12,0.18))
-	for p in sim.level.platforms:
+	for platform_index in sim.level.platforms.size():
+		var p = sim.level.platforms[platform_index]
 		if p.x+p.w < sim.camera or p.x > sim.camera+1280: continue
 		var x = p.x-sim.camera
-		if p.w > 300:
-			for offset in range(28,int(p.w)-40,180):
-				draw_texture_rect(textures["industrial-props"][3],Rect2(x+offset+9,p.y+33,132,maxf(140,720-p.y-32)),false)
-				draw_texture_rect(textures["industrial-props"][2],Rect2(x+offset,p.y+29,23,maxf(160,720-p.y-32)),false)
-			for offset in range(18,int(p.w)-20,160):
-				draw_texture_rect(textures["industrial-props"][4],Rect2(x+offset,p.y-31,minf(148,p.w-offset-8),32),false)
-		var count = ceili(p.w/210)
-		for i in count: draw_texture_rect(textures["industrial-props"][0],Rect2(x+i*p.w/count,p.y,p.w/count,45),false)
-		draw_line(Vector2(x,p.y+1),Vector2(x+p.w,p.y+1),Color("d7b18a"),1.5)
+		draw_texture(textures["platforms"][platform_index],Vector2(x,p.y-36))
 	sprite_at("stations",0,170-sim.camera,560,205)
 	var exit_floor = 560.0
 	for p in sim.level.platforms:
@@ -330,10 +326,10 @@ func _draw():
 	if sim.mode != "dead":
 		var p = sim.player
 		var frame = 7 if p.crouching else 4 if p.aim_up else 6 if not p.grounded else int(sim.clock*11)%4 if absf(p.vx)>10 else 5 if sim.cooldown>0.08 else 4
-		sprite_at("protesser",frame,p.x+19-sim.camera,p.y+p.h,p.h*(1.21 if p.crouching else 1.145),p.face<0,0.45 if sim.invulnerable>0 and int(sim.clock*12)%2 else 1.0)
-		if p.aim_up: draw_line(Vector2(p.x+19-sim.camera,p.y+10),Vector2(p.x+19-sim.camera,p.y-18),Color.CYAN,5)
+		Visuals.robot(self,textures["protesser"][frame],Vector2(p.x+19-sim.camera,p.y+p.h),p.h,p.face,p.aim_up,0.45 if sim.invulnerable>0 and int(sim.clock*12)%2 else 1.0)
 	for s in sim.shots:
-		draw_rect(Rect2(s.x-s.w/2-sim.camera,s.y-s.h/2,s.w,s.h),Color("79f6ff") if s.friendly else Color("ff865b"))
+		Visuals.shot(self,s,sim.camera)
+	for effect in sim.effects: Visuals.effect(self,effect,sim.camera)
 	draw_rect(Rect2(0,0,1280,95),Color(0.02,0.05,0.09,0.92))
 	label_at("PROTESSER",Vector2(25,30),24,Color("efc983"))
 	draw_rect(Rect2(25,43,240,13),Color("344455"))
@@ -347,20 +343,5 @@ func _draw():
 			var rect = controls[action]
 			var active = Input.is_action_pressed(action)
 			for point in fingers.values(): active = active or rect.has_point(point)
-			draw_style_box(button_style(active),rect)
-			var text = {"left":"←","right":"→","up":"↑","crouch":"↓","jump":"SALTO","fire":"FUEGO","charge":"POTENTE"}[action]
-			if action in ["left","right","up","crouch"]:
-				var direction = {"left":Vector2.LEFT,"right":Vector2.RIGHT,"up":Vector2.UP,"crouch":Vector2.DOWN}[action]
-				var center = rect.get_center()
-				var normal = Vector2(-direction.y,direction.x)
-				draw_colored_polygon(PackedVector2Array([center+direction*22,center-direction*12+normal*18,center-direction*12-normal*18]),Color("b5eefa"))
-			else: label_at(text,rect.position+Vector2(10,rect.size.y/2+8),20)
+			Visuals.control(self,action,rect,active)
 	if toast_time>0: label_at(toast,Vector2(380,130),20,Color.CYAN)
-
-func button_style(active: bool) -> StyleBoxFlat:
-	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.05,0.3,0.4,0.85) if active else Color(0.02,0.08,0.14,0.65)
-	style.border_color = Color(0.4,0.8,0.9,0.8)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(18)
-	return style
