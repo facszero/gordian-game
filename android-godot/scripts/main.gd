@@ -29,6 +29,7 @@ var skip_button: Button
 var pause_button: Button
 var menu_clock = 0.0
 var app_active = true
+const WebInterface = preload("res://scripts/web_interface.gd")
 const AdvancedVisuals = preload("res://scripts/advanced_visuals.gd")
 
 func _ready():
@@ -73,19 +74,24 @@ func _ready():
 	menu.add_theme_constant_override("separation",18)
 	panel.add_child(menu)
 	pause_button = Button.new()
-	pause_button.text = "PAUSA"
-	pause_button.position = Vector2(1120,22)
-	pause_button.size = Vector2(135,55)
+	pause_button.text = "Ⅱ"
+	pause_button.tooltip_text = "Pausar partida"
+	pause_button.position = Vector2(1190,12)
+	pause_button.size = Vector2(58,54)
 	pause_button.pressed.connect(toggle_pause)
 	ui.add_child(pause_button)
 	var mute_button = Button.new()
-	mute_button.text = "SONIDO ON"
-	mute_button.position = Vector2(950,22)
-	mute_button.size = Vector2(155,55)
+	mute_button.text = "SONIDO\nON"
+	mute_button.position = Vector2(1098,12)
+	mute_button.size = Vector2(84,54)
 	mute_button.pressed.connect(func():
 		sound_on = not sound_on
 		AudioServer.set_bus_mute(0,not sound_on)
-		mute_button.text = "SONIDO ON" if sound_on else "SONIDO OFF")
+		mute_button.text = "SONIDO\nON" if sound_on else "SONIDO OFF")
+	for tool_button in [pause_button,mute_button]:
+		tool_button.add_theme_stylebox_override("normal",WebInterface.button_style())
+		tool_button.add_theme_stylebox_override("hover",WebInterface.button_style(false,true))
+		tool_button.add_theme_font_size_override("font_size",12 if tool_button == mute_button else 24)
 	ui.add_child(mute_button)
 	skip_button = Button.new()
 	skip_button.text = "CONTINUAR →"
@@ -215,6 +221,18 @@ func refresh_menu():
 	if not panel.visible:
 		music.stop()
 		return
+	if sim.mode == "menu":
+		panel.add_theme_stylebox_override("panel",StyleBoxEmpty.new())
+		panel.position = Vector2(77,382)
+		panel.size = Vector2(542,120)
+		menu.add_theme_constant_override("separation",16)
+		var start = WebInterface.menu_button(self,"start",func(): start_level(1))
+		if not read_campaign().is_empty(): WebInterface.menu_button(self,"continue",restore_campaign)
+		if app_active and not music.playing and not music.stream_paused: music.play()
+		start.grab_focus()
+		return
+	panel.remove_theme_stylebox_override("panel")
+	menu.add_theme_constant_override("separation",18)
 	if sim.mode == "complete":
 		show_ending()
 		return
@@ -341,9 +359,6 @@ func sprite_at(key: String, index: int, center: float, feet: float, height: floa
 
 func _draw():
 	if sim == null or textures.is_empty(): return
-	if sim.mode == "menu":
-		draw_title()
-		return
 	var transition = sim.mode == "transition" or (sim.mode == "pause" and sim.before_pause == "transition") or (sim.mode == "complete" and sim.level.id < 12)
 	if transition:
 		Transition.draw(self)
@@ -394,7 +409,9 @@ func _draw():
 		var cat = sim.companion
 		var tex = textures.companion[int(cat.frame)]
 		sprite_at("companion",int(cat.frame),cat.x-sim.camera,cat.feet,112.0*tex.get_height()/tex.get_width())
-	if sim.mode != "dead":
+	if sim.mode == "menu":
+		Visuals.robot(self,textures.protesser[4],Vector2(319,549.5),139.5,1,false,1,90)
+	elif sim.mode != "dead":
 		var p = sim.player
 		var frame = 7 if p.crouching else 4 if p.aim_up else 6 if not p.grounded else int(sim.clock*11)%4 if absf(p.vx)>10 else 5 if sim.cooldown>0.08 else 4
 		var alpha = 0.45 if sim.invulnerable>0 and int(sim.clock*12)%2 else 1.0
@@ -411,6 +428,9 @@ func _draw():
 		if s.get("ice",false) or s.get("nucleus",false): AdvancedVisuals.projectile(self,s)
 		else: Visuals.shot(self,s,sim.camera)
 	for effect in sim.effects: Visuals.effect(self,effect,sim.camera)
+	if sim.mode == "menu":
+		draw_title()
+		return
 	draw_hud()
 	if sim.mode == "play":
 		for action in controls:
@@ -421,23 +441,7 @@ func _draw():
 	if toast_time>0: label_at(toast,Vector2(380,130),20,Color.CYAN)
 
 func draw_hud():
-	draw_rect(Rect2(0,0,1280,95),Color(0.02,0.05,0.09,0.92))
-	label_at(sim.robot.to_upper(),Vector2(25,30),24,Color("efc983"))
-	draw_rect(Rect2(25,43,240,13),Color("344455"))
-	draw_rect(Rect2(25,43,240*sim.player.health/sim.spec.maxHealth,13),Color("60dfbb"))
-	label_at("ENERGÍA %d%% · VIDAS %d / 4" % [sim.energy,sim.lives],Vector2(25,80),18)
-	var encounter = sim.boss
-	for elite in sim.elites:
-		if elite.active: encounter = elite
-	if not encounter.is_empty() and encounter.active:
-		label_at(encounter.name,Vector2(380,30),20,Color("ffc574"))
-		draw_rect(Rect2(380,42,480,18),Color("182734"))
-		draw_rect(Rect2(380,42,480*encounter.hp/encounter.maxHp,18),Color("ed7354"))
-		label_at("FASE %d" % encounter.get("phase",2 if encounter.hp <= encounter.maxHp/2 else 1),Vector2(380,83),16)
-		return
-	label_at("NIVEL %02d · %s" % [sim.level.id,sim.level.title.to_upper()],Vector2(380,32),22)
-	label_at("CÉLULAS %d / %d · ENEMIGOS %d" % [sim.cells,sim.pickups.size(),sim.kills],Vector2(380,62),18)
-	draw_rect(Rect2(380,76,480*clampf(sim.player.x/sim.level.exit,0,1),4),Color.CYAN)
+	WebInterface.hud(self)
 
 func configure_weapons():
 	shot_audio.stream = load("res://assets/LivianaSimple1.mp3" if sim.robot == "protesser" else "res://assets/LivianaSimple2.mp3")
@@ -476,19 +480,7 @@ func continue_ending():
 	refresh_menu()
 
 func draw_title():
-	draw_texture_rect(textures.canyon,Rect2(0,0,1280,720),false)
-	draw_rect(Rect2(0,0,1280,720),Color("07132199"))
-	draw_rect(Rect2(0,0,640,720),Color("071321bb"))
-	label_at("UNA NUEVA BATALLA COMIENZA",Vector2(70,80),17,Color("e8b76d"))
-	label_at("GORDIAN",Vector2(65,170),76,Color("f4e9cf"))
-	label_at("EL DESPERTAR",Vector2(70,208),28,Color("9deaff"))
-	draw_rect(Rect2(70,229,390,3),Color("e8b76d"))
-	label_at("El desierto guarda un legado.",Vector2(70,270),23)
-	label_at("Entra en Protesser. Protege Victor Town.",Vector2(70,302),23)
-	sprite_at("protesser",4,930,650+sin(menu_clock)*2,440)
-	label_at("01 / PROTESSER",Vector2(840,90),24,Color("e8b76d"))
-	label_at("ÁGIL · PRECISO · RESISTENTE",Vector2(840,120),16)
-	label_at("CAPÍTULOS 01–12 · DOS RUTAS SECRETAS",Vector2(70,698),15,Color("9eb3c2"))
+	WebInterface.title(self)
 
 func load_platforms(id: int):
 	for key in textures.keys():

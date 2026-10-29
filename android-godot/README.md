@@ -1,4 +1,4 @@
-# Gordian Android — campaña 0.5.0
+# Gordian Android — campaña 0.5.1
 
 Port nativo Godot 4.7.2 / GDScript / Compatibility. Campaña de doce niveles, dos rutas secretas, menú principal y tema musical. Funciona sin WebView y sin conexión. La versión web en dist/ permanece intacta.
 
@@ -15,6 +15,14 @@ Port nativo Godot 4.7.2 / GDScript / Compatibility. Campaña de doce niveles, do
 - Pantalla principal con arte, textos, nueva misión, continuar y IntroGordian en bucle. La música se detiene al jugar y se suspende al enviar la app al fondo.
 - Sonidos diferenciados de los nuevos jefes: teletransporte, espada, invocación, rayos, hielo y descarga del reactor.
 - Las texturas de plataformas se cargan para el nivel actual y se liberan al cambiar de nivel, en vez de mantener toda la campaña simultáneamente.
+
+## Interfaz 0.5.1
+
+Menú y HUD adaptados directamente de dist/style.css e interface.css: logotipo rojo inclinado con relieve amarillo, rótulos y espaciado originales, botones dorados/azules, degradado lateral y composición del escenario. Paneles de unidad y misión con bordes metálicos, barra segmentada celeste, progreso dorado y panel rojo de jefe. Se mantienen las zonas táctiles y la franja superior del port.
+
+Las palabras fijas del menú y HUD se renderizaron a triple resolución usando las fuentes elegidas por la web en Windows (Arial Black, Bahnschrift y símbolos de respaldo). Se distribuyen solamente las imágenes resultantes en ui/, sin copiar archivos de fuentes. Los textos variables y las narraciones siguen usando la fuente de Godot. El generador opcional tools/bake_web_ui.py requiere Pillow y esas fuentes en la estación de diseño; no hace falta ejecutarlo para compilar, porque el arte está versionado.
+
+Validación de esta revisión: capturas del menú, HUD de nivel y jefe, y 230 comprobaciones existentes de integración/campaña completa. La validación de 422 comprobaciones de la campaña base se conserva como referencia. Se mantiene la misma firma de APK y el formato de guardado.
 
 ## Preparar y ejecutar
 
@@ -43,7 +51,7 @@ Plantillas Godot 4.7.2, OpenJDK 17, SDK Android con platform-tools, build-tools 
 godot --headless --path android-godot --export-debug "Android Debug" build/gordian-level1-debug.apk
 ```
 
-El nombre interno de salida se conserva por compatibilidad; contiene toda la campaña. Entrega: gordian-campaign-v0.5.0-debug.apk. Paquete com.facszero.gordian.prototype, versionCode 7, versión 0.5.0-campaign. ARM64, Android 7 mínimo, target 36, OpenGL ES 3, horizontal y sin permiso de Internet. Misma firma debug que las entregas anteriores: instalar encima, sin desinstalar.
+El nombre interno de salida se conserva por compatibilidad; contiene toda la campaña. Entrega: gordian-campaign-v0.5.1-debug.apk. Paquete com.facszero.gordian.prototype, versionCode 8, versión 0.5.1-campaign. ARM64, Android 7 mínimo, target 36, OpenGL ES 3, horizontal y sin permiso de Internet. Misma firma debug que las entregas anteriores: instalar encima, sin desinstalar.
 
 ## Guardados
 
@@ -76,7 +84,7 @@ Revisión visual de menú, enemigo corregido, nuevos escenarios, transiciones, j
 
 Cruceta a la izquierda; acciones verticales translúcidas (rayo, mira, salto). Teclado: A/D o flechas, espacio/Z, X/J, C/K, arriba/W, abajo/S y Escape. Mando: stick/cruceta, A, X, B y Start.
 
-La interfaz está adaptada a Godot y usa su fuente. Los sonidos enemigos y jefes usan los fragmentos, velocidades y filtros originales, sin la normalización previa de amplitud de Web Audio. Algunos efectos generales son síntesis simplificada; los brillos, trazos y mezclas visuales se adaptaron a CanvasItem. No se afirma identidad píxel a píxel ni de mezcla sonora.
+La interfaz está adaptada a Godot; el menú y los rótulos fijos conservan la tipografía web mediante arte rasterizado. Los textos variables usan la fuente de Godot. Los sonidos enemigos y jefes usan los fragmentos, velocidades y filtros originales, sin la normalización previa de amplitud de Web Audio. Algunos efectos generales son síntesis simplificada; los brillos, trazos y mezclas visuales se adaptaron a CanvasItem. No se afirma identidad píxel a píxel ni de mezcla sonora.
 
 ## Próximas etapas
 
