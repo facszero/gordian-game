@@ -72,7 +72,7 @@ static func draw(c: Node2D):
 		for i in steps.size():
 			c.draw_circle(Vector2(72,340+i*31),4,Color("81e4eb") if i <= active else Color("344d60"))
 			c.label_at(steps[i],Vector2(88,345+i*31),12,Color("f2d093") if i == active else Color("91a8b8"))
-	else:
+	elif c.sim.level.id == 2:
 		if t < 8.5: pose(c,state(maxf(0,10.4-t*1.22)).pose)
 		else:
 			pose(c,0)
@@ -82,9 +82,26 @@ static func draw(c: Node2D):
 		c.label_at("DESACOPLAMIENTO",Vector2(64,232),19,Color("b9efff"))
 		c.label_at("DELLINGER → PROTESSER",Vector2(64,264),15,Color("e8c483"))
 		c.label_at("DESTINO: "+c.sim.level.nextTitle.to_upper(),Vector2(64,340),12,Color("a3bac8"))
+	else:
+		if c.sim.level.id == 3 and t < 8:
+			var local_state = state(t*10.4/8)
+			pose(c,local_state.pose)
+			if local_state.pose == 0 and t > 0.7: pose(c,11,420+390*local_state.entry,604,330+100*local_state.entry)
+		else:
+			var phase = 11-t if c.sim.level.id == 4 else t-8
+			var frame = (8 if phase < 4.4 else 9 if phase < 5.8 else 10 if phase < 7.2 else 11 if phase < 8.8 else 4) if c.sim.level.id == 4 else (8 if t < 11.2 else 9 if t < 12.1 else 10 if t < 13 else 11 if t < 13.8 else 4)
+			c.sprite_at("garbin",frame,810,604,460)
+			if (c.sim.level.id == 3 and t < 11.2) or (c.sim.level.id == 4 and phase < 4.4):
+				var p = smooth(phase/(3.8 if c.sim.level.id == 4 else 2.8))
+				pose(c,8,440+370*p,604,320-90*p,clampf((4.4-phase)*2 if c.sim.level.id == 4 else (11.2-t)*3,0,1))
+		c.label_at("SANTORE / TRANSICIÓN %02d → %02d" % [c.sim.level.id,c.sim.level.id+1],Vector2(64,192),14,Color("e8b76d"))
+		c.label_at("ACOPLAMIENTO DOBLE" if c.sim.level.id == 3 else "DESACOPLAMIENTO",Vector2(64,232),19,Color("b9efff"))
+		c.label_at(("PROTESSER → DELLINGER" if t < 8 else "DELLINGER → GARBIN") if c.sim.level.id == 3 else "GARBIN → DELLINGER",Vector2(64,264),15,Color("e8c483"))
+		c.label_at("DESTINO: "+c.sim.level.nextTitle.to_upper(),Vector2(64,340),12,Color("a3bac8"))
 	c.draw_rect(Rect2(64,290,330,4),Color("233d4e"))
-	c.draw_rect(Rect2(64,290,330*minf(1,t/(10.4 if c.sim.level.id == 1 else 11.0)),4),Color("79e5ef"))
-	var fade = s.fade if c.sim.level.id == 1 else clampf((t-10.5)*2,0,1)
+	var duration = 15.0 if c.sim.level.id == 3 else 11.0
+	c.draw_rect(Rect2(64,290,330*minf(1,t/(10.4 if c.sim.level.id == 1 else duration)),4),Color("79e5ef"))
+	var fade = s.fade if c.sim.level.id == 1 else clampf((t-duration+0.5)*2,0,1)
 	if fade > 0: c.draw_rect(Rect2(0,0,1280,720),Color(0.027,0.067,0.122,fade))
 	c.draw_rect(Rect2(48,465,380,210),Color("061323ed"))
 	c.draw_rect(Rect2(48,465,3,210),Color("e8b76d"))
@@ -100,4 +117,4 @@ static func draw(c: Node2D):
 		else: line = next
 	c.label_at(line,Vector2(64,y),17,Color("dfebf2"))
 	if t < 3:
-		c.label_at("ACOPLAMIENTO AUTORIZADO" if c.sim.level.id == 1 else "DESACOPLAMIENTO AUTORIZADO",Vector2(430,140),20,Color("ffd18b"))
+		c.label_at("ACOPLAMIENTO AUTORIZADO" if int(c.sim.level.id)%2 else "DESACOPLAMIENTO AUTORIZADO",Vector2(430,140),20,Color("ffd18b"))

@@ -31,11 +31,19 @@ static func shot(c: Node2D, s: Dictionary, camera: float):
 		var length = maxf(s.w,s.h)
 		var radius = minf(s.w,s.h)/2
 		var dellinger = s.get("robot","protesser") == "dellinger"
-		var color = Color("ff564b") if dellinger else Color("54ff9e")
-		var core = Color("fff0cb") if dellinger else Color("deffe9")
+		var garbin = s.get("robot","") == "garbin"
+		var color = Color("78cfff") if garbin else Color("ff564b") if dellinger else Color("54ff9e")
+		var core = Color.WHITE if garbin else Color("fff0cb") if dellinger else Color("deffe9")
 		c.draw_polygon(PackedVector2Array([Vector2(-length*1.6,0),Vector2(length*0.2,-radius*0.8),Vector2(length*0.45,0),Vector2(length*0.2,radius*0.8)]),PackedColorArray([Color(color,0),Color(color,0.55),color,Color(color,0.55)]))
 		oval(c,Vector2.ZERO,Vector2(length*0.55,radius*1.8),Color(color,0.12))
-		if dellinger:
+		if garbin:
+			c.draw_rect(Rect2(-length*0.45,-radius,length*0.8,radius*2),color)
+			oval(c,Vector2(length*0.35,0),Vector2(length*0.15,radius),core)
+			c.draw_line(Vector2(-length*0.4,0),Vector2(length*0.35,0),core,maxf(2,radius*0.8),true)
+			if s.get("charged",false):
+				for x in [-length*0.3,0,length*0.3]: oval(c,Vector2(x,0),Vector2(3,radius*1.25),color,true)
+				c.draw_polyline(PackedVector2Array([Vector2(-length*0.8,0),Vector2(-length*0.5,-radius),Vector2(-length*0.1,radius),Vector2(length*0.3,0)]),Color("bdeaff"),1.5,true)
+		elif dellinger:
 			c.draw_colored_polygon(PackedVector2Array([Vector2(length*0.5,0),Vector2(length*0.12,-radius),Vector2(-length*0.5,-radius*0.6),Vector2(-length*0.3,0),Vector2(-length*0.5,radius*0.6),Vector2(length*0.12,radius)]),color)
 			c.draw_line(Vector2(-length*0.25,0),Vector2(length*0.28,0),core,maxf(2,radius*0.6),true)
 			if s.get("charged",false):
@@ -43,7 +51,7 @@ static func shot(c: Node2D, s: Dictionary, camera: float):
 		else:
 			oval(c,Vector2.ZERO,Vector2(length*0.5,radius),color)
 			oval(c,Vector2(length*0.12,0),Vector2(length*0.3,radius*0.4),core)
-		if s.get("charged",false) and not dellinger:
+		if s.get("charged",false) and not dellinger and not garbin:
 			oval(c,Vector2.ZERO,Vector2(length*0.42,radius*1.3),core,true)
 			c.draw_polyline(PackedVector2Array([Vector2(-length*0.45,-radius),Vector2(-length*0.65,-radius),Vector2(-length*0.85,0),Vector2(-length*0.65,radius),Vector2(-length*0.45,radius)]),color,2,true)
 	else:
@@ -55,8 +63,9 @@ static func effect(c: Node2D, e: Dictionary, camera: float):
 	var p = e.age/e.duration
 	var r = (26 if e.charged else 13)*((1-p) if e.kind == "muzzle" else (0.4+p))
 	var dellinger = e.get("robot","protesser") == "dellinger"
-	var color = Color("ff564b") if dellinger else Color("54ff9e")
-	var core = Color("fff0cb") if dellinger else Color("deffe9")
+	var garbin = e.get("robot","") == "garbin"
+	var color = Color("78cfff") if garbin else Color("ff564b") if dellinger else Color("54ff9e")
+	var core = Color.WHITE if garbin else Color("fff0cb") if dellinger else Color("deffe9")
 	color.a = (1-p)*0.85
 	core.a = color.a
 	c.draw_set_transform(Vector2(e.x-camera,e.y),e.angle)
@@ -66,8 +75,9 @@ static func effect(c: Node2D, e: Dictionary, camera: float):
 		c.draw_line(Vector2(-r*0.35,0),Vector2(r,0),color,2,true)
 	else:
 		oval(c,Vector2.ZERO,Vector2(r*0.65 if dellinger else r,r),color,true,3 if e.charged else 2)
-		for i in 6:
-			var direction = Vector2.from_angle(i*TAU/6)
+		var rays = 8 if garbin else 6
+		for i in rays:
+			var direction = Vector2.from_angle(i*TAU/rays)
 			c.draw_line(direction*r*0.65,direction*r*1.35,color if i%2 else core,1.5,true)
 		oval(c,Vector2.ZERO,Vector2.ONE*maxf(1,r*(1-p)*0.3),core)
 	c.draw_set_transform(Vector2.ZERO)

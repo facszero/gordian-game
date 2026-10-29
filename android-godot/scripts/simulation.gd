@@ -1,4 +1,6 @@
 extends RefCounted
+const Boss = preload("res://scripts/boss.gd")
+var boss: Dictionary = {}
 ## Coordinates and one-way platform collisions deliberately match the web game.
 var level: Dictionary
 var spec: Dictionary
@@ -44,6 +46,7 @@ func reset(saved: Dictionary = {}):
 	cells = int(saved.get("cells",0))
 	elapsed = float(saved.get("elapsed",0))
 	clock = 0
+	boss = Boss.create(level.get("boss",{}),saved.get("boss_defeated",false))
 	enemies = level.enemies.duplicate(true)
 	var spawn = level.checkpoints[checkpoint] if checkpoint >= 0 else level.spawn
 	for e in enemies:
@@ -72,6 +75,7 @@ func reset(saved: Dictionary = {}):
 	timer = 0
 
 func respawn():
+	if not boss.is_empty() and not boss.dead: boss = Boss.create(level.boss)
 	var spawn = level.checkpoints[checkpoint] if checkpoint >= 0 else level.spawn
 	player = {"x":float(spawn.x),"y":float(spawn.y),"w":float(spec.width),"h":float(spec.height),"vx":0.0,"vy":0.0,"health":float(spec.maxHealth),"grounded":false,"face":1,"crouching":false,"aim_up":false}
 	energy = 100
@@ -99,7 +103,7 @@ func snapshot() -> Dictionary:
 		if pickups[i].taken: collected.append(i)
 	var stage = before_pause if mode == "pause" else mode
 	if stage not in ["transition","complete"]: stage = "play"
-	return {"version":2,"level_id":int(level.id),"lives":lives,"checkpoint":checkpoint,"kills":kills,"cells":cells,"elapsed":elapsed,"defeated":defeated,"collected":collected,"destroyed":destroyed,"stage":stage}
+	return {"version":2,"level_id":int(level.id),"lives":lives,"checkpoint":checkpoint,"kills":kills,"cells":cells,"elapsed":elapsed,"defeated":defeated,"collected":collected,"destroyed":destroyed,"boss_defeated":not boss.is_empty() and boss.dead,"stage":stage}
 
 func pause():
 	if mode in ["play","intro","transition","dead"]:
@@ -139,9 +143,12 @@ func fire(charged: bool):
 	var length = 55.0 if charged else 24.0
 	var thickness = 20.0 if charged else 7.0
 	shots.append({"robot":level.robot,"x":player.x+player.w/2+(0 if up else player.face*(player.w/2+11)),"y":player.y+(-10 if up else player.h/3 if player.crouching else player.h*28/90),"w":thickness if up else length,"h":length if up else thickness,"vx":0.0 if up else player.face*speed,"vy":-speed if up else 0.0,"friendly":true,"damage":(4 if charged else 1)*(2 if level.robot == "dellinger" else 1),"life":1.2})
+	if level.robot == "garbin":
+		shots.back().damage = 12 if charged else 3
+		if up: shots.back().y = player.y+player.h-player.h*(1.21/0.79 if player.crouching else 1.145/0.84)
 	shots.back()["charged"] = charged
 	add_effect(shots.back(),"muzzle")
-	cooldown = 0.24 if level.robot == "dellinger" else 0.17
+	cooldown = 0.3 if level.robot == "garbin" else 0.24 if level.robot == "dellinger" else 0.17
 	if charged:
 		energy -= 35
 		charge_cooldown = 0.65
@@ -163,7 +170,7 @@ func update(dt: float, actions: Dictionary):
 		return
 	if mode == "transition":
 		timer += dt
-		if timer >= 11:
+		if timer >= (15 if level.id == 3 else 11):
 			mode = "complete"
 			events.append("save")
 		return
@@ -253,12 +260,40 @@ func update(dt: float, actions: Dictionary):
 			shots.append({"x":muzzle.x,"y":muzzle.y,"w":13,"h":10,"vx":velocity.x,"vy":velocity.y,"friendly":false,"damage":12,"life":4.0})
 			enemy_cues.append({"kind":"light" if e.type == "drone" else "heavy","x":muzzle.x})
 		if bounds(player).intersects(bounds(e)): hurt(18)
+	if not boss.is_empty() and not boss.dead:
+		var was_active = boss.active
+		var old_state = boss.state
+		var emitted = Boss.update(boss,dt,player)
+		shots.append_array(emitted)
+		if not was_active and boss.active:
+			shots = shots.filter(func(s): return s.friendly or s.get("boss",false))
+			events.append("boss_active")
+		if boss.state == "warning" and old_state != "warning": events.append("boss_warning")
+		if not emitted.is_empty(): enemy_cues.append({"kind":"bossShot","x":boss.x})
+		if boss.state == "attack" and old_state != "attack" and boss.attack in ["beam","shell"]:
+			enemy_cues.append({"kind":"beam" if boss.attack == "beam" else "impact","x":boss.x})
+		if boss.active:
+			player.x = clampf(player.x,boss.left+12,boss.x-player.w)
+			for h in boss.hazards:
+				if bounds(player).intersects(bounds(h)): hurt(26)
 	for s in shots:
+		if s.life <= 0: continue
 		s.x += s.vx*dt
 		s.y += s.vy*dt
 		s.life -= dt
 		var rect = Rect2(s.x-s.w/2,s.y-s.h/2,s.w,s.h)
 		if s.friendly:
+			if not boss.is_empty() and boss.active and not boss.dead and rect.intersects(Boss.bounds(boss)):
+				s.life = 0
+				add_effect(s,"impact")
+				if Boss.hit(boss,s.damage):
+					kills += 1
+					for other in shots:
+						if not other.friendly: other.life = 0
+					events.append("boss_defeated")
+					events.append("explosion")
+					events.append("save")
+				continue
 			for b in barriers:
 				if not b.dead and rect.intersects(bounds(b)):
 					b.hp -= s.damage
@@ -282,11 +317,12 @@ func update(dt: float, actions: Dictionary):
 						events.append("save")
 					break
 		elif rect.intersects(bounds(player)):
-			hurt(12,true)
+			hurt(s.get("damage",12),true)
 			s.life = 0
 	shots = shots.filter(func(s): return s.life > 0)
-	camera += (clampf(player.x-1280*0.32,0,level.width-1280)-camera)*minf(1,dt*5)
-	if mode == "play" and player.x > level.exit:
+	var camera_target = boss.left if not boss.is_empty() and boss.active else clampf(player.x-1280*0.32,0,level.width-1280)
+	camera += (camera_target-camera)*minf(1,dt*5)
+	if mode == "play" and player.x > level.exit and (boss.is_empty() or boss.dead):
 		mode = "transition"
 		timer = 0
 		shots.clear()

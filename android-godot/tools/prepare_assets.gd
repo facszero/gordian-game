@@ -27,18 +27,20 @@ func _init():
 			if not spec.get("preserve",false):
 				# WebP can leave nearly transparent pixels across the whole cell.
 				# Match environment.js's alpha > 150 bounds, not any nonzero alpha.
-				var bounds = industrial_bounds(frame) if key in ["industrial-props","enemy-army","enemy-group-b","dellinger","industrial-crates"] else frame.get_used_rect()
+				var bounds = industrial_bounds(frame) if key in ["industrial-props","enemy-army","enemy-group-b","enemy-group-c","enemy-group-d","dellinger","garbin","garbin-up","boss-scorpion","industrial-crates"] else frame.get_used_rect()
 				frame = frame.get_region(bounds)
 			if frame.save_png("res://assets/%s_%d.png" % [key,index]) != OK:
 				quit(1)
 				return
 			index += 1
-	for key in ["canyon","quarry","hangar-background"]:
+	for key in ["canyon","quarry","tunnels","fortress","hangar-background"]:
 		DirAccess.copy_absolute("res://../dist/assets/"+key+".webp","res://assets/"+key+".webp")
-	for key in ["IntroGordian","LivianaSimple1","LivianaSimple2","PesadaSimple1"]:
+	for key in ["IntroGordian","LivianaSimple1","LivianaSimple2","PesadaSimple1","Jefes1"]:
 		DirAccess.copy_absolute("res://../dist/audio/"+key+".mp3","res://assets/"+key+".mp3")
 	prepare_platforms(1)
 	prepare_platforms(2)
+	prepare_platforms(3)
+	prepare_platforms(4)
 	print("Assets prepared offline; no chroma processing during gameplay.")
 	quit()
 
@@ -88,7 +90,7 @@ func prepare_platforms(level_id: int):
 		if p.w > 300:
 			stamp(canvas,parts[7],10,54,14,23)
 			stamp(canvas,parts[7],p.w-25,54,14,23)
-		var target = "res://assets/platform_%d.png" % index if level_id == 1 else "res://assets/level2-platform_%d.png" % index
+		var target = "res://assets/platform_%d.png" % index if level_id == 1 else "res://assets/level%d-platform_%d.png" % [level_id,index]
 		if canvas.save_png(target) != OK:
 			push_error("Could not generate platform " + str(index))
 			quit(1)

@@ -114,7 +114,7 @@ func run():
 	game.sim.mode = "transition"
 	game.refresh_menu()
 	game.skip_button.pressed.emit()
-	check(game.sim.level.id == 2 and game.sim.mode == "complete" and game.panel.visible,"Second transition ends at prototype boundary")
+	check(game.sim.level.id == 3 and game.sim.mode == "play","Second transition now continues into tunnels")
 	game.queue_free()
 	await process_frame
 	await create_timer(0.15).timeout

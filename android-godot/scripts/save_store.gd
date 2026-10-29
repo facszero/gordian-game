@@ -10,6 +10,7 @@ static func read_save(level: Dictionary, path = PATH) -> Dictionary:
 	if (data.get("version") != 1 and data.get("version") != 2) or data.get("level_id") != level.id: return {}
 	if data.version == 1 and level.id != 1: return {}
 	if not data.has("destroyed"): data.destroyed = []
+	data.boss_defeated = level.has("boss") and data.get("boss_defeated",false) == true
 	for field in ["lives","checkpoint","kills","cells","elapsed"]:
 		if not (data.get(field) is float or data.get(field) is int): return {}
 		if not is_finite(float(data[field])): return {}
@@ -24,6 +25,7 @@ static func read_save(level: Dictionary, path = PATH) -> Dictionary:
 				clean.append(int(id))
 		data[spec[0]] = clean
 	if data.get("stage") not in ["play","transition","complete"]: data.stage = "play"
+	if level.has("boss") and not data.boss_defeated: data.stage = "play"
 	data.kills = maxi(0,int(data.kills))
 	data.cells = maxi(0,int(data.cells))
 	data.elapsed = maxf(0,data.elapsed)
