@@ -69,3 +69,8 @@ Cruceta en la disposición web y acciones en columna (rayo, mira y salto), dibuj
 El APK utiliza el mismo identificador y clave de depuración que la entrega anterior, con versionCode 2, para actualizar conservando los datos. Las capturas de revisión se pueden regenerar con 
 
 `godot --path android-godot --script tests/capture_visuals.gd`.
+
+## Revisión 0.1.2
+
+Corrige el recorte de las ocho piezas industriales: usa el umbral alpha > 150/255 de la web, eliminando márgenes casi transparentes que aplastaban el tablero y separaban visualmente sus soportes. Regenera las 40 plataformas sin cambiar sus colisiones. Añade 48 comprobaciones de márgenes y dimensiones al proceso de construcción. APK con versionCode 3 y la misma firma de depuración.
+

@@ -25,7 +25,10 @@ func _init():
 			rect = rect.intersection(Rect2i(0,0,img.get_width(),img.get_height()))
 			var frame = img.get_region(rect)
 			if not spec.get("preserve",false):
-				frame = frame.get_region(frame.get_used_rect())
+				# WebP can leave nearly transparent pixels across the whole cell.
+				# Match environment.js's alpha > 150 bounds, not any nonzero alpha.
+				var bounds = industrial_bounds(frame) if key == "industrial-props" else frame.get_used_rect()
+				frame = frame.get_region(bounds)
 			if frame.save_png("res://assets/%s_%d.png" % [key,index]) != OK:
 				quit(1)
 				return
@@ -37,6 +40,21 @@ func _init():
 	prepare_platforms()
 	print("Assets prepared offline; no chroma processing during gameplay.")
 	quit()
+
+func industrial_bounds(frame: Image) -> Rect2i:
+	var left = frame.get_width()
+	var top = frame.get_height()
+	var right = -1
+	var bottom = -1
+	for y in frame.get_height():
+		for x in frame.get_width():
+			if frame.get_pixel(x,y).a > 150.0/255.0:
+				left = mini(left,x)
+				top = mini(top,y)
+				right = maxi(right,x)
+				bottom = maxi(bottom,y)
+	assert(right >= left,"Empty industrial sprite")
+	return Rect2i(left,top,right-left+1,bottom-top+1)
 
 func stamp(canvas: Image, part: Image, x: float, y: float, w: float, h: float):
 	var scaled = part.duplicate()
