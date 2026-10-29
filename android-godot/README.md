@@ -1,4 +1,4 @@
-# Gordian Android — campaña 0.5.1
+# Gordian Android — campaña 0.5.2
 
 Port nativo Godot 4.7.2 / GDScript / Compatibility. Campaña de doce niveles, dos rutas secretas, menú principal y tema musical. Funciona sin WebView y sin conexión. La versión web en dist/ permanece intacta.
 
@@ -15,6 +15,10 @@ Port nativo Godot 4.7.2 / GDScript / Compatibility. Campaña de doce niveles, do
 - Pantalla principal con arte, textos, nueva misión, continuar y IntroGordian en bucle. La música se detiene al jugar y se suspende al enviar la app al fondo.
 - Sonidos diferenciados de los nuevos jefes: teletransporte, espada, invocación, rayos, hielo y descarga del reactor.
 - Las texturas de plataformas se cargan para el nivel actual y se liberan al cambiar de nivel, en vez de mantener toda la campaña simultáneamente.
+
+## Ayuda de controles 0.5.2
+
+El menú inicia con instrucciones táctiles. La ayuda cambia al usar teclas de juego o mando; vuelve a táctil al tocar la pantalla o desconectar el último mando. El menú de pausa sigue la misma selección. Se conserva el diseño y el guardado.
 
 ## Interfaz 0.5.1
 
@@ -51,7 +55,7 @@ Plantillas Godot 4.7.2, OpenJDK 17, SDK Android con platform-tools, build-tools 
 godot --headless --path android-godot --export-debug "Android Debug" build/gordian-level1-debug.apk
 ```
 
-El nombre interno de salida se conserva por compatibilidad; contiene toda la campaña. Entrega: gordian-campaign-v0.5.1-debug.apk. Paquete com.facszero.gordian.prototype, versionCode 8, versión 0.5.1-campaign. ARM64, Android 7 mínimo, target 36, OpenGL ES 3, horizontal y sin permiso de Internet. Misma firma debug que las entregas anteriores: instalar encima, sin desinstalar.
+El nombre interno de salida se conserva por compatibilidad; contiene toda la campaña. Entrega: gordian-campaign-v0.5.2-debug.apk. Paquete com.facszero.gordian.prototype, versionCode 9, versión 0.5.2-campaign. ARM64, Android 7 mínimo, target 36, OpenGL ES 3, horizontal y sin permiso de Internet. Misma firma debug que las entregas anteriores: instalar encima, sin desinstalar.
 
 ## Guardados
 

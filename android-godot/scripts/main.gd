@@ -29,6 +29,13 @@ var skip_button: Button
 var pause_button: Button
 var menu_clock = 0.0
 var app_active = true
+var input_hint = "touch"
+var help_hint: Label
+const INPUT_HELP = {
+	"touch":["Cruceta: moverse, apuntar arriba y agacharse.","Botones de la derecha: carga, disparo y salto.","Doble salto: soltar y volver a pulsar salto."],
+	"pad":["Stick / cruceta: moverse, apuntar y agacharse.","A: salto · X: disparo · B: carga · Start: pausa.","Doble salto: soltar y volver a pulsar A."],
+	"help":["Flechas / A D: mover · Z / Espacio: saltar.","X / J: disparar · C / K: carga · Esc: pausa.","Arriba / W: apuntar · Abajo / S: agacharse."]
+}
 const WebInterface = preload("res://scripts/web_interface.gd")
 const AdvancedVisuals = preload("res://scripts/advanced_visuals.gd")
 
@@ -47,6 +54,8 @@ func _ready():
 		textures[entry[0]] = frames
 	for name in ["canyon","quarry","tunnels","fortress","hangar-background","foundry","dam","reactor","eclipse","nucleus-background","cryo-background"]: textures[name] = load("res://assets/"+name+".webp")
 	setup_inputs()
+	Input.joy_connection_changed.connect(func(_device,connected):
+		if not connected and Input.get_connected_joypads().is_empty() and input_hint == "pad": set_input_hint("touch"))
 	music = audio("IntroGordian",-14)
 	music.finished.connect(func():
 		if sim.mode == "menu": music.play())
@@ -167,7 +176,17 @@ func setup_inputs():
 		event.axis_value = spec[2]
 		InputMap.action_add_event(spec[0],event)
 
+func set_input_hint(kind: String):
+	if input_hint == kind: return
+	input_hint = kind
+	if is_instance_valid(help_hint): help_hint.text = "\n".join(INPUT_HELP[kind])
+	queue_redraw()
+
 func _input(event):
+	if event is InputEventScreenTouch and event.pressed: set_input_hint("touch")
+	elif event is InputEventKey and event.pressed and not event.echo and event.physical_keycode in [KEY_LEFT,KEY_RIGHT,KEY_UP,KEY_DOWN,KEY_A,KEY_D,KEY_W,KEY_S,KEY_Z,KEY_SPACE,KEY_X,KEY_J,KEY_C,KEY_K]: set_input_hint("help")
+	elif event is InputEventJoypadButton and event.pressed: set_input_hint("pad")
+	elif event is InputEventJoypadMotion and absf(event.axis_value) > 0.45: set_input_hint("pad")
 	if event is InputEventScreenTouch:
 		if event.pressed and sim.mode == "play": fingers[event.index] = event.position
 		else: fingers.erase(event.index)
@@ -255,10 +274,10 @@ func refresh_menu():
 			persist()
 			sim.mode = "menu"
 			refresh_menu())
-	var help = Label.new()
-	help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	help.text = "← → / A D mover · Z / espacio saltar\nX disparar · C potente · ↑ apuntar · ↓ agacharse\nDoble salto: soltar y volver a pulsar salto"
-	menu.add_child(help)
+	help_hint = Label.new()
+	help_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	help_hint.text = "\n".join(INPUT_HELP[input_hint])
+	menu.add_child(help_hint)
 
 	if sim.mode == "menu" and app_active and not music.playing and not music.stream_paused: music.play()
 	var first = menu.find_children("*","Button",false,false)
