@@ -27,20 +27,17 @@ func _init():
 			if not spec.get("preserve",false):
 				# WebP can leave nearly transparent pixels across the whole cell.
 				# Match environment.js's alpha > 150 bounds, not any nonzero alpha.
-				var bounds = industrial_bounds(frame) if key in ["industrial-props","enemy-army","enemy-group-b","enemy-group-c","enemy-group-d","dellinger","garbin","garbin-up","boss-scorpion","industrial-crates"] else frame.get_used_rect()
+				var bounds = industrial_bounds(frame)
 				frame = frame.get_region(bounds)
 			if frame.save_png("res://assets/%s_%d.png" % [key,index]) != OK:
 				quit(1)
 				return
 			index += 1
-	for key in ["canyon","quarry","tunnels","fortress","hangar-background"]:
+	for key in ["canyon","quarry","tunnels","fortress","hangar-background","foundry","dam","reactor","eclipse","nucleus-background","cryo-background"]:
 		DirAccess.copy_absolute("res://../dist/assets/"+key+".webp","res://assets/"+key+".webp")
-	for key in ["IntroGordian","LivianaSimple1","LivianaSimple2","PesadaSimple1","Jefes1"]:
+	for key in ["IntroGordian","LivianaSimple1","LivianaSimple2","PesadaSimple1","Jefes1","Jefes2","Jefes3","Jefes4"]:
 		DirAccess.copy_absolute("res://../dist/audio/"+key+".mp3","res://assets/"+key+".mp3")
-	prepare_platforms(1)
-	prepare_platforms(2)
-	prepare_platforms(3)
-	prepare_platforms(4)
+	for id in range(1,15): prepare_platforms(id)
 	print("Assets prepared offline; no chroma processing during gameplay.")
 	quit()
 
@@ -85,8 +82,8 @@ func prepare_platforms(level_id: int):
 		for i in count:
 			var x = roundi(i*p.w/count)
 			var end = roundi((i+1)*p.w/count)
-			stamp(canvas,parts[1 if level_id == 2 else 0],x,36,end-x,45)
-		canvas.fill_rect(Rect2i(0,37,canvas.get_width(),1),Color("e7c278") if level_id == 2 else Color("d7b18a"))
+			stamp(canvas,parts[1 if level_id in [2,5,7] else 0],x,36,end-x,45)
+		canvas.fill_rect(Rect2i(0,37,canvas.get_width(),1),Color("e7c278") if level_id in [2,5,7] else Color("d7b18a"))
 		if p.w > 300:
 			stamp(canvas,parts[7],10,54,14,23)
 			stamp(canvas,parts[7],p.w-25,54,14,23)

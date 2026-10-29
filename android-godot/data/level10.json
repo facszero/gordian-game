@@ -1,0 +1,1358 @@
+{
+  "id": 10,
+  "title": "Legión de acero",
+  "robot": "dellinger",
+  "background": "foundry",
+  "width": 15950,
+  "spawn": {
+    "x": 150,
+    "y": 440
+  },
+  "exit": 15810,
+  "platforms": [
+    {
+      "x": 0,
+      "y": 560,
+      "w": 900,
+      "h": 30
+    },
+    {
+      "x": 970,
+      "y": 535,
+      "w": 850,
+      "h": 30
+    },
+    {
+      "x": 1890,
+      "y": 580,
+      "w": 1700,
+      "h": 30
+    },
+    {
+      "x": 3660,
+      "y": 540,
+      "w": 850,
+      "h": 30
+    },
+    {
+      "x": 4580,
+      "y": 560,
+      "w": 900,
+      "h": 30
+    },
+    {
+      "x": 5550,
+      "y": 580,
+      "w": 1700,
+      "h": 30
+    },
+    {
+      "x": 7320,
+      "y": 540,
+      "w": 510,
+      "h": 30
+    },
+    {
+      "x": 260,
+      "y": 470,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 1230,
+      "y": 445,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 3920,
+      "y": 450,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 4840,
+      "y": 470,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 7580,
+      "y": 450,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 7830,
+      "y": 560,
+      "w": 900,
+      "h": 30
+    },
+    {
+      "x": 8800,
+      "y": 535,
+      "w": 850,
+      "h": 30
+    },
+    {
+      "x": 9720,
+      "y": 580,
+      "w": 1700,
+      "h": 30
+    },
+    {
+      "x": 11490,
+      "y": 540,
+      "w": 850,
+      "h": 30
+    },
+    {
+      "x": 12410,
+      "y": 560,
+      "w": 900,
+      "h": 30
+    },
+    {
+      "x": 13380,
+      "y": 580,
+      "w": 1700,
+      "h": 30
+    },
+    {
+      "x": 15150,
+      "y": 540,
+      "w": 800,
+      "h": 30
+    },
+    {
+      "x": 8090,
+      "y": 470,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 9060,
+      "y": 445,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 11750,
+      "y": 450,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 12670,
+      "y": 470,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 15410,
+      "y": 450,
+      "w": 220,
+      "h": 30
+    }
+  ],
+  "enemies": [
+    {
+      "type": "turret",
+      "x": 310,
+      "y": 560,
+      "id": 0,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "A"
+    },
+    {
+      "type": "armor",
+      "x": 432,
+      "y": 560,
+      "id": 1,
+      "name": "Centinela blindado",
+      "w": 116,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.48,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 576,
+      "y": 330,
+      "id": 2,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "C"
+    },
+    {
+      "type": "turret",
+      "x": 765,
+      "y": 560,
+      "id": 3,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "D"
+    },
+    {
+      "type": "drone",
+      "x": 830,
+      "y": 260,
+      "id": 4,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "E"
+    },
+    {
+      "type": "turret",
+      "x": 1280,
+      "y": 535,
+      "id": 5,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "F"
+    },
+    {
+      "type": "armor",
+      "x": 1378,
+      "y": 535,
+      "id": 6,
+      "name": "Centinela blindado",
+      "w": 82,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.42,
+      "group": "A"
+    },
+    {
+      "type": "drone",
+      "x": 1514,
+      "y": 305,
+      "id": 7,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "B"
+    },
+    {
+      "type": "turret",
+      "x": 1685,
+      "y": 535,
+      "id": 8,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "C"
+    },
+    {
+      "type": "drone",
+      "x": 1750,
+      "y": 235,
+      "id": 9,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "D"
+    },
+    {
+      "type": "drone",
+      "x": 1190,
+      "y": 345,
+      "id": 10,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "E"
+    },
+    {
+      "type": "drone",
+      "x": 3520,
+      "y": 280,
+      "id": 11,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "F"
+    },
+    {
+      "type": "turret",
+      "x": 3970,
+      "y": 540,
+      "id": 12,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "A"
+    },
+    {
+      "type": "armor",
+      "x": 4068,
+      "y": 540,
+      "id": 13,
+      "name": "Centinela blindado",
+      "w": 116,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.48,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 4204,
+      "y": 310,
+      "id": 14,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "C"
+    },
+    {
+      "type": "turret",
+      "x": 4375,
+      "y": 540,
+      "id": 15,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "D"
+    },
+    {
+      "type": "drone",
+      "x": 4440,
+      "y": 240,
+      "id": 16,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "E"
+    },
+    {
+      "type": "drone",
+      "x": 3880,
+      "y": 350,
+      "id": 17,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "F"
+    },
+    {
+      "type": "turret",
+      "x": 4890,
+      "y": 560,
+      "id": 18,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "A"
+    },
+    {
+      "type": "armor",
+      "x": 5012,
+      "y": 560,
+      "id": 19,
+      "name": "Centinela blindado",
+      "w": 116,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.48,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 5156,
+      "y": 330,
+      "id": 20,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "C"
+    },
+    {
+      "type": "turret",
+      "x": 5345,
+      "y": 560,
+      "id": 21,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "D"
+    },
+    {
+      "type": "drone",
+      "x": 5410,
+      "y": 260,
+      "id": 22,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "E"
+    },
+    {
+      "type": "drone",
+      "x": 7180,
+      "y": 280,
+      "id": 23,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "F"
+    },
+    {
+      "type": "drone",
+      "x": 5770,
+      "y": 390,
+      "id": 24,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "A"
+    },
+    {
+      "type": "turret",
+      "x": 7630,
+      "y": 540,
+      "id": 25,
+      "name": "Centinela ligero",
+      "w": 92,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.5,
+      "group": "B"
+    },
+    {
+      "type": "armor",
+      "x": 7704,
+      "y": 540,
+      "id": 26,
+      "name": "Centinela blindado",
+      "w": 94,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.43,
+      "group": "C"
+    },
+    {
+      "type": "drone",
+      "x": 7832,
+      "y": 310,
+      "id": 27,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "D"
+    },
+    {
+      "type": "turret",
+      "x": 7985,
+      "y": 540,
+      "id": 28,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "E"
+    },
+    {
+      "type": "drone",
+      "x": 8050,
+      "y": 240,
+      "id": 29,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "F"
+    },
+    {
+      "type": "turret",
+      "x": 8140,
+      "y": 560,
+      "id": 30,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "A"
+    },
+    {
+      "type": "armor",
+      "x": 8262,
+      "y": 560,
+      "id": 31,
+      "name": "Centinela blindado",
+      "w": 116,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.48,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 8406,
+      "y": 330,
+      "id": 32,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "C"
+    },
+    {
+      "type": "turret",
+      "x": 8595,
+      "y": 560,
+      "id": 33,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "D"
+    },
+    {
+      "type": "drone",
+      "x": 8660,
+      "y": 260,
+      "id": 34,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "E"
+    },
+    {
+      "type": "turret",
+      "x": 9110,
+      "y": 535,
+      "id": 35,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "F"
+    },
+    {
+      "type": "armor",
+      "x": 9208,
+      "y": 535,
+      "id": 36,
+      "name": "Centinela blindado",
+      "w": 82,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.42,
+      "group": "A"
+    },
+    {
+      "type": "drone",
+      "x": 9344,
+      "y": 305,
+      "id": 37,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "B"
+    },
+    {
+      "type": "turret",
+      "x": 9515,
+      "y": 535,
+      "id": 38,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "C"
+    },
+    {
+      "type": "drone",
+      "x": 9580,
+      "y": 235,
+      "id": 39,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "D"
+    },
+    {
+      "type": "drone",
+      "x": 9020,
+      "y": 345,
+      "id": 40,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "E"
+    },
+    {
+      "type": "drone",
+      "x": 11350,
+      "y": 280,
+      "id": 41,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "F"
+    },
+    {
+      "type": "turret",
+      "x": 11800,
+      "y": 540,
+      "id": 42,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "A"
+    },
+    {
+      "type": "armor",
+      "x": 11898,
+      "y": 540,
+      "id": 43,
+      "name": "Centinela blindado",
+      "w": 116,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.48,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 12034,
+      "y": 310,
+      "id": 44,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "C"
+    },
+    {
+      "type": "turret",
+      "x": 12205,
+      "y": 540,
+      "id": 45,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "D"
+    },
+    {
+      "type": "drone",
+      "x": 12270,
+      "y": 240,
+      "id": 46,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "E"
+    },
+    {
+      "type": "drone",
+      "x": 11710,
+      "y": 350,
+      "id": 47,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "F"
+    },
+    {
+      "type": "turret",
+      "x": 12720,
+      "y": 560,
+      "id": 48,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "A"
+    },
+    {
+      "type": "armor",
+      "x": 12842,
+      "y": 560,
+      "id": 49,
+      "name": "Centinela blindado",
+      "w": 116,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.48,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 12986,
+      "y": 330,
+      "id": 50,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "C"
+    },
+    {
+      "type": "turret",
+      "x": 13175,
+      "y": 560,
+      "id": 51,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "D"
+    },
+    {
+      "type": "drone",
+      "x": 13240,
+      "y": 260,
+      "id": 52,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "E"
+    },
+    {
+      "type": "drone",
+      "x": 15010,
+      "y": 280,
+      "id": 53,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "F"
+    },
+    {
+      "type": "drone",
+      "x": 13600,
+      "y": 390,
+      "id": 54,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "A"
+    },
+    {
+      "type": "turret",
+      "x": 15460,
+      "y": 540,
+      "id": 55,
+      "name": "Centinela ligero",
+      "w": 92,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.5,
+      "group": "B"
+    },
+    {
+      "type": "armor",
+      "x": 15534,
+      "y": 540,
+      "id": 56,
+      "name": "Centinela blindado",
+      "w": 94,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.43,
+      "group": "C"
+    },
+    {
+      "type": "drone",
+      "x": 15662,
+      "y": 310,
+      "id": 57,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "D"
+    },
+    {
+      "type": "turret",
+      "x": 15815,
+      "y": 540,
+      "id": 58,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "E"
+    },
+    {
+      "type": "drone",
+      "x": 15880,
+      "y": 240,
+      "id": 59,
+      "name": "Dron blindado",
+      "w": 88,
+      "h": 56,
+      "hp": 2,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "F"
+    }
+  ],
+  "checkpoints": [
+    {
+      "x": 1910,
+      "y": 460
+    },
+    {
+      "x": 5570,
+      "y": 460
+    },
+    {
+      "x": 7360,
+      "y": 420
+    },
+    {
+      "x": 7990,
+      "y": 440
+    },
+    {
+      "x": 9740,
+      "y": 460
+    },
+    {
+      "x": 13400,
+      "y": 460
+    },
+    {
+      "x": 15190,
+      "y": 420
+    }
+  ],
+  "pickups": [
+    {
+      "x": 300,
+      "y": 430
+    },
+    {
+      "x": 820,
+      "y": 510
+    },
+    {
+      "x": 1270,
+      "y": 405
+    },
+    {
+      "x": 1740,
+      "y": 485
+    },
+    {
+      "x": 2190,
+      "y": 450
+    },
+    {
+      "x": 3510,
+      "y": 530
+    },
+    {
+      "x": 3960,
+      "y": 410
+    },
+    {
+      "x": 4430,
+      "y": 490
+    },
+    {
+      "x": 4880,
+      "y": 430
+    },
+    {
+      "x": 5400,
+      "y": 510
+    },
+    {
+      "x": 5850,
+      "y": 450
+    },
+    {
+      "x": 7170,
+      "y": 530
+    },
+    {
+      "x": 7620,
+      "y": 410
+    },
+    {
+      "x": 8040,
+      "y": 490
+    },
+    {
+      "x": 8130,
+      "y": 430
+    },
+    {
+      "x": 8650,
+      "y": 510
+    },
+    {
+      "x": 9100,
+      "y": 405
+    },
+    {
+      "x": 9570,
+      "y": 485
+    },
+    {
+      "x": 10020,
+      "y": 450
+    },
+    {
+      "x": 11340,
+      "y": 530
+    },
+    {
+      "x": 11790,
+      "y": 410
+    },
+    {
+      "x": 12260,
+      "y": 490
+    },
+    {
+      "x": 12710,
+      "y": 430
+    },
+    {
+      "x": 13230,
+      "y": 510
+    },
+    {
+      "x": 13680,
+      "y": 450
+    },
+    {
+      "x": 15000,
+      "y": 530
+    },
+    {
+      "x": 15450,
+      "y": 410
+    },
+    {
+      "x": 15870,
+      "y": 490
+    }
+  ],
+  "elites": [
+    {
+      "name": "CENTINELA COBALTO 1",
+      "elite": true,
+      "tint": "hue-rotate(155deg) saturate(1.65)",
+      "hp": 60,
+      "damageScale": 0.3333333333333333,
+      "x": 2760,
+      "floor": 580,
+      "w": 500,
+      "h": 340,
+      "left": 1940,
+      "right": 3490,
+      "trigger": 1980
+    },
+    {
+      "name": "CENTINELA COBALTO 2",
+      "elite": true,
+      "tint": "hue-rotate(155deg) saturate(1.65)",
+      "hp": 60,
+      "damageScale": 0.3333333333333333,
+      "x": 14250,
+      "floor": 580,
+      "w": 500,
+      "h": 340,
+      "left": 13430,
+      "right": 14980,
+      "trigger": 13470
+    }
+  ],
+  "barriers": [],
+  "sourceCommit": "11439a2ef93966d3e5c8e7df9147a979d7e61f80",
+  "gravity": 1800,
+  "robots": {
+    "protesser": {
+      "speed": 310,
+      "jump": 740,
+      "width": 38,
+      "height": 90,
+      "maxHealth": 100
+    },
+    "dellinger": {
+      "speed": 240,
+      "jump": 854.478398400646,
+      "width": 55,
+      "height": 120,
+      "maxHealth": 150
+    },
+    "garbin": {
+      "speed": 190,
+      "jump": 986.6666666666666,
+      "width": 80,
+      "height": 160,
+      "maxHealth": 220
+    }
+  },
+  "robotSpec": {
+    "speed": 240,
+    "jump": 854.478398400646,
+    "width": 55,
+    "height": 120,
+    "maxHealth": 150
+  },
+  "story": [
+    "ECOS DEL ECLIPSE",
+    "Los centinelas ya no bloquean el paso. Ahora aparecen copias del guardián oscuro, custodios del último acceso. Garbin deberá atravesarlas antes de que Dokuma reúna sus fuerzas."
+  ],
+  "nextTitle": "Guardianes del eclipse",
+  "nextRobot": "garbin",
+  "victories": {
+    "protesser": {
+      "title": "UN MAÑANA POSIBLE",
+      "body": "Grandmaster Dokuma ha caído. Su dominio se quiebra y Victor Town vuelve a mirar al futuro. El legado del padre de Daigo ha protegido aquello para lo que fue creado: la vida. Una señal rompe el silencio desde el hielo: Cryodrax Prime ha despertado. La última defensa de Dokuma todavía amenaza a la humanidad."
+    },
+    "dellinger": {
+      "title": "UN MAÑANA POSIBLE",
+      "body": "Grandmaster Dokuma ha caído. Su dominio se quiebra y Victor Town vuelve a mirar al futuro. El legado del padre de Daigo ha protegido aquello para lo que fue creado: la vida. Sin embargo, bajo la fortaleza aún late el Núcleo Madokter. Gordian debe silenciarlo antes de regresar."
+    },
+    "garbin": {
+      "title": "UN MAÑANA POSIBLE",
+      "body": "Grandmaster Dokuma ha caído. Su dominio se quiebra y Victor Town vuelve a mirar al futuro. El legado del padre de Daigo ha protegido aquello para lo que fue creado: la vida. Por primera vez, las comunicaciones de Santore hablan de reconstrucción. Daigo sabe que esta victoria pertenece también a quienes resistieron."
+    }
+  },
+  "epilogue": {
+    "title": "GORDIAN SIEMPRE ESTARÁ LISTO",
+    "body": "En Santore comienza un nuevo día. Saori reúne a los supervivientes y Clint acompaña a Daigo de regreso. Protesser, Dellinger y Garbin descansan, unidos por una misma promesa: proteger a la humanidad.",
+    "note": "El futuro sigue abierto. Mientras haya personas que proteger, el legado de Gordian seguirá vivo."
+  },
+  "companion": {
+    "active": true,
+    "x": 205,
+    "feet": 560,
+    "time": 0,
+    "frame": 0,
+    "floors": [
+      {
+        "x": 0,
+        "y": 560,
+        "w": 900,
+        "h": 30
+      },
+      {
+        "x": 970,
+        "y": 535,
+        "w": 850,
+        "h": 30
+      },
+      {
+        "x": 1890,
+        "y": 580,
+        "w": 1700,
+        "h": 30
+      },
+      {
+        "x": 3660,
+        "y": 540,
+        "w": 850,
+        "h": 30
+      },
+      {
+        "x": 4580,
+        "y": 560,
+        "w": 900,
+        "h": 30
+      },
+      {
+        "x": 5550,
+        "y": 580,
+        "w": 1700,
+        "h": 30
+      },
+      {
+        "x": 7320,
+        "y": 540,
+        "w": 510,
+        "h": 30
+      },
+      {
+        "x": 7830,
+        "y": 560,
+        "w": 900,
+        "h": 30
+      },
+      {
+        "x": 8800,
+        "y": 535,
+        "w": 850,
+        "h": 30
+      },
+      {
+        "x": 9720,
+        "y": 580,
+        "w": 1700,
+        "h": 30
+      },
+      {
+        "x": 11490,
+        "y": 540,
+        "w": 850,
+        "h": 30
+      },
+      {
+        "x": 12410,
+        "y": 560,
+        "w": 900,
+        "h": 30
+      },
+      {
+        "x": 13380,
+        "y": 580,
+        "w": 1700,
+        "h": 30
+      },
+      {
+        "x": 15150,
+        "y": 540,
+        "w": 800,
+        "h": 30
+      }
+    ],
+    "jumps": [
+      {
+        "start": 830,
+        "end": 1040,
+        "from": 560,
+        "to": 535,
+        "height": 125
+      },
+      {
+        "start": 1750,
+        "end": 1960,
+        "from": 535,
+        "to": 580,
+        "height": 125
+      },
+      {
+        "start": 3520,
+        "end": 3730,
+        "from": 580,
+        "to": 540,
+        "height": 125
+      },
+      {
+        "start": 4440,
+        "end": 4650,
+        "from": 540,
+        "to": 560,
+        "height": 125
+      },
+      {
+        "start": 5410,
+        "end": 5620,
+        "from": 560,
+        "to": 580,
+        "height": 125
+      },
+      {
+        "start": 7180,
+        "end": 7390,
+        "from": 580,
+        "to": 540,
+        "height": 125
+      },
+      {
+        "start": 7760,
+        "end": 7900,
+        "from": 540,
+        "to": 560,
+        "height": 125
+      },
+      {
+        "start": 8660,
+        "end": 8870,
+        "from": 560,
+        "to": 535,
+        "height": 125
+      },
+      {
+        "start": 9580,
+        "end": 9790,
+        "from": 535,
+        "to": 580,
+        "height": 125
+      },
+      {
+        "start": 11350,
+        "end": 11560,
+        "from": 580,
+        "to": 540,
+        "height": 125
+      },
+      {
+        "start": 12270,
+        "end": 12480,
+        "from": 540,
+        "to": 560,
+        "height": 125
+      },
+      {
+        "start": 13240,
+        "end": 13450,
+        "from": 560,
+        "to": 580,
+        "height": 125
+      },
+      {
+        "start": 15010,
+        "end": 15220,
+        "from": 580,
+        "to": 540,
+        "height": 125
+      }
+    ]
+  }
+}

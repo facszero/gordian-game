@@ -1,0 +1,164 @@
+{
+  "id": 14,
+  "extra": true,
+  "title": "Cryodrax Prime",
+  "robot": "garbin",
+  "background": "cryo-background",
+  "width": 1280,
+  "spawn": {
+    "x": 110,
+    "y": 400
+  },
+  "exit": 1230,
+  "platforms": [
+    {
+      "x": 0,
+      "y": 680,
+      "w": 1280,
+      "h": 30
+    },
+    {
+      "x": 0,
+      "y": 560,
+      "w": 430,
+      "h": 30
+    },
+    {
+      "x": 0,
+      "y": 350,
+      "w": 270,
+      "h": 30
+    },
+    {
+      "x": 530,
+      "y": 530,
+      "w": 210,
+      "h": 30
+    },
+    {
+      "x": 850,
+      "y": 530,
+      "w": 200,
+      "h": 30
+    },
+    {
+      "x": 1090,
+      "y": 470,
+      "w": 190,
+      "h": 30
+    }
+  ],
+  "enemies": [],
+  "checkpoints": [],
+  "pickups": [
+    {
+      "x": 170,
+      "y": 520
+    },
+    {
+      "x": 100,
+      "y": 310
+    },
+    {
+      "x": 610,
+      "y": 490
+    }
+  ],
+  "boss": {
+    "kind": "cryodrax",
+    "name": "CRYODRAX PRIME",
+    "hp": 330,
+    "x": 570,
+    "floor": 680,
+    "w": 760,
+    "h": 592,
+    "left": 0,
+    "right": 1260,
+    "trigger": 0,
+    "number": 5
+  },
+  "sourceCommit": "11439a2ef93966d3e5c8e7df9147a979d7e61f80",
+  "gravity": 1800,
+  "robots": {
+    "protesser": {
+      "speed": 310,
+      "jump": 740,
+      "width": 38,
+      "height": 90,
+      "maxHealth": 100
+    },
+    "dellinger": {
+      "speed": 240,
+      "jump": 854.478398400646,
+      "width": 55,
+      "height": 120,
+      "maxHealth": 150
+    },
+    "garbin": {
+      "speed": 190,
+      "jump": 986.6666666666666,
+      "width": 80,
+      "height": 160,
+      "maxHealth": 220
+    }
+  },
+  "robotSpec": {
+    "speed": 190,
+    "jump": 986.6666666666666,
+    "width": 80,
+    "height": 160,
+    "maxHealth": 220
+  },
+  "story": [],
+  "nextTitle": "",
+  "nextRobot": "",
+  "victories": {
+    "protesser": {
+      "title": "EL DESHIELO",
+      "body": "El rugido de Cryodrax se extingue. Bajo el hielo, la fortaleza queda inmóvil. Daigo y Clint vuelven la mirada hacia el horizonte: después de tanta oscuridad, aún queda un mundo por despertar."
+    },
+    "dellinger": {
+      "title": "EL DESHIELO",
+      "body": "El rugido de Cryodrax se extingue. Bajo el hielo, la fortaleza queda inmóvil. Daigo y Clint vuelven la mirada hacia el horizonte: después de tanta oscuridad, aún queda un mundo por despertar."
+    },
+    "garbin": {
+      "title": "EL DESHIELO",
+      "body": "El rugido de Cryodrax se extingue. Bajo el hielo, la fortaleza queda inmóvil. Daigo y Clint vuelven la mirada hacia el horizonte: después de tanta oscuridad, aún queda un mundo por despertar."
+    }
+  },
+  "epilogue": {
+    "title": "GORDIAN SIEMPRE ESTARÁ LISTO",
+    "body": "En Santore comienza un nuevo día. Saori reúne a los supervivientes y Clint acompaña a Daigo de regreso. Protesser, Dellinger y Garbin descansan, unidos por una misma promesa: proteger a la humanidad.",
+    "note": "Los enemigos nunca conceden un descanso definitivo. Pero mientras exista una amenaza, Gordian estará listo para volver a luchar."
+  },
+  "companion": {
+    "active": true,
+    "x": 165,
+    "feet": 680,
+    "time": 0,
+    "frame": 0,
+    "floors": [
+      {
+        "x": 0,
+        "y": 680,
+        "w": 1280,
+        "h": 30
+      },
+      {
+        "x": 0,
+        "y": 560,
+        "w": 430,
+        "h": 30
+      }
+    ],
+    "jumps": [
+      {
+        "start": 1210,
+        "end": 70,
+        "from": 680,
+        "to": 560,
+        "height": 125
+      }
+    ]
+  }
+}

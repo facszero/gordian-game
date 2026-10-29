@@ -1,16 +1,25 @@
 extends RefCounted
+const Advanced = preload("res://scripts/advanced_boss.gd")
 ## Centinela state machine ported from dist/src/boss.js; random is injectable.
 static func create(config: Dictionary, defeated = false) -> Dictionary:
 	if config.is_empty(): return {}
 	var b = config.duplicate(true)
-	b.merge({"homeX":b.x,"direction":-1,"moving":false,"walkDistance":0.0,"hp":0 if defeated else 180,"maxHp":180,"active":false,"dead":defeated,"state":"idle","timer":1.0,"cycle":0,"attack":"beam","targetX":0.0,"targetY":0.0,"hazards":[],"flash":0.0,"age":0.0,"bag":[],"rounds":0})
+	b.merge({"homeX":b.x,"direction":-1,"moving":false,"walkDistance":0.0,"maxHp":b.get("hp",180),"hidden":false,"face":-1,"drones":[],"active":false,"dead":defeated,"state":"idle","timer":1.0,"cycle":0,"attack":"beam","targetX":0.0,"targetY":0.0,"hazards":[],"flash":0.0,"age":0.0,"bag":[],"rounds":0})
+	b.hp = 0 if defeated else b.maxHp
 	return b
 
 static func bounds(b: Dictionary) -> Rect2:
+	match b.get("kind",""):
+		"dark": return Rect2(b.x+35,b.floor-480,b.w-70,480)
+		"dokuma": return Advanced.dokuma_bounds(b)
+		"nucleus": return Rect2(b.left+820,440,150,150)
+		"cryodrax":
+			var m = Advanced.ports(b).chest
+			return Rect2(m.x-70,m.y-60,140,160)
 	return Rect2(b.x+100,b.floor-175,b.w-150,175)
 
 static func hit(b: Dictionary, amount: float) -> bool:
-	if b.is_empty() or not b.active or b.dead: return false
+	if b.is_empty() or not b.active or b.dead or b.hidden: return false
 	b.hp = maxf(0,b.hp-amount)
 	b.flash = 0.12
 	if b.hp > 0: return false
@@ -19,6 +28,7 @@ static func hit(b: Dictionary, amount: float) -> bool:
 	b.moving = false
 	b.rounds = 0
 	b.hazards = []
+	b.drones = []
 	return true
 
 static func volley(b: Dictionary) -> Dictionary:
@@ -35,6 +45,10 @@ static func volley(b: Dictionary) -> Dictionary:
 
 static func update(b: Dictionary, dt: float, player: Dictionary, random: Callable = randf) -> Array:
 	if b.is_empty() or b.dead: return []
+	match b.get("kind",""):
+		"dark": return Advanced.dark(b,dt,player,random)
+		"dokuma": return Advanced.dokuma(b,dt,player,random)
+		"nucleus", "cryodrax": return Advanced.bonus(b,dt,player)
 	b.flash = maxf(0,b.flash-dt)
 	b.age += dt
 	if not b.active:

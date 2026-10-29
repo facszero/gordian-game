@@ -117,7 +117,7 @@ func run():
 	game.sim.mode = "transition"
 	game.sim.timer = 10.99
 	game._physics_process(0.02)
-	check(game.sim.mode=="complete" and game.panel.visible,"Level 4 ends at current campaign boundary")
+	check(game.sim.level.id==5 and game.sim.lives==4,"Level 4 restores lives and continues to foundry")
 	game.queue_free()
 	await process_frame
 	await create_timer(0.15).timeout

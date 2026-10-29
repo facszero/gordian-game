@@ -1,0 +1,1783 @@
+{
+  "id": 9,
+  "title": "Frontera del vacío",
+  "robot": "protesser",
+  "background": "eclipse",
+  "width": 13950,
+  "spawn": {
+    "x": 150,
+    "y": 470
+  },
+  "exit": 13810,
+  "platforms": [
+    {
+      "x": 0,
+      "y": 560,
+      "w": 850,
+      "h": 30
+    },
+    {
+      "x": 940,
+      "y": 510,
+      "w": 700,
+      "h": 30
+    },
+    {
+      "x": 1730,
+      "y": 550,
+      "w": 780,
+      "h": 30
+    },
+    {
+      "x": 2600,
+      "y": 490,
+      "w": 720,
+      "h": 30
+    },
+    {
+      "x": 3410,
+      "y": 540,
+      "w": 800,
+      "h": 30
+    },
+    {
+      "x": 4300,
+      "y": 500,
+      "w": 760,
+      "h": 30
+    },
+    {
+      "x": 5150,
+      "y": 550,
+      "w": 780,
+      "h": 30
+    },
+    {
+      "x": 6020,
+      "y": 510,
+      "w": 810,
+      "h": 30
+    },
+    {
+      "x": 260,
+      "y": 420,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 1200,
+      "y": 370,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 1990,
+      "y": 410,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 2860,
+      "y": 350,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 3670,
+      "y": 400,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 4560,
+      "y": 360,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 5410,
+      "y": 410,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 6280,
+      "y": 370,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 6830,
+      "y": 560,
+      "w": 850,
+      "h": 30
+    },
+    {
+      "x": 7770,
+      "y": 510,
+      "w": 700,
+      "h": 30
+    },
+    {
+      "x": 8560,
+      "y": 550,
+      "w": 780,
+      "h": 30
+    },
+    {
+      "x": 9430,
+      "y": 490,
+      "w": 720,
+      "h": 30
+    },
+    {
+      "x": 10240,
+      "y": 540,
+      "w": 800,
+      "h": 30
+    },
+    {
+      "x": 11130,
+      "y": 500,
+      "w": 760,
+      "h": 30
+    },
+    {
+      "x": 11980,
+      "y": 550,
+      "w": 780,
+      "h": 30
+    },
+    {
+      "x": 12850,
+      "y": 510,
+      "w": 1100,
+      "h": 30
+    },
+    {
+      "x": 7090,
+      "y": 420,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 8030,
+      "y": 370,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 8820,
+      "y": 410,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 9690,
+      "y": 350,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 10500,
+      "y": 400,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 11390,
+      "y": 360,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 12240,
+      "y": 410,
+      "w": 220,
+      "h": 30
+    },
+    {
+      "x": 13110,
+      "y": 370,
+      "w": 220,
+      "h": 30
+    }
+  ],
+  "enemies": [
+    {
+      "type": "turret",
+      "x": 310,
+      "y": 560,
+      "id": 0,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "A"
+    },
+    {
+      "type": "armor",
+      "x": 408,
+      "y": 560,
+      "id": 1,
+      "name": "Centinela blindado",
+      "w": 116,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.48,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 544,
+      "y": 330,
+      "id": 2,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "C"
+    },
+    {
+      "type": "turret",
+      "x": 715,
+      "y": 560,
+      "id": 3,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "D"
+    },
+    {
+      "type": "drone",
+      "x": 780,
+      "y": 260,
+      "id": 4,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "E"
+    },
+    {
+      "type": "turret",
+      "x": 1250,
+      "y": 510,
+      "id": 5,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "F"
+    },
+    {
+      "type": "armor",
+      "x": 1276,
+      "y": 510,
+      "id": 6,
+      "name": "Centinela blindado",
+      "w": 82,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.42,
+      "group": "A"
+    },
+    {
+      "type": "drone",
+      "x": 1388,
+      "y": 280,
+      "id": 7,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "B"
+    },
+    {
+      "type": "turret",
+      "x": 1505,
+      "y": 510,
+      "id": 8,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "C"
+    },
+    {
+      "type": "drone",
+      "x": 1570,
+      "y": 210,
+      "id": 9,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "D"
+    },
+    {
+      "type": "drone",
+      "x": 1160,
+      "y": 320,
+      "id": 10,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "E"
+    },
+    {
+      "type": "turret",
+      "x": 2040,
+      "y": 550,
+      "id": 11,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "F"
+    },
+    {
+      "type": "armor",
+      "x": 2104.4,
+      "y": 550,
+      "id": 12,
+      "name": "Centinela blindado",
+      "w": 82,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.42,
+      "group": "A"
+    },
+    {
+      "type": "drone",
+      "x": 2229.2,
+      "y": 320,
+      "id": 13,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "B"
+    },
+    {
+      "type": "turret",
+      "x": 2375,
+      "y": 550,
+      "id": 14,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "C"
+    },
+    {
+      "type": "drone",
+      "x": 2440,
+      "y": 250,
+      "id": 15,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "D"
+    },
+    {
+      "type": "turret",
+      "x": 2910,
+      "y": 490,
+      "id": 16,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "E"
+    },
+    {
+      "type": "armor",
+      "x": 2945.6,
+      "y": 490,
+      "id": 17,
+      "name": "Centinela blindado",
+      "w": 82,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.42,
+      "group": "F"
+    },
+    {
+      "type": "drone",
+      "x": 3060.8,
+      "y": 260,
+      "id": 18,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "A"
+    },
+    {
+      "type": "turret",
+      "x": 3185,
+      "y": 490,
+      "id": 19,
+      "name": "Centinela ligero",
+      "w": 92,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.5,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 3250,
+      "y": 190,
+      "id": 20,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "C"
+    },
+    {
+      "type": "drone",
+      "x": 2820,
+      "y": 300,
+      "id": 21,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "D"
+    },
+    {
+      "type": "turret",
+      "x": 3720,
+      "y": 540,
+      "id": 22,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "E"
+    },
+    {
+      "type": "armor",
+      "x": 3794,
+      "y": 540,
+      "id": 23,
+      "name": "Centinela blindado",
+      "w": 82,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.42,
+      "group": "F"
+    },
+    {
+      "type": "drone",
+      "x": 3922,
+      "y": 310,
+      "id": 24,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "A"
+    },
+    {
+      "type": "turret",
+      "x": 4075,
+      "y": 540,
+      "id": 25,
+      "name": "Centinela ligero",
+      "w": 92,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.5,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 4140,
+      "y": 240,
+      "id": 26,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "C"
+    },
+    {
+      "type": "turret",
+      "x": 4610,
+      "y": 500,
+      "id": 27,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "D"
+    },
+    {
+      "type": "armor",
+      "x": 4664.8,
+      "y": 500,
+      "id": 28,
+      "name": "Centinela blindado",
+      "w": 82,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.42,
+      "group": "E"
+    },
+    {
+      "type": "drone",
+      "x": 4786.4,
+      "y": 270,
+      "id": 29,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "F"
+    },
+    {
+      "type": "turret",
+      "x": 4925,
+      "y": 500,
+      "id": 30,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "A"
+    },
+    {
+      "type": "drone",
+      "x": 4990,
+      "y": 200,
+      "id": 31,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 4520,
+      "y": 310,
+      "id": 32,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "C"
+    },
+    {
+      "type": "turret",
+      "x": 5460,
+      "y": 550,
+      "id": 33,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "D"
+    },
+    {
+      "type": "armor",
+      "x": 5524.4,
+      "y": 550,
+      "id": 34,
+      "name": "Centinela blindado",
+      "w": 82,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.42,
+      "group": "E"
+    },
+    {
+      "type": "drone",
+      "x": 5649.2,
+      "y": 320,
+      "id": 35,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "F"
+    },
+    {
+      "type": "turret",
+      "x": 5795,
+      "y": 550,
+      "id": 36,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "A"
+    },
+    {
+      "type": "drone",
+      "x": 5860,
+      "y": 250,
+      "id": 37,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "B"
+    },
+    {
+      "type": "turret",
+      "x": 6330,
+      "y": 510,
+      "id": 38,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "C"
+    },
+    {
+      "type": "armor",
+      "x": 6470,
+      "y": 510,
+      "id": 39,
+      "name": "Centinela blindado",
+      "w": 82,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.42,
+      "group": "D"
+    },
+    {
+      "type": "drone",
+      "x": 6610,
+      "y": 280,
+      "id": 40,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "E"
+    },
+    {
+      "type": "turret",
+      "x": 6985,
+      "y": 510,
+      "id": 41,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "F"
+    },
+    {
+      "type": "drone",
+      "x": 7050,
+      "y": 210,
+      "id": 42,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "A"
+    },
+    {
+      "type": "drone",
+      "x": 6240,
+      "y": 320,
+      "id": 43,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "B"
+    },
+    {
+      "type": "turret",
+      "x": 7140,
+      "y": 560,
+      "id": 44,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "C"
+    },
+    {
+      "type": "armor",
+      "x": 7238,
+      "y": 560,
+      "id": 45,
+      "name": "Centinela blindado",
+      "w": 82,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.42,
+      "group": "D"
+    },
+    {
+      "type": "drone",
+      "x": 7374,
+      "y": 330,
+      "id": 46,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "E"
+    },
+    {
+      "type": "turret",
+      "x": 7545,
+      "y": 560,
+      "id": 47,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "F"
+    },
+    {
+      "type": "drone",
+      "x": 7610,
+      "y": 260,
+      "id": 48,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "A"
+    },
+    {
+      "type": "turret",
+      "x": 8080,
+      "y": 510,
+      "id": 49,
+      "name": "Centinela ligero",
+      "w": 92,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.5,
+      "group": "B"
+    },
+    {
+      "type": "armor",
+      "x": 8106,
+      "y": 510,
+      "id": 50,
+      "name": "Centinela blindado",
+      "w": 94,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.43,
+      "group": "C"
+    },
+    {
+      "type": "drone",
+      "x": 8218,
+      "y": 280,
+      "id": 51,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "D"
+    },
+    {
+      "type": "turret",
+      "x": 8335,
+      "y": 510,
+      "id": 52,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "E"
+    },
+    {
+      "type": "drone",
+      "x": 8400,
+      "y": 210,
+      "id": 53,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "F"
+    },
+    {
+      "type": "drone",
+      "x": 7990,
+      "y": 320,
+      "id": 54,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "A"
+    },
+    {
+      "type": "turret",
+      "x": 8870,
+      "y": 550,
+      "id": 55,
+      "name": "Centinela ligero",
+      "w": 92,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.5,
+      "group": "B"
+    },
+    {
+      "type": "armor",
+      "x": 8934.4,
+      "y": 550,
+      "id": 56,
+      "name": "Centinela blindado",
+      "w": 94,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.43,
+      "group": "C"
+    },
+    {
+      "type": "drone",
+      "x": 9059.2,
+      "y": 320,
+      "id": 57,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "D"
+    },
+    {
+      "type": "turret",
+      "x": 9205,
+      "y": 550,
+      "id": 58,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "E"
+    },
+    {
+      "type": "drone",
+      "x": 9270,
+      "y": 250,
+      "id": 59,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "F"
+    },
+    {
+      "type": "turret",
+      "x": 9740,
+      "y": 490,
+      "id": 60,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "A"
+    },
+    {
+      "type": "armor",
+      "x": 9775.6,
+      "y": 490,
+      "id": 61,
+      "name": "Centinela blindado",
+      "w": 116,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.48,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 9890.8,
+      "y": 260,
+      "id": 62,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "C"
+    },
+    {
+      "type": "turret",
+      "x": 10015,
+      "y": 490,
+      "id": 63,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "D"
+    },
+    {
+      "type": "drone",
+      "x": 10080,
+      "y": 190,
+      "id": 64,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "E"
+    },
+    {
+      "type": "drone",
+      "x": 9650,
+      "y": 300,
+      "id": 65,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "F"
+    },
+    {
+      "type": "turret",
+      "x": 10550,
+      "y": 540,
+      "id": 66,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "A"
+    },
+    {
+      "type": "armor",
+      "x": 10624,
+      "y": 540,
+      "id": 67,
+      "name": "Centinela blindado",
+      "w": 116,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.48,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 10752,
+      "y": 310,
+      "id": 68,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "C"
+    },
+    {
+      "type": "turret",
+      "x": 10905,
+      "y": 540,
+      "id": 69,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "D"
+    },
+    {
+      "type": "drone",
+      "x": 10970,
+      "y": 240,
+      "id": 70,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "E"
+    },
+    {
+      "type": "turret",
+      "x": 11440,
+      "y": 500,
+      "id": 71,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "F"
+    },
+    {
+      "type": "armor",
+      "x": 11494.8,
+      "y": 500,
+      "id": 72,
+      "name": "Centinela blindado",
+      "w": 82,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.42,
+      "group": "A"
+    },
+    {
+      "type": "drone",
+      "x": 11616.4,
+      "y": 270,
+      "id": 73,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "B"
+    },
+    {
+      "type": "turret",
+      "x": 11755,
+      "y": 500,
+      "id": 74,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "C"
+    },
+    {
+      "type": "drone",
+      "x": 11820,
+      "y": 200,
+      "id": 75,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "D"
+    },
+    {
+      "type": "drone",
+      "x": 11350,
+      "y": 310,
+      "id": 76,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "E"
+    },
+    {
+      "type": "turret",
+      "x": 12290,
+      "y": 550,
+      "id": 77,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "F"
+    },
+    {
+      "type": "armor",
+      "x": 12354.4,
+      "y": 550,
+      "id": 78,
+      "name": "Centinela blindado",
+      "w": 82,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.42,
+      "group": "A"
+    },
+    {
+      "type": "drone",
+      "x": 12479.2,
+      "y": 320,
+      "id": 79,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "B"
+    },
+    {
+      "type": "turret",
+      "x": 12625,
+      "y": 550,
+      "id": 80,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "C"
+    },
+    {
+      "type": "drone",
+      "x": 12690,
+      "y": 250,
+      "id": 81,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "D"
+    },
+    {
+      "type": "turret",
+      "x": 13160,
+      "y": 510,
+      "id": 82,
+      "name": "Centinela ligero",
+      "w": 88,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "E"
+    },
+    {
+      "type": "armor",
+      "x": 13300,
+      "y": 510,
+      "id": 83,
+      "name": "Centinela blindado",
+      "w": 82,
+      "h": 112,
+      "hp": 10,
+      "frame": 4,
+      "muzzleY": 0.42,
+      "group": "F"
+    },
+    {
+      "type": "drone",
+      "x": 13440,
+      "y": 280,
+      "id": 84,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "A"
+    },
+    {
+      "type": "turret",
+      "x": 13815,
+      "y": 510,
+      "id": 85,
+      "name": "Centinela ligero",
+      "w": 92,
+      "h": 68,
+      "hp": 4,
+      "frame": 0,
+      "muzzleY": 0.5,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 13880,
+      "y": 210,
+      "id": 86,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "C"
+    },
+    {
+      "type": "drone",
+      "x": 13070,
+      "y": 320,
+      "id": 87,
+      "name": "Explorador",
+      "w": 64,
+      "h": 40,
+      "hp": 2,
+      "frame": 2,
+      "muzzleY": 0.76,
+      "group": "D"
+    }
+  ],
+  "checkpoints": [
+    {
+      "x": 1770,
+      "y": 460
+    },
+    {
+      "x": 3450,
+      "y": 450
+    },
+    {
+      "x": 5190,
+      "y": 460
+    },
+    {
+      "x": 6990,
+      "y": 470
+    },
+    {
+      "x": 8600,
+      "y": 460
+    },
+    {
+      "x": 10280,
+      "y": 450
+    },
+    {
+      "x": 12020,
+      "y": 460
+    }
+  ],
+  "pickups": [
+    {
+      "x": 300,
+      "y": 380
+    },
+    {
+      "x": 770,
+      "y": 510
+    },
+    {
+      "x": 1240,
+      "y": 330
+    },
+    {
+      "x": 1560,
+      "y": 460
+    },
+    {
+      "x": 2030,
+      "y": 370
+    },
+    {
+      "x": 2430,
+      "y": 500
+    },
+    {
+      "x": 2900,
+      "y": 310
+    },
+    {
+      "x": 3240,
+      "y": 440
+    },
+    {
+      "x": 3710,
+      "y": 360
+    },
+    {
+      "x": 4130,
+      "y": 490
+    },
+    {
+      "x": 4600,
+      "y": 320
+    },
+    {
+      "x": 4980,
+      "y": 450
+    },
+    {
+      "x": 5450,
+      "y": 370
+    },
+    {
+      "x": 5850,
+      "y": 500
+    },
+    {
+      "x": 6320,
+      "y": 330
+    },
+    {
+      "x": 7040,
+      "y": 460
+    },
+    {
+      "x": 7130,
+      "y": 380
+    },
+    {
+      "x": 7600,
+      "y": 510
+    },
+    {
+      "x": 8070,
+      "y": 330
+    },
+    {
+      "x": 8390,
+      "y": 460
+    },
+    {
+      "x": 8860,
+      "y": 370
+    },
+    {
+      "x": 9260,
+      "y": 500
+    },
+    {
+      "x": 9730,
+      "y": 310
+    },
+    {
+      "x": 10070,
+      "y": 440
+    },
+    {
+      "x": 10540,
+      "y": 360
+    },
+    {
+      "x": 10960,
+      "y": 490
+    },
+    {
+      "x": 11430,
+      "y": 320
+    },
+    {
+      "x": 11810,
+      "y": 450
+    },
+    {
+      "x": 12280,
+      "y": 370
+    },
+    {
+      "x": 12680,
+      "y": 500
+    },
+    {
+      "x": 13150,
+      "y": 330
+    },
+    {
+      "x": 13870,
+      "y": 460
+    }
+  ],
+  "barriers": [],
+  "elites": [],
+  "sourceCommit": "11439a2ef93966d3e5c8e7df9147a979d7e61f80",
+  "gravity": 1800,
+  "robots": {
+    "protesser": {
+      "speed": 310,
+      "jump": 740,
+      "width": 38,
+      "height": 90,
+      "maxHealth": 100
+    },
+    "dellinger": {
+      "speed": 240,
+      "jump": 854.478398400646,
+      "width": 55,
+      "height": 120,
+      "maxHealth": 150
+    },
+    "garbin": {
+      "speed": 190,
+      "jump": 986.6666666666666,
+      "width": 80,
+      "height": 160,
+      "maxHealth": 220
+    }
+  },
+  "robotSpec": {
+    "speed": 310,
+    "jump": 740,
+    "width": 38,
+    "height": 90,
+    "maxHealth": 100
+  },
+  "story": [
+    "LA ÚLTIMA LEGIÓN",
+    "La frontera no está vacía. Entre las ruinas se reagrupan las máquinas supervivientes. Daigo y Clint siguen adelante: detrás de esa legión se encuentra el camino al mando enemigo."
+  ],
+  "nextTitle": "Legión de acero",
+  "nextRobot": "dellinger",
+  "victories": {
+    "protesser": {
+      "title": "UN MAÑANA POSIBLE",
+      "body": "Grandmaster Dokuma ha caído. Su dominio se quiebra y Victor Town vuelve a mirar al futuro. El legado del padre de Daigo ha protegido aquello para lo que fue creado: la vida. Una señal rompe el silencio desde el hielo: Cryodrax Prime ha despertado. La última defensa de Dokuma todavía amenaza a la humanidad."
+    },
+    "dellinger": {
+      "title": "UN MAÑANA POSIBLE",
+      "body": "Grandmaster Dokuma ha caído. Su dominio se quiebra y Victor Town vuelve a mirar al futuro. El legado del padre de Daigo ha protegido aquello para lo que fue creado: la vida. Sin embargo, bajo la fortaleza aún late el Núcleo Madokter. Gordian debe silenciarlo antes de regresar."
+    },
+    "garbin": {
+      "title": "UN MAÑANA POSIBLE",
+      "body": "Grandmaster Dokuma ha caído. Su dominio se quiebra y Victor Town vuelve a mirar al futuro. El legado del padre de Daigo ha protegido aquello para lo que fue creado: la vida. Por primera vez, las comunicaciones de Santore hablan de reconstrucción. Daigo sabe que esta victoria pertenece también a quienes resistieron."
+    }
+  },
+  "epilogue": {
+    "title": "GORDIAN SIEMPRE ESTARÁ LISTO",
+    "body": "En Santore comienza un nuevo día. Saori reúne a los supervivientes y Clint acompaña a Daigo de regreso. Protesser, Dellinger y Garbin descansan, unidos por una misma promesa: proteger a la humanidad.",
+    "note": "El futuro sigue abierto. Mientras haya personas que proteger, el legado de Gordian seguirá vivo."
+  },
+  "companion": {
+    "active": true,
+    "x": 205,
+    "feet": 560,
+    "time": 0,
+    "frame": 0,
+    "floors": [
+      {
+        "x": 0,
+        "y": 560,
+        "w": 850,
+        "h": 30
+      },
+      {
+        "x": 940,
+        "y": 510,
+        "w": 700,
+        "h": 30
+      },
+      {
+        "x": 1730,
+        "y": 550,
+        "w": 780,
+        "h": 30
+      },
+      {
+        "x": 2600,
+        "y": 490,
+        "w": 720,
+        "h": 30
+      },
+      {
+        "x": 3410,
+        "y": 540,
+        "w": 800,
+        "h": 30
+      },
+      {
+        "x": 4300,
+        "y": 500,
+        "w": 760,
+        "h": 30
+      },
+      {
+        "x": 5150,
+        "y": 550,
+        "w": 780,
+        "h": 30
+      },
+      {
+        "x": 6020,
+        "y": 510,
+        "w": 810,
+        "h": 30
+      },
+      {
+        "x": 6830,
+        "y": 560,
+        "w": 850,
+        "h": 30
+      },
+      {
+        "x": 7770,
+        "y": 510,
+        "w": 700,
+        "h": 30
+      },
+      {
+        "x": 8560,
+        "y": 550,
+        "w": 780,
+        "h": 30
+      },
+      {
+        "x": 9430,
+        "y": 490,
+        "w": 720,
+        "h": 30
+      },
+      {
+        "x": 10240,
+        "y": 540,
+        "w": 800,
+        "h": 30
+      },
+      {
+        "x": 11130,
+        "y": 500,
+        "w": 760,
+        "h": 30
+      },
+      {
+        "x": 11980,
+        "y": 550,
+        "w": 780,
+        "h": 30
+      },
+      {
+        "x": 12850,
+        "y": 510,
+        "w": 1100,
+        "h": 30
+      }
+    ],
+    "jumps": [
+      {
+        "start": 780,
+        "end": 1010,
+        "from": 560,
+        "to": 510,
+        "height": 125
+      },
+      {
+        "start": 1570,
+        "end": 1800,
+        "from": 510,
+        "to": 550,
+        "height": 125
+      },
+      {
+        "start": 2440,
+        "end": 2670,
+        "from": 550,
+        "to": 490,
+        "height": 125
+      },
+      {
+        "start": 3250,
+        "end": 3480,
+        "from": 490,
+        "to": 540,
+        "height": 125
+      },
+      {
+        "start": 4140,
+        "end": 4370,
+        "from": 540,
+        "to": 500,
+        "height": 125
+      },
+      {
+        "start": 4990,
+        "end": 5220,
+        "from": 500,
+        "to": 550,
+        "height": 125
+      },
+      {
+        "start": 5860,
+        "end": 6090,
+        "from": 550,
+        "to": 510,
+        "height": 125
+      },
+      {
+        "start": 6760,
+        "end": 6900,
+        "from": 510,
+        "to": 560,
+        "height": 125
+      },
+      {
+        "start": 7610,
+        "end": 7840,
+        "from": 560,
+        "to": 510,
+        "height": 125
+      },
+      {
+        "start": 8400,
+        "end": 8630,
+        "from": 510,
+        "to": 550,
+        "height": 125
+      },
+      {
+        "start": 9270,
+        "end": 9500,
+        "from": 550,
+        "to": 490,
+        "height": 125
+      },
+      {
+        "start": 10080,
+        "end": 10310,
+        "from": 490,
+        "to": 540,
+        "height": 125
+      },
+      {
+        "start": 10970,
+        "end": 11200,
+        "from": 540,
+        "to": 500,
+        "height": 125
+      },
+      {
+        "start": 11820,
+        "end": 12050,
+        "from": 500,
+        "to": 550,
+        "height": 125
+      },
+      {
+        "start": 12690,
+        "end": 12920,
+        "from": 550,
+        "to": 510,
+        "height": 125
+      }
+    ]
+  }
+}

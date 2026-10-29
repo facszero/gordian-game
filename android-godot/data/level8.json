@@ -1,0 +1,458 @@
+{
+  "id": 8,
+  "title": "Ciudadela del eclipse",
+  "robot": "garbin",
+  "background": "eclipse",
+  "width": 7800,
+  "spawn": {
+    "x": 150,
+    "y": 400
+  },
+  "exit": 7650,
+  "platforms": [
+    {
+      "x": 0,
+      "y": 560,
+      "w": 920,
+      "h": 30
+    },
+    {
+      "x": 990,
+      "y": 540,
+      "w": 800,
+      "h": 30
+    },
+    {
+      "x": 1860,
+      "y": 570,
+      "w": 820,
+      "h": 30
+    },
+    {
+      "x": 2750,
+      "y": 540,
+      "w": 800,
+      "h": 30
+    },
+    {
+      "x": 3620,
+      "y": 565,
+      "w": 840,
+      "h": 30
+    },
+    {
+      "x": 4530,
+      "y": 540,
+      "w": 820,
+      "h": 30
+    },
+    {
+      "x": 5420,
+      "y": 580,
+      "w": 650,
+      "h": 30
+    },
+    {
+      "x": 6140,
+      "y": 620,
+      "w": 1660,
+      "h": 30
+    },
+    {
+      "x": 570,
+      "y": 470,
+      "w": 240,
+      "h": 30
+    },
+    {
+      "x": 1260,
+      "y": 450,
+      "w": 240,
+      "h": 30
+    },
+    {
+      "x": 2140,
+      "y": 480,
+      "w": 240,
+      "h": 30
+    },
+    {
+      "x": 3010,
+      "y": 450,
+      "w": 240,
+      "h": 30
+    },
+    {
+      "x": 3910,
+      "y": 475,
+      "w": 240,
+      "h": 30
+    },
+    {
+      "x": 4810,
+      "y": 450,
+      "w": 240,
+      "h": 30
+    },
+    {
+      "x": 5610,
+      "y": 490,
+      "w": 240,
+      "h": 30
+    }
+  ],
+  "enemies": [
+    {
+      "type": "armor",
+      "x": 730,
+      "y": 560,
+      "id": 0,
+      "name": "Centinela blindado",
+      "w": 151,
+      "h": 146,
+      "hp": 20,
+      "frame": 4,
+      "muzzleY": 0.48,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 1100,
+      "y": 320,
+      "id": 1,
+      "name": "Dron blindado",
+      "w": 114,
+      "h": 73,
+      "hp": 4,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "D"
+    },
+    {
+      "type": "turret",
+      "x": 1550,
+      "y": 540,
+      "id": 2,
+      "name": "Centinela ligero",
+      "w": 114,
+      "h": 130,
+      "hp": 8,
+      "frame": 0,
+      "muzzleY": 0.34,
+      "group": "F"
+    },
+    {
+      "type": "armor",
+      "x": 2400,
+      "y": 570,
+      "id": 3,
+      "name": "Centinela blindado",
+      "w": 151,
+      "h": 146,
+      "hp": 20,
+      "frame": 4,
+      "muzzleY": 0.48,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 2850,
+      "y": 320,
+      "id": 4,
+      "name": "Dron blindado",
+      "w": 114,
+      "h": 73,
+      "hp": 4,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "D"
+    },
+    {
+      "type": "armor",
+      "x": 3300,
+      "y": 540,
+      "id": 5,
+      "name": "Centinela blindado",
+      "w": 107,
+      "h": 146,
+      "hp": 20,
+      "frame": 4,
+      "muzzleY": 0.42,
+      "group": "F"
+    },
+    {
+      "type": "turret",
+      "x": 4140,
+      "y": 565,
+      "id": 6,
+      "name": "Centinela ligero",
+      "w": 120,
+      "h": 130,
+      "hp": 8,
+      "frame": 0,
+      "muzzleY": 0.5,
+      "group": "B"
+    },
+    {
+      "type": "drone",
+      "x": 4630,
+      "y": 325,
+      "id": 7,
+      "name": "Dron blindado",
+      "w": 114,
+      "h": 73,
+      "hp": 4,
+      "frame": 6,
+      "muzzleY": 0.8,
+      "group": "D"
+    },
+    {
+      "type": "armor",
+      "x": 5020,
+      "y": 540,
+      "id": 8,
+      "name": "Centinela blindado",
+      "w": 107,
+      "h": 146,
+      "hp": 20,
+      "frame": 4,
+      "muzzleY": 0.42,
+      "group": "F"
+    },
+    {
+      "type": "armor",
+      "x": 5800,
+      "y": 580,
+      "id": 9,
+      "name": "Centinela blindado",
+      "w": 151,
+      "h": 146,
+      "hp": 20,
+      "frame": 4,
+      "muzzleY": 0.48,
+      "group": "B"
+    }
+  ],
+  "checkpoints": [
+    {
+      "x": 3670,
+      "y": 405
+    },
+    {
+      "x": 6170,
+      "y": 460
+    }
+  ],
+  "pickups": [
+    {
+      "x": 640,
+      "y": 430
+    },
+    {
+      "x": 1330,
+      "y": 410
+    },
+    {
+      "x": 2210,
+      "y": 440
+    },
+    {
+      "x": 3080,
+      "y": 410
+    },
+    {
+      "x": 3980,
+      "y": 435
+    },
+    {
+      "x": 4880,
+      "y": 410
+    },
+    {
+      "x": 5680,
+      "y": 450
+    },
+    {
+      "x": 6230,
+      "y": 540
+    }
+  ],
+  "boss": {
+    "kind": "dark",
+    "name": "DELLINGER OSCURO",
+    "number": 2,
+    "hp": 330,
+    "x": 7100,
+    "floor": 620,
+    "w": 260,
+    "h": 550,
+    "left": 6300,
+    "right": 7580,
+    "trigger": 6340
+  },
+  "sourceCommit": "11439a2ef93966d3e5c8e7df9147a979d7e61f80",
+  "gravity": 1800,
+  "robots": {
+    "protesser": {
+      "speed": 310,
+      "jump": 740,
+      "width": 38,
+      "height": 90,
+      "maxHealth": 100
+    },
+    "dellinger": {
+      "speed": 240,
+      "jump": 854.478398400646,
+      "width": 55,
+      "height": 120,
+      "maxHealth": 150
+    },
+    "garbin": {
+      "speed": 190,
+      "jump": 986.6666666666666,
+      "width": 80,
+      "height": 160,
+      "maxHealth": 220
+    }
+  },
+  "robotSpec": {
+    "speed": 190,
+    "jump": 986.6666666666666,
+    "width": 80,
+    "height": 160,
+    "maxHealth": 220
+  },
+  "story": [
+    "UNA NUEVA OPORTUNIDAD",
+    "El guardián oscuro se derrumba. Desde Santore llegan reparaciones y cuatro vidas renovadas. Daigo vuelve a Protesser: más allá de la frontera comienza el último avance hacia Dokuma."
+  ],
+  "nextTitle": "Frontera del vacío",
+  "nextRobot": "protesser",
+  "victories": {
+    "protesser": {
+      "title": "UN MAÑANA POSIBLE",
+      "body": "Grandmaster Dokuma ha caído. Su dominio se quiebra y Victor Town vuelve a mirar al futuro. El legado del padre de Daigo ha protegido aquello para lo que fue creado: la vida. Una señal rompe el silencio desde el hielo: Cryodrax Prime ha despertado. La última defensa de Dokuma todavía amenaza a la humanidad."
+    },
+    "dellinger": {
+      "title": "UN MAÑANA POSIBLE",
+      "body": "Grandmaster Dokuma ha caído. Su dominio se quiebra y Victor Town vuelve a mirar al futuro. El legado del padre de Daigo ha protegido aquello para lo que fue creado: la vida. Sin embargo, bajo la fortaleza aún late el Núcleo Madokter. Gordian debe silenciarlo antes de regresar."
+    },
+    "garbin": {
+      "title": "UN MAÑANA POSIBLE",
+      "body": "Grandmaster Dokuma ha caído. Su dominio se quiebra y Victor Town vuelve a mirar al futuro. El legado del padre de Daigo ha protegido aquello para lo que fue creado: la vida. Por primera vez, las comunicaciones de Santore hablan de reconstrucción. Daigo sabe que esta victoria pertenece también a quienes resistieron."
+    }
+  },
+  "epilogue": {
+    "title": "GORDIAN SIEMPRE ESTARÁ LISTO",
+    "body": "En Santore comienza un nuevo día. Saori reúne a los supervivientes y Clint acompaña a Daigo de regreso. Protesser, Dellinger y Garbin descansan, unidos por una misma promesa: proteger a la humanidad.",
+    "note": "El futuro sigue abierto. Mientras haya personas que proteger, el legado de Gordian seguirá vivo."
+  },
+  "companion": {
+    "active": true,
+    "x": 205,
+    "feet": 560,
+    "time": 0,
+    "frame": 0,
+    "floors": [
+      {
+        "x": 0,
+        "y": 560,
+        "w": 920,
+        "h": 30
+      },
+      {
+        "x": 990,
+        "y": 540,
+        "w": 800,
+        "h": 30
+      },
+      {
+        "x": 1860,
+        "y": 570,
+        "w": 820,
+        "h": 30
+      },
+      {
+        "x": 2750,
+        "y": 540,
+        "w": 800,
+        "h": 30
+      },
+      {
+        "x": 3620,
+        "y": 565,
+        "w": 840,
+        "h": 30
+      },
+      {
+        "x": 4530,
+        "y": 540,
+        "w": 820,
+        "h": 30
+      },
+      {
+        "x": 5420,
+        "y": 580,
+        "w": 650,
+        "h": 30
+      },
+      {
+        "x": 6140,
+        "y": 620,
+        "w": 1660,
+        "h": 30
+      }
+    ],
+    "jumps": [
+      {
+        "start": 850,
+        "end": 1060,
+        "from": 560,
+        "to": 540,
+        "height": 125
+      },
+      {
+        "start": 1720,
+        "end": 1930,
+        "from": 540,
+        "to": 570,
+        "height": 125
+      },
+      {
+        "start": 2610,
+        "end": 2820,
+        "from": 570,
+        "to": 540,
+        "height": 125
+      },
+      {
+        "start": 3480,
+        "end": 3690,
+        "from": 540,
+        "to": 565,
+        "height": 125
+      },
+      {
+        "start": 4390,
+        "end": 4600,
+        "from": 565,
+        "to": 540,
+        "height": 125
+      },
+      {
+        "start": 5280,
+        "end": 5490,
+        "from": 540,
+        "to": 580,
+        "height": 125
+      },
+      {
+        "start": 6000,
+        "end": 6210,
+        "from": 580,
+        "to": 620,
+        "height": 125
+      }
+    ]
+  }
+}

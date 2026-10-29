@@ -684,6 +684,29 @@
   "elites": [],
   "sourceCommit": "11439a2ef93966d3e5c8e7df9147a979d7e61f80",
   "gravity": 1800,
+  "robots": {
+    "protesser": {
+      "speed": 310,
+      "jump": 740,
+      "width": 38,
+      "height": 90,
+      "maxHealth": 100
+    },
+    "dellinger": {
+      "speed": 240,
+      "jump": 854.478398400646,
+      "width": 55,
+      "height": 120,
+      "maxHealth": 150
+    },
+    "garbin": {
+      "speed": 190,
+      "jump": 986.6666666666666,
+      "width": 80,
+      "height": 160,
+      "maxHealth": 220
+    }
+  },
   "robotSpec": {
     "speed": 240,
     "jump": 854.478398400646,
@@ -696,6 +719,26 @@
     "Las máquinas de la cantera ocultan un paso hacia las defensas Madokter. Daigo libera a Protesser: allí donde la fuerza no alcanza, la agilidad puede abrir una brecha."
   ],
   "nextTitle": "Túneles de infiltración",
+  "nextRobot": "protesser",
+  "victories": {
+    "protesser": {
+      "title": "UN MAÑANA POSIBLE",
+      "body": "Grandmaster Dokuma ha caído. Su dominio se quiebra y Victor Town vuelve a mirar al futuro. El legado del padre de Daigo ha protegido aquello para lo que fue creado: la vida. Una señal rompe el silencio desde el hielo: Cryodrax Prime ha despertado. La última defensa de Dokuma todavía amenaza a la humanidad."
+    },
+    "dellinger": {
+      "title": "UN MAÑANA POSIBLE",
+      "body": "Grandmaster Dokuma ha caído. Su dominio se quiebra y Victor Town vuelve a mirar al futuro. El legado del padre de Daigo ha protegido aquello para lo que fue creado: la vida. Sin embargo, bajo la fortaleza aún late el Núcleo Madokter. Gordian debe silenciarlo antes de regresar."
+    },
+    "garbin": {
+      "title": "UN MAÑANA POSIBLE",
+      "body": "Grandmaster Dokuma ha caído. Su dominio se quiebra y Victor Town vuelve a mirar al futuro. El legado del padre de Daigo ha protegido aquello para lo que fue creado: la vida. Por primera vez, las comunicaciones de Santore hablan de reconstrucción. Daigo sabe que esta victoria pertenece también a quienes resistieron."
+    }
+  },
+  "epilogue": {
+    "title": "GORDIAN SIEMPRE ESTARÁ LISTO",
+    "body": "En Santore comienza un nuevo día. Saori reúne a los supervivientes y Clint acompaña a Daigo de regreso. Protesser, Dellinger y Garbin descansan, unidos por una misma promesa: proteger a la humanidad.",
+    "note": "El futuro sigue abierto. Mientras haya personas que proteger, el legado de Gordian seguirá vivo."
+  },
   "companion": {
     "active": true,
     "x": 195,

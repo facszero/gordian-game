@@ -1,6 +1,6 @@
 extends Node
 ## Enemy recordings and cue parameters from dist/src/weapon-audio.js.
-const SPECS = {"light":["LivianaSimple1",0.05,0.16,1.05,2300,0.11],"heavy":["LivianaSimple2",0.03,0.24,0.85,1700,0.14],"bossShot":["PesadaSimple1",0,0.32,0.85,2100,0.23],"beam":["Jefes1",0,1,0.95,2300,0.34],"impact":["PesadaSimple1",0,0.55,0.7,1600,0.3]}
+const SPECS = {"light":["LivianaSimple1",0.05,0.16,1.05,2300,0.11],"heavy":["LivianaSimple2",0.03,0.24,0.85,1700,0.14],"bossShot":["PesadaSimple1",0,0.32,0.85,2100,0.23],"beam":["Jefes1",0,1,0.95,2300,0.34],"impact":["PesadaSimple1",0,0.55,0.7,1600,0.3],"darkShot":["Jefes2",0.05,0.32,1.1,2800,0.22],"bossPulse":["Jefes3",0.05,0.35,1.15,3000,0.24],"iceShard":["Jefes4",0,0.3,1.4,4200,0.21],"dokumaBeam":["Jefes2",0.05,1.15,0.8,2100,0.36],"iceBeam":["Jefes4",0,1.5,1.15,3800,0.36],"sword":["Jefes4",0.1,0.42,1.35,3500,0.25],"teleport":["Jefes3",0.05,0.4,1.5,3000,0.18],"summon":["Jefes1",0,0.7,0.7,2100,0.25],"reactorBurst":["Jefes3",0.05,1.6,0.85,2600,0.42]}
 var voices: Array = []
 var samples = {}
 var cooldown = 0.0

@@ -1,22 +1,20 @@
-# Gordian Android — campaña 0.4.0
+# Gordian Android — campaña 0.5.0
 
-Port nativo Godot 4.7.2 / GDScript / Compatibility. Incluye los niveles 1 a 4 completos, sin WebView y sin conexión. El juego web permanece intacto en dist/.
+Port nativo Godot 4.7.2 / GDScript / Compatibility. Campaña de doce niveles, dos rutas secretas, menú principal y tema musical. Funciona sin WebView y sin conexión. La versión web en dist/ permanece intacta.
 
-## Referencias y alcance
+## Alcance
 
-- Base web: commit 11439a2ef93966d3e5c8e7df9147a979d7e61f80.
-- Referencia estable Android 0.2.0, validada por el usuario en teléfono: commit fd77de3b16c36573c0c246d6141c96d17561229f. Su APK se conserva separado de las entregas nuevas.
-- Nivel 1, Victor Town: Protesser, 40 plataformas, 26 enemigos, 18 células y 5 checkpoints.
-- Nivel 2, Cantera de Santore: Dellinger, 32 plataformas, 26 enemigos grupo B, 16 células, 5 checkpoints y 8 barreras destructibles.
-- Dellinger: salud 150, ancho 55, alto 120, velocidad 240, salto proporcional a su altura, disparos de daño 2/8 y cadencia 0,24 s. Armamento rojo, poses y audio propios.
-- Acoplamiento 01 → 02: 11 segundos, entrada de Protesser, poses y mezclas, luces mecánicas, sombra, oscurecimiento del hangar, etiquetas de fase, indicadores, progreso, fundido final, relato completo «El legado despierta» y botón Continuar.
-- Desacoplamiento al terminar el nivel 2, con relato «Bajo la roca» y destino indicado por la historia original. A continuación comienza el nivel 3.
-
-- Nivel 3: túneles con Protesser, 36 plataformas, 24 enemigos grupo C, 18 células y 5 checkpoints.
-- Nivel 4: fortaleza con Garbin, 13 plataformas, 10 enemigos grupo D, 7 células y 2 checkpoints.
-- Garbin: salud 220, altura 160, velocidad 190, armas de daño 3/12, poses propias y disparo elevado de pie o agachado.
-- Doble acoplamiento tras el nivel 3: 15 segundos, relato completo «Tres corazas, una voluntad» y entrada a Garbin. Desacoplamiento y relato completos tras el nivel 4; la campaña se detiene antes del nivel 5.
-- Centinela: 180 de salud, dos fases, cuatro ataques con avisos, música/efectos de combate y barra de salud. La salida requiere derrotarlo; su derrota queda guardada. Perder una vida antes de vencerlo reinicia el combate.
+- Base web: 11439a2ef93966d3e5c8e7df9147a979d7e61f80.
+- Referencia Android anterior: 0.4.0, commit 85b2bed4cfba7dc2c86ecd94dd15f7552d803b20. El usuario validó sus cuatro niveles en teléfono; el recorte del enemigo flotante del nivel 3 se corrige en esta entrega.
+- Niveles 1–12: recorridos completos, plataformas, grupos enemigos A–F, barreras, células, checkpoints y acompañante. Se conservan las extensiones de los recorridos de la web.
+- Protesser, Dellinger y Garbin: armas, poses y estadísticas propias; controles multitáctiles y mando.
+- Centinela de acero, Dellinger Oscuro, cuatro encuentros de élite y Dokuma con tres fases, drones, suministros y ataques telegrafiados.
+- En los combates finales, la destrucción de Garbin libera a Dellinger; la de Dellinger libera a Protesser. La derrota de Protesser consume una vida y el reintento restaura Garbin y al jefe.
+- Vencer a Dokuma con Garbin lleva al epílogo; con Dellinger abre Núcleo Madokter (13); con Protesser abre Cryodrax Prime (14). Los extras comienzan con Garbin y conservan las vidas.
+- Todas las transiciones y relatos, incluido el desacoplamiento doble tras el nivel 8 y el reabastecimiento del 11. Duraciones originales: 15 s tras el 3, 20,8 s tras el 8, 10 s tras el 11 y 11 s en las restantes.
+- Pantalla principal con arte, textos, nueva misión, continuar y IntroGordian en bucle. La música se detiene al jugar y se suspende al enviar la app al fondo.
+- Sonidos diferenciados de los nuevos jefes: teletransporte, espada, invocación, rayos, hielo y descarga del reactor.
+- Las texturas de plataformas se cargan para el nivel actual y se liberan al cambiar de nivel, en vez de mantener toda la campaña simultáneamente.
 
 ## Preparar y ejecutar
 
@@ -29,58 +27,57 @@ godot --headless --path android-godot --editor --import
 godot --path android-godot
 ```
 
-Sustituir godot por la ruta real. assets/ se genera a partir de dist/ y no se versiona; el APK incluye todos los recursos. El exportador genera cuatro niveles, una referencia de la transición a 120 Hz y una simulación determinista del primer jefe desde el código web. Mantener estas referencias sincronizadas al modificar el original.
-
-En PowerShell:
+assets/ se genera a partir de dist/ y no se versiona. El APK incluye los recursos generados. El exportador también genera las referencias de transición y jefes usadas por las pruebas; estas referencias se excluyen del APK y de Git.
 
 ```powershell
 ./android-godot/tools/build.ps1 -Godot 'C:/ruta/godot_console.exe' -ExportAndroid
 ```
 
-El script prepara, importa, ejecuta las seis suites y exporta si se solicita. Las pruebas escriben guardados en el perfil de Godot usado: utilizar un perfil de pruebas si se quiere conservar una partida local.
+El script prepara, importa, ejecuta siete suites y exporta si se solicita. Usar un perfil de pruebas: las pruebas de integración escriben guardados en el perfil de Godot activo.
 
 ## Exportación e instalación
 
-Plantillas Godot 4.7.2, OpenJDK 17, SDK Android con platform-tools, build-tools 36.0.0 y android-36. Configurar SDK, Java y keystore debug en los ajustes del editor. No versionar claves. Crear android-godot/build/ antes de exportar directamente:
+Plantillas Godot 4.7.2, OpenJDK 17, SDK Android con platform-tools, build-tools 36.0.0 y android-36. Configurar SDK, Java y keystore debug en los ajustes del editor. No versionar claves.
 
 ```sh
 godot --headless --path android-godot --export-debug "Android Debug" build/gordian-level1-debug.apk
 ```
 
-El nombre interno del archivo de salida se conserva por compatibilidad con los scripts; ahora contiene los cuatro niveles. APK entregado: gordian-campaign-v0.4.0-debug.apk. ARM64, API mínima 24, target 36, OpenGL ES 3, horizontal, sin permiso de Internet. Paquete com.facszero.gordian.prototype, versionCode 6, misma firma debug que 0.1.3. Instalar como actualización, sin desinstalar.
+El nombre interno de salida se conserva por compatibilidad; contiene toda la campaña. Entrega: gordian-campaign-v0.5.0-debug.apk. Paquete com.facszero.gordian.prototype, versionCode 7, versión 0.5.0-campaign. ARM64, Android 7 mínimo, target 36, OpenGL ES 3, horizontal y sin permiso de Internet. Misma firma debug que las entregas anteriores: instalar encima, sin desinstalar.
 
-## Partidas y transición
+## Guardados
 
-Se mantiene la ruta user://level1.json y el nombre interno del proyecto para conservar los datos de las instalaciones anteriores. El esquema 2 identifica el nivel e incluye barreras destruidas; se aceptan partidas del esquema 1 para el nivel 1.
+Se mantienen user://level1.json y el nombre interno del proyecto para conservar los datos. Compatible con esquemas 1 y 2; añade élites derrotados, robot vencedor y página del epílogo. Las partidas anteriores reciben valores predeterminados para esos campos.
 
-- Una partida en progreso retoma su último checkpoint.
-- Una partida antigua que completó el nivel 1 puede continuar directamente con Dellinger. Una partida de 0.2.0 que completó el nivel 2 continúa con el nivel 3.
-- Si se guardó durante la transición, se vuelve a mostrar desde el inicio, igual que en la web.
-- Al cambiar de nivel se conservan vidas; células, bajas y tiempo del nivel se reinician como en la referencia.
-- El cambio de nivel se guarda inmediatamente, también al pulsar Continuar.
-- Las cuatro vidas se recuperan al iniciar una nueva misión o reiniciar manualmente un nivel.
+- Partida en curso: continúa desde el último checkpoint.
+- Partida de 0.4.0 con el nivel 4 completado: continúa al 5.
+- Durante una transición: vuelve a mostrarla desde el inicio, como la web.
+- Vidas conservadas al avanzar, salvo tras los niveles 4 y 8, donde se restauran a cuatro.
+- Se guardan barreras, enemigos, células y jefes/élites derrotados; el daño parcial de un jefe no persiste al reintentar.
+- Victoria y epílogo se recuperan sin perder la ruta secreta correspondiente.
 
 ## Validación
 
-203 comprobaciones: 51 de lógica del nivel 1, 11 de integración, 56 de recursos, 10 de audio enemigo 36 de campaña y 39 de los capítulos 3 y 4. La suite de campaña incluye cada hueco del recorrido principal de la cantera, daño y colisión de barreras, salto y armas de Dellinger, migración de guardados, transición automática y manual, pausa y restauración. Una comprobación compara 1.321 muestras de poses, etiquetas, entrada y fundidos con couplingState() de la web.
+422 comprobaciones: 51 de lógica inicial, 11 de integración, 56 de recursos, 10 de audio, 36 de campaña inicial, 39 de capítulos 3–4 y 219 de campaña completa.
 
-La suite de los capítulos 3 y 4 cubre los huecos del recorrido, armas de Garbin, bloqueo de salida, derrota y reinicio del jefe, guardados y avance de campaña. Compara 60 segundos de ambas fases del jefe contra la implementación web, con aleatoriedad controlada y tolerancia numérica de 0,00001. Se revisaron capturas de túneles, fortaleza, poses de Garbin, acoplamiento y combate.
+La suite nueva comprueba los huecos principales de los niveles 5–12, las armaduras sucesivas, reintentos, guardados, restauración de vidas, avance por los doce niveles, las tres rutas de final y regreso al menú. Comprueba también la suspensión de la música y la duración de los fragmentos de audio.
 
-Capturas reproducibles con:
+La simulación se compara con JavaScript usando aleatoriedad controlada: 60 segundos del Centinela y 90 segundos de cada configuración nueva de jefe/élite, incluyendo cambios de fase. Se comparan estados, tiempos, objetivos, zonas de impacto y proyectiles; tolerancia de 0,001 para los nuevos jefes, por la precisión de Vector2 de Godot. Esto no sustituye una partida completa por una persona.
+
+Capturas reproducibles:
 
 ```sh
-godot --path android-godot --script tests/capture_campaign.gd
-godot --path android-godot --script tests/capture_chapter4.gd
+godot --path android-godot --script tests/capture_full_campaign.gd
 ```
 
-Pendiente: completar los niveles 3 y 4 en un teléfono físico, evaluar dificultad, control y rendimiento sostenido y escuchar la mezcla. La versión 0.2.0 fue validada en teléfono; eso no sustituye la prueba de los nuevos niveles.
+Revisión visual de menú, enemigo corregido, nuevos escenarios, transiciones, jefes, extras y final. Pendiente: jugar los niveles nuevos en teléfono físico, escuchar la mezcla y evaluar dificultad y rendimiento sostenido.
 
 ## Controles y diferencias conocidas
 
-Cruceta multitáctil a la izquierda, acciones verticales (rayo, mira, salto), fondos translúcidos. Teclado: A/D o flechas, espacio/Z, X/J, C/K, arriba/W, abajo/S y Escape. Mando: stick/cruceta, A, X, B y Start.
+Cruceta a la izquierda; acciones verticales translúcidas (rayo, mira, salto). Teclado: A/D o flechas, espacio/Z, X/J, C/K, arriba/W, abajo/S y Escape. Mando: stick/cruceta, A, X, B y Start.
 
-Los sonidos enemigos usan fragmentos MP3, velocidad y filtros de la web, sin su normalización previa de amplitud. Algunos efectos generales siguen sintetizados de forma simplificada; el acoplamiento tiene una recreación del barrido de motor y los tres cierres mecánicos. La tipografía usa la fuente de Godot y puede variar ligeramente respecto de Arial. La interfaz conserva el estilo del port Android. No se afirma equivalencia píxel a píxel ni de mezcla sonora.
+La interfaz está adaptada a Godot y usa su fuente. Los sonidos enemigos y jefes usan los fragmentos, velocidades y filtros originales, sin la normalización previa de amplitud de Web Audio. Algunos efectos generales son síntesis simplificada; los brillos, trazos y mezclas visuales se adaptaron a CanvasItem. No se afirma identidad píxel a píxel ni de mezcla sonora.
 
 ## Próximas etapas
 
-Validar esta campaña en teléfono, corregir diferencias observadas y luego integrar el nivel 5 y la campaña restante y preparar firma de publicación, AAB y pruebas de Google Play. Este proyecto no incluye exportador de Nintendo Switch.
+Validación de la campaña completa en teléfono y corrección de diferencias observadas. Después: optimización, firma de publicación, AAB y pruebas de Google Play. Esta APK usa firma debug y no constituye una entrega de tienda. No incluye exportador de Nintendo Switch.

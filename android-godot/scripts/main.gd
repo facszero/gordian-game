@@ -26,23 +26,29 @@ var toast_time = 0.0
 var autosave = 0.0
 var tones = {}
 var skip_button: Button
+var pause_button: Button
+var menu_clock = 0.0
+var app_active = true
+const AdvancedVisuals = preload("res://scripts/advanced_visuals.gd")
 
 func _ready():
 	get_tree().auto_accept_quit = false
 	get_tree().quit_on_go_back = false
-	for id in [1,2,3,4]:
+	for id in range(1,15):
 		levels[id] = JSON.parse_string(FileAccess.get_file_as_string("res://data/level%d.json" % id))
-		textures["platforms%d" % id] = []
-		for i in levels[id].platforms.size():
-			textures["platforms%d" % id].append(load("res://assets/platform_%d.png" % i if id == 1 else "res://assets/level%d-platform_%d.png" % [id,i]))
+	load_platforms(1)
 	sim = Simulation.new(levels[1])
-	for entry in [["garbin",12],["garbin-up",2],["boss-scorpion",1],["boss-walk",4],["enemy-group-c",8],["enemy-group-d",8],["protesser",8],["dellinger",8],["enemy-army",8],["enemy-group-b",8],["industrial-crates",2],["stations",4],["industrial-props",8],["energy-atom",1],["coupling-front",12],["companion",8]]:
+	var atlas = JSON.parse_string(FileAccess.get_file_as_string("res://data/atlas-spec.json"))
+	for key in atlas:
+		var entry = [key,atlas[key].regions.size()]
 		var frames = []
 		for i in entry[1]: frames.append(load("res://assets/%s_%d.png" % [entry[0],i]))
 		textures[entry[0]] = frames
-	for name in ["canyon","quarry","tunnels","fortress","hangar-background"]: textures[name] = load("res://assets/"+name+".webp")
+	for name in ["canyon","quarry","tunnels","fortress","hangar-background","foundry","dam","reactor","eclipse","nucleus-background","cryo-background"]: textures[name] = load("res://assets/"+name+".webp")
 	setup_inputs()
 	music = audio("IntroGordian",-14)
+	music.finished.connect(func():
+		if sim.mode == "menu": music.play())
 	shot_audio = audio("LivianaSimple1",-10)
 	charge_audio = audio("PesadaSimple1",-10)
 	enemy_audio = preload("res://scripts/enemy_audio.gd").new()
@@ -66,7 +72,7 @@ func _ready():
 	menu = VBoxContainer.new()
 	menu.add_theme_constant_override("separation",18)
 	panel.add_child(menu)
-	var pause_button = Button.new()
+	pause_button = Button.new()
 	pause_button.text = "PAUSA"
 	pause_button.position = Vector2(1120,22)
 	pause_button.size = Vector2(135,55)
@@ -111,7 +117,7 @@ func audio(name: String, volume: float) -> AudioStreamPlayer:
 	return node
 
 func read_campaign() -> Dictionary:
-	for id in [1,2,3,4]:
+	for id in range(1,15):
 		var data = Saves.read_save(levels[id])
 		if not data.is_empty(): return data
 	return {}
@@ -119,18 +125,17 @@ func read_campaign() -> Dictionary:
 func start_level(id: int, data: Dictionary = {}):
 	stop_effects()
 	fingers.clear()
+	load_platforms(id)
 	sim = Simulation.new(levels[id])
 	sim.reset(data)
-	shot_audio.stream = load("res://assets/LivianaSimple2.mp3" if id in [2,4] else "res://assets/LivianaSimple1.mp3")
-	shot_audio.pitch_scale = 0.78 if id == 4 else 1.0 if id == 2 else 1.15
-	charge_audio.pitch_scale = 0.75 if id == 4 else 0.95 if id == 2 else 1.15
+	configure_weapons()
 	finish_transition()
 	persist()
 	refresh_menu()
 
 func finish_transition():
-	if sim.mode == "complete" and sim.level.id < 4:
-		var remaining_lives = sim.lives
+	if sim.mode == "complete" and sim.level.id < 12:
+		var remaining_lives = 4 if int(sim.level.id) in [4,8] else sim.lives
 		start_level(int(sim.level.id)+1,{"lives":remaining_lives})
 
 func restore_campaign():
@@ -167,6 +172,7 @@ func _input(event):
 func _notification(what):
 	if sim == null: return
 	if what in [NOTIFICATION_APPLICATION_PAUSED,NOTIFICATION_APPLICATION_FOCUS_OUT]:
+		app_active = false
 		sim.pause()
 		fingers.clear()
 		persist()
@@ -174,6 +180,7 @@ func _notification(what):
 		stop_effects()
 		refresh_menu()
 	elif what == NOTIFICATION_APPLICATION_FOCUS_IN:
+		app_active = true
 		if music: music.stream_paused = false
 	elif what == NOTIFICATION_WM_GO_BACK_REQUEST: toggle_pause()
 	elif what == NOTIFICATION_WM_CLOSE_REQUEST:
@@ -199,19 +206,26 @@ func refresh_menu():
 		menu.remove_child(child)
 		child.queue_free()
 	last_mode = sim.mode
+	pause_button.visible = sim.mode not in ["menu","complete","game_over"]
+	if sim.mode != "menu": music.stop()
+	panel.position = Vector2(70,320) if sim.mode == "menu" else Vector2(300,145)
+	panel.size = Vector2(510,330) if sim.mode == "menu" else Vector2(680,430)
 	skip_button.visible = sim.mode == "transition"
 	panel.visible = sim.mode in ["menu","pause","complete","game_over"]
 	if not panel.visible:
 		music.stop()
 		return
+	if sim.mode == "complete":
+		show_ending()
+		return
 	var heading = Label.new()
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	heading.add_theme_font_size_override("font_size",32)
-	heading.text = {"menu":"GORDIAN · EL DESPERTAR","pause":"MISIÓN EN PAUSA","complete":"NIVELES 1 A 4 COMPLETADOS","game_over":"MISIÓN TERMINADA"}[sim.mode]
+	heading.text = {"menu":"INICIAR AVENTURA","pause":"MISIÓN EN PAUSA","complete":"CAMPAÑA COMPLETADA","game_over":"MISIÓN TERMINADA"}[sim.mode]
 	menu.add_child(heading)
 	var subtitle = Label.new()
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	subtitle.text = sim.level.title.to_upper()+" · "+sim.level.robot.to_upper()+"\nPrototipo Android · Niveles 1 a 4"
+	subtitle.text = sim.level.title.to_upper()+" · "+sim.level.robot.to_upper()+"\nCampaña completa · 12 niveles + 2 secretos"
 	menu.add_child(subtitle)
 	if sim.mode == "pause": add_button("CONTINUAR",toggle_pause)
 	if sim.mode == "menu" and not read_campaign().is_empty():
@@ -227,8 +241,8 @@ func refresh_menu():
 	help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	help.text = "← → / A D mover · Z / espacio saltar\nX disparar · C potente · ↑ apuntar · ↓ agacharse\nDoble salto: soltar y volver a pulsar salto"
 	menu.add_child(help)
-	if sim.mode == "complete": subtitle.text = "Centinela derrotado. Bastión completado.\nLa fundición del nivel 5 llegará en la próxima etapa."
-	if sim.mode == "menu" and not music.playing: music.play()
+
+	if sim.mode == "menu" and app_active and not music.playing and not music.stream_paused: music.play()
 	var first = menu.find_children("*","Button",false,false)
 	if not first.is_empty(): first[0].grab_focus()
 
@@ -241,13 +255,14 @@ func add_button(title: String, callback: Callable):
 
 func _physics_process(dt):
 	if sim == null: return
+	menu_clock += dt
 	var actions = {}
 	for action in controls:
 		actions[action] = Input.is_action_pressed(action)
 		for point in fingers.values():
 			if controls[action].has_point(point): actions[action] = true
 	sim.update(dt,actions)
-	if sim.mode == "complete" and sim.level.id < 4:
+	if sim.mode == "complete" and sim.level.id < 12:
 		finish_transition()
 		return
 	for event in sim.events:
@@ -255,9 +270,15 @@ func _physics_process(dt):
 		elif event == "shot": shot_audio.play()
 		elif event == "charge": charge_audio.play()
 		elif event in ["jump","pickup","checkpoint","hit","explosion"]: tone(event)
+		elif event == "armor_lost":
+			configure_weapons()
+			fingers.clear()
+			toast = "ARMADURA DESTRUIDA · "+sim.robot.to_upper()+" ACTIVO"
+			toast_time = 3
+			tone("coupling")
 		elif event == "boss_warning": tone("boss_warning")
 		elif event in ["boss_active","boss_defeated"]:
-			toast = "CENTINELA DE ACERO · JEFE 01" if event == "boss_active" else "CENTINELA DERROTADO · SALIDA ABIERTA"
+			toast = "COMBATE ACTIVADO" if event == "boss_active" else "ENEMIGO DERROTADO · SALIDA ABIERTA"
 			toast_time = 4
 		if event == "checkpoint":
 			toast = "PUNTO DE CONTROL · SISTEMAS RESTAURADOS"
@@ -320,7 +341,10 @@ func sprite_at(key: String, index: int, center: float, feet: float, height: floa
 
 func _draw():
 	if sim == null or textures.is_empty(): return
-	var transition = sim.mode == "transition" or (sim.mode == "pause" and sim.before_pause == "transition") or sim.mode == "complete"
+	if sim.mode == "menu":
+		draw_title()
+		return
+	var transition = sim.mode == "transition" or (sim.mode == "pause" and sim.before_pause == "transition") or (sim.mode == "complete" and sim.level.id < 12)
 	if transition:
 		Transition.draw(self)
 		draw_hud()
@@ -328,18 +352,22 @@ func _draw():
 	var bg = textures[sim.level.get("background","canyon")]
 	var scale_bg = maxf(1280.0/bg.get_width(),720.0/bg.get_height())*1.22
 	var size_bg = bg.get_size()*scale_bg
-	draw_texture_rect(bg,Rect2(-sim.camera/(sim.level.width-1280)*(size_bg.x-1280),-(size_bg.y-720)*0.35,size_bg.x,size_bg.y),false)
+	draw_texture_rect(bg,Rect2(-sim.camera/maxf(1,sim.level.width-1280)*(size_bg.x-1280),-(size_bg.y-720)*0.35,size_bg.x,size_bg.y),false)
 	draw_rect(Rect2(0,0,1280,720),Color(0.03,0.07,0.12,0.18))
+	if sim.level.get("extra",false): AdvancedVisuals.draw(self,sim.boss)
 	for platform_index in sim.level.platforms.size():
 		var p = sim.level.platforms[platform_index]
 		if p.x+p.w < sim.camera or p.x > sim.camera+1280: continue
 		var x = p.x-sim.camera
 		draw_texture(textures["platforms%d" % int(sim.level.id)][platform_index],Vector2(x,p.y-36))
-	sprite_at("stations",0,170-sim.camera,sim.level.spawn.y+sim.spec.height,205)
+		if sim.level.id == 14:
+			draw_rect(Rect2(x,p.y-3,p.w,5),Color("e0f5ff"))
+			for icicle in range(12,int(p.w)-8,37): draw_colored_polygon(PackedVector2Array([Vector2(x+icicle,p.y+2),Vector2(x+icicle+5,p.y+10+fmod(icicle*13+p.y,19)),Vector2(x+icicle+9,p.y+2)]),Color("9edaf3"))
+	if not sim.level.get("extra",false): sprite_at("stations",0,170-sim.camera,sim.level.spawn.y+sim.level.robotSpec.height,280 if sim.level.robot == "garbin" else 230 if sim.level.robot == "dellinger" else 205)
 	var exit_floor = 560.0
 	for p in sim.level.platforms:
 		if sim.level.exit >= p.x and sim.level.exit < p.x+p.w: exit_floor = p.y
-	sprite_at("stations",1,sim.level.exit-sim.camera,exit_floor,205)
+	if not sim.level.get("extra",false): sprite_at("stations",1,sim.level.exit-sim.camera,exit_floor,280 if sim.level.robot == "garbin" else 230 if sim.level.robot == "dellinger" else 205)
 	for i in sim.level.checkpoints.size():
 		var cp = sim.level.checkpoints[i]
 		var feet = cp.y+sim.spec.height
@@ -355,12 +383,13 @@ func _draw():
 		if not b.dead: picture(textures["industrial-crates"][1 if b.hp < 6 else 0],Rect2(b.x-sim.camera,b.y,b.w,b.h))
 	for e in sim.enemies:
 		if e.dead or absf(e.x-sim.camera-640)>800: continue
-		var tex = textures[["enemy-army","enemy-group-b","enemy-group-c","enemy-group-d"][int(sim.level.id)-1]][int(e.frame)+(1 if e.flash>0 else 0)]
+		var tex = textures["enemy-army" if e.group == "A" else "enemy-group-"+e.group.to_lower()][int(e.frame)+(1 if e.flash>0 else 0)]
 		if e.type != "drone": Visuals.oval(self,Vector2(e.x+e.w/2-sim.camera,e.y+e.h+1),Vector2(e.w*0.5,5),Color(0.016,0.043,0.082,0.6))
 		var flip = sim.player.x+sim.player.w/2 < e.x+e.w/2
-		picture(tex,Rect2(e.x-10-sim.camera,e.y-3,e.w+20,e.h+3),not flip if sim.level.id == 4 else flip)
+		picture(tex,Rect2(e.x-10-sim.camera,e.y-3,e.w+20,e.h+3),not flip if e.group in ["D","E","F"] else flip)
 		if e.timer < 0.4: draw_circle(Vector2(e.x+e.w/2-sim.camera,e.y-10),5,Color.ORANGE)
-	BossVisuals.draw(self)
+	if not sim.level.get("extra",false): BossVisuals.draw(self)
+	for elite in sim.elites: BossVisuals.draw(self,elite)
 	if sim.companion.active:
 		var cat = sim.companion
 		var tex = textures.companion[int(cat.frame)]
@@ -369,7 +398,7 @@ func _draw():
 		var p = sim.player
 		var frame = 7 if p.crouching else 4 if p.aim_up else 6 if not p.grounded else int(sim.clock*11)%4 if absf(p.vx)>10 else 5 if sim.cooldown>0.08 else 4
 		var alpha = 0.45 if sim.invulnerable>0 and int(sim.clock*12)%2 else 1.0
-		if sim.level.robot == "garbin" and p.aim_up:
+		if sim.robot == "garbin" and p.aim_up:
 			var texture = textures["garbin-up"][1 if p.crouching else 0]
 			var height = p.h*(1.21/0.79 if p.crouching else 1.145/0.84)
 			var width = texture.get_width()*height/texture.get_height()
@@ -377,9 +406,10 @@ func _draw():
 			draw_set_transform(Vector2(p.x+p.w/2-sim.camera,p.y+p.h),0,Vector2(p.face,1))
 			draw_texture_rect(texture,Rect2(-width*anchor,-height,width,height),false,Color(1,1,1,alpha))
 			draw_set_transform(Vector2.ZERO)
-		else: Visuals.robot(self,textures[sim.level.robot][frame],Vector2(p.x+p.w/2-sim.camera,p.y+p.h),p.h,p.face,p.aim_up,alpha,sim.spec.height)
+		else: Visuals.robot(self,textures[sim.robot][frame],Vector2(p.x+p.w/2-sim.camera,p.y+p.h),p.h,p.face,p.aim_up,alpha,sim.spec.height)
 	for s in sim.shots:
-		Visuals.shot(self,s,sim.camera)
+		if s.get("ice",false) or s.get("nucleus",false): AdvancedVisuals.projectile(self,s)
+		else: Visuals.shot(self,s,sim.camera)
 	for effect in sim.effects: Visuals.effect(self,effect,sim.camera)
 	draw_hud()
 	if sim.mode == "play":
@@ -392,16 +422,77 @@ func _draw():
 
 func draw_hud():
 	draw_rect(Rect2(0,0,1280,95),Color(0.02,0.05,0.09,0.92))
-	label_at(sim.level.robot.to_upper(),Vector2(25,30),24,Color("efc983"))
+	label_at(sim.robot.to_upper(),Vector2(25,30),24,Color("efc983"))
 	draw_rect(Rect2(25,43,240,13),Color("344455"))
 	draw_rect(Rect2(25,43,240*sim.player.health/sim.spec.maxHealth,13),Color("60dfbb"))
 	label_at("ENERGÍA %d%% · VIDAS %d / 4" % [sim.energy,sim.lives],Vector2(25,80),18)
-	if not sim.boss.is_empty() and sim.boss.active:
-		label_at(sim.boss.name,Vector2(380,30),20,Color("ffc574"))
+	var encounter = sim.boss
+	for elite in sim.elites:
+		if elite.active: encounter = elite
+	if not encounter.is_empty() and encounter.active:
+		label_at(encounter.name,Vector2(380,30),20,Color("ffc574"))
 		draw_rect(Rect2(380,42,480,18),Color("182734"))
-		draw_rect(Rect2(380,42,480*sim.boss.hp/sim.boss.maxHp,18),Color("ed7354"))
-		label_at("FASE 2" if sim.boss.hp <= sim.boss.maxHp/2 else "FASE 1",Vector2(380,83),16)
+		draw_rect(Rect2(380,42,480*encounter.hp/encounter.maxHp,18),Color("ed7354"))
+		label_at("FASE %d" % encounter.get("phase",2 if encounter.hp <= encounter.maxHp/2 else 1),Vector2(380,83),16)
 		return
 	label_at("NIVEL %02d · %s" % [sim.level.id,sim.level.title.to_upper()],Vector2(380,32),22)
 	label_at("CÉLULAS %d / %d · ENEMIGOS %d" % [sim.cells,sim.pickups.size(),sim.kills],Vector2(380,62),18)
 	draw_rect(Rect2(380,76,480*clampf(sim.player.x/sim.level.exit,0,1),4),Color.CYAN)
+
+func configure_weapons():
+	shot_audio.stream = load("res://assets/LivianaSimple1.mp3" if sim.robot == "protesser" else "res://assets/LivianaSimple2.mp3")
+	shot_audio.pitch_scale = 0.78 if sim.robot == "garbin" else 1.0 if sim.robot == "dellinger" else 1.15
+	charge_audio.pitch_scale = 0.75 if sim.robot == "garbin" else 0.95 if sim.robot == "dellinger" else 1.15
+
+func show_ending():
+	var key = sim.victory_robot if sim.victory_robot != "" else sim.robot
+	var story = sim.level.epilogue if sim.ending_page == "epilogue" else sim.level.victories[key]
+	var title = Label.new()
+	title.text = story.title
+	title.add_theme_font_size_override("font_size",26)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	menu.add_child(title)
+	var body = Label.new()
+	body.text = story.body
+	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	body.custom_minimum_size = Vector2(640,180)
+	body.add_theme_font_size_override("font_size",22)
+	menu.add_child(body)
+	var note = Label.new()
+	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	note.text = story.get("note","%d enemigos neutralizados · %d células · VIDAS %d / 4" % [sim.kills,sim.cells,sim.lives])
+	menu.add_child(note)
+	add_button("VOLVER AL MENÚ PRINCIPAL" if sim.ending_page == "epilogue" else "CONTINUAR →",continue_ending)
+
+func continue_ending():
+	if sim.ending_page == "epilogue":
+		sim.mode = "menu"
+	elif sim.level.id == 12 and sim.victory_robot in ["dellinger","protesser"]:
+		start_level(13 if sim.victory_robot == "dellinger" else 14,{"lives":sim.lives})
+		return
+	else:
+		sim.ending_page = "epilogue"
+		persist()
+	refresh_menu()
+
+func draw_title():
+	draw_texture_rect(textures.canyon,Rect2(0,0,1280,720),false)
+	draw_rect(Rect2(0,0,1280,720),Color("07132199"))
+	draw_rect(Rect2(0,0,640,720),Color("071321bb"))
+	label_at("UNA NUEVA BATALLA COMIENZA",Vector2(70,80),17,Color("e8b76d"))
+	label_at("GORDIAN",Vector2(65,170),76,Color("f4e9cf"))
+	label_at("EL DESPERTAR",Vector2(70,208),28,Color("9deaff"))
+	draw_rect(Rect2(70,229,390,3),Color("e8b76d"))
+	label_at("El desierto guarda un legado.",Vector2(70,270),23)
+	label_at("Entra en Protesser. Protege Victor Town.",Vector2(70,302),23)
+	sprite_at("protesser",4,930,650+sin(menu_clock)*2,440)
+	label_at("01 / PROTESSER",Vector2(840,90),24,Color("e8b76d"))
+	label_at("ÁGIL · PRECISO · RESISTENTE",Vector2(840,120),16)
+	label_at("CAPÍTULOS 01–12 · DOS RUTAS SECRETAS",Vector2(70,698),15,Color("9eb3c2"))
+
+func load_platforms(id: int):
+	for key in textures.keys():
+		if key.begins_with("platforms"): textures.erase(key)
+	textures["platforms%d" % id] = []
+	for i in levels[id].platforms.size():
+		textures["platforms%d" % id].append(load("res://assets/platform_%d.png" % i if id == 1 else "res://assets/level%d-platform_%d.png" % [id,i]))

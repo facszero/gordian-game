@@ -10,6 +10,10 @@ static func read_save(level: Dictionary, path = PATH) -> Dictionary:
 	if (data.get("version") != 1 and data.get("version") != 2) or data.get("level_id") != level.id: return {}
 	if data.version == 1 and level.id != 1: return {}
 	if not data.has("destroyed"): data.destroyed = []
+	if not data.has("elites_defeated"): data.elites_defeated = []
+	data.victory_robot = data.get("victory_robot",level.robot)
+	if data.victory_robot not in ["protesser","dellinger","garbin"]: data.victory_robot = level.robot
+	data.ending_page = "epilogue" if data.get("ending_page") == "epilogue" else "victory"
 	data.boss_defeated = level.has("boss") and data.get("boss_defeated",false) == true
 	for field in ["lives","checkpoint","kills","cells","elapsed"]:
 		if not (data.get(field) is float or data.get(field) is int): return {}
@@ -17,7 +21,7 @@ static func read_save(level: Dictionary, path = PATH) -> Dictionary:
 	if data.lives < 1 or data.lives > 4: return {}
 	if data.checkpoint < -1 or data.checkpoint >= level.checkpoints.size(): return {}
 	data.checkpoint = int(data.checkpoint)
-	for spec in [["defeated",level.enemies.size()],["collected",level.pickups.size()],["destroyed",level.get("barriers",[]).size()]]:
+	for spec in [["elites_defeated",level.get("elites",[]).size()],["defeated",level.enemies.size()],["collected",level.pickups.size()],["destroyed",level.get("barriers",[]).size()]]:
 		if not data.get(spec[0]) is Array: return {}
 		var clean = []
 		for id in data[spec[0]]:
@@ -26,6 +30,7 @@ static func read_save(level: Dictionary, path = PATH) -> Dictionary:
 		data[spec[0]] = clean
 	if data.get("stage") not in ["play","transition","complete"]: data.stage = "play"
 	if level.has("boss") and not data.boss_defeated: data.stage = "play"
+	if data.elites_defeated.size() < level.get("elites",[]).size(): data.stage = "play"
 	data.kills = maxi(0,int(data.kills))
 	data.cells = maxi(0,int(data.cells))
 	data.elapsed = maxf(0,data.elapsed)

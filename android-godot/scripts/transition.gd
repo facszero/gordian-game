@@ -72,6 +72,8 @@ static func draw(c: Node2D):
 		for i in steps.size():
 			c.draw_circle(Vector2(72,340+i*31),4,Color("81e4eb") if i <= active else Color("344d60"))
 			c.label_at(steps[i],Vector2(88,345+i*31),12,Color("f2d093") if i == active else Color("91a8b8"))
+	elif c.sim.level.id >= 5:
+		later(c,t)
 	elif c.sim.level.id == 2:
 		if t < 8.5: pose(c,state(maxf(0,10.4-t*1.22)).pose)
 		else:
@@ -99,7 +101,7 @@ static func draw(c: Node2D):
 		c.label_at(("PROTESSER → DELLINGER" if t < 8 else "DELLINGER → GARBIN") if c.sim.level.id == 3 else "GARBIN → DELLINGER",Vector2(64,264),15,Color("e8c483"))
 		c.label_at("DESTINO: "+c.sim.level.nextTitle.to_upper(),Vector2(64,340),12,Color("a3bac8"))
 	c.draw_rect(Rect2(64,290,330,4),Color("233d4e"))
-	var duration = 15.0 if c.sim.level.id == 3 else 11.0
+	var duration = c.sim.transition_duration()
 	c.draw_rect(Rect2(64,290,330*minf(1,t/(10.4 if c.sim.level.id == 1 else duration)),4),Color("79e5ef"))
 	var fade = s.fade if c.sim.level.id == 1 else clampf((t-duration+0.5)*2,0,1)
 	if fade > 0: c.draw_rect(Rect2(0,0,1280,720),Color(0.027,0.067,0.122,fade))
@@ -118,3 +120,36 @@ static func draw(c: Node2D):
 	c.label_at(line,Vector2(64,y),17,Color("dfebf2"))
 	if t < 3:
 		c.label_at("ACOPLAMIENTO AUTORIZADO" if int(c.sim.level.id)%2 else "DESACOPLAMIENTO AUTORIZADO",Vector2(430,140),20,Color("ffd18b"))
+
+static func garbin(c,t,duration,reverse):
+	var phase = duration-t if reverse else t
+	var frame = 8 if phase < 4.4 else 9 if phase < 5.8 else 10 if phase < 7.2 else 11 if phase < 8.8 else 4
+	c.sprite_at("garbin",frame,810,604,460)
+	if phase < 4.4:
+		var p = smooth(phase/3.8)
+		pose(c,8,440+370*p,604,320-90*p,minf(1,(4.4-phase)*2))
+
+static func later(c,t):
+	var id = int(c.sim.level.id)
+	var title = "ACOPLAMIENTO"
+	if id in [5,6,7,10]:
+		garbin(c,t,11,id == 6)
+		if id == 6: title = "DESACOPLAMIENTO"
+	elif id == 11:
+		c.sprite_at("garbin",4,810,604,460)
+		title = "REABASTECIMIENTO"
+	else:
+		if id == 8: title = "DESACOPLAMIENTO DOBLE"
+		if id == 8 and t < 10.4:
+			garbin(c,t,10.4,true)
+		else:
+			var local = t-10.4 if id == 8 else t
+			var s = state(maxf(0,10.4-local) if id == 8 else local)
+			pose(c,s.pose)
+			if s.pose == 0:
+				var p = 1-smooth(maxf(0,(local-7)/3.4)) if id == 8 else s.entry
+				pose(c,11,420+390*p,604,330+100*p)
+	c.label_at("SANTORE / TRANSICIÓN %02d → %02d" % [id,id+1],Vector2(64,192),14,Color("e8b76d"))
+	c.label_at(title,Vector2(64,232),19,Color("b9efff"))
+	c.label_at(c.sim.level.robot.to_upper()+" → "+c.sim.level.nextRobot.to_upper(),Vector2(64,264),15,Color("e8c483"))
+	c.label_at("DESTINO: "+c.sim.level.nextTitle.to_upper(),Vector2(64,340),12,Color("a3bac8"))

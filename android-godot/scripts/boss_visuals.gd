@@ -1,6 +1,9 @@
 extends RefCounted
-static func draw(c: Node2D):
-	var b = c.sim.boss
+static func draw(c: Node2D, subject: Dictionary = {}):
+	var b = c.sim.boss if subject.is_empty() else subject
+	if not b.is_empty() and b.has("kind"):
+		c.AdvancedVisuals.draw(c,b)
+		return
 	if b.is_empty() or b.dead or b.x > c.sim.camera+1380: return
 	var frame = posmod(floori(-b.walkDistance/10),4)
 	var tint = Color(1.8,1.8,1.8) if b.flash > 0 else Color.WHITE
