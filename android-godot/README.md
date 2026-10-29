@@ -1,16 +1,20 @@
-# Gordian: prototipo Android del nivel 1
+# Gordian Android — campaña 0.2.0
 
-Port nativo en Godot 4.7.2 (GDScript, renderizador Compatibility). El juego se ejecuta con el motor Godot; no utiliza WebView. La referencia es el commit web `11439a2ef93966d3e5c8e7df9147a979d7e61f80`.
+Port nativo Godot 4.7.2 / GDScript / Compatibility. Incluye los niveles 1 y 2 completos, sin WebView y sin conexión. El juego web permanece intacto en dist/.
 
-## Alcance
+## Referencias y alcance
 
-Todo el recorrido de Victor Town: 40 plataformas, 26 enemigos, 18 células, 5 checkpoints, cuatro vidas y llegada al hangar con secuencia de acoplamiento. Incluye introducción con acompañante, salto variable y doble salto, disparo normal/potente/vertical, agacharse, controles multitáctiles, teclado y mando, pausa y guardado local. Recuperar partida comienza en el último checkpoint, conservando vidas, enemigos derrotados y células recogidas. Al completar el acoplamiento termina el prototipo; no carga el nivel 2.
-
-Los datos geométricos proceden del nivel web completo. Esto no significa paridad exacta: la IA y algunos sonidos sintetizados son implementaciones iniciales que requieren comparación y ajuste. La revisión 0.1.1 incorpora el recorte y rotación del brazo elevado, los proyectiles y efectos verdes de Protesser y todas las capas de las plataformas, siguiendo el código web. El esquema de guardado es independiente de la versión web.
+- Base web: commit 11439a2ef93966d3e5c8e7df9147a979d7e61f80.
+- Referencia estable Android 0.1.3, validada por el usuario en teléfono: commit d83e87282b13940eaf3215d08be4284768f4007c. Su APK se conserva separado de las entregas nuevas.
+- Nivel 1, Victor Town: Protesser, 40 plataformas, 26 enemigos, 18 células y 5 checkpoints.
+- Nivel 2, Cantera de Santore: Dellinger, 32 plataformas, 26 enemigos grupo B, 16 células, 5 checkpoints y 8 barreras destructibles.
+- Dellinger: salud 150, ancho 55, alto 120, velocidad 240, salto proporcional a su altura, disparos de daño 2/8 y cadencia 0,24 s. Armamento rojo, poses y audio propios.
+- Acoplamiento 01 → 02: 11 segundos, entrada de Protesser, poses y mezclas, luces mecánicas, sombra, oscurecimiento del hangar, etiquetas de fase, indicadores, progreso, fundido final, relato completo «El legado despierta» y botón Continuar.
+- Desacoplamiento al terminar el nivel 2, con relato «Bajo la roca» y destino indicado por la historia original. Después se muestra el límite de esta entrega: el nivel 3 todavía no está incluido.
 
 ## Preparar y ejecutar
 
-Requisitos: Node.js compatible con el proyecto web y Godot **4.7.2 standard**, no .NET. Desde la raíz del repositorio:
+Instalar Node.js y Godot **4.7.2 standard**, no .NET. Desde la raíz:
 
 ```sh
 node android-godot/tools/export-reference.mjs
@@ -19,65 +23,55 @@ godot --headless --path android-godot --editor --import
 godot --path android-godot
 ```
 
-Sustituir `godot` por la ruta del ejecutable instalado. Los PNG y audios de `assets/` son generados a partir de `dist/` y están ignorados en Git; ejecutar la preparación antes de abrir el proyecto por primera vez. El APK sí incluye todos estos recursos y puede jugarse sin conexión.
+Sustituir godot por la ruta real. assets/ se genera a partir de dist/ y no se versiona; el APK incluye todos los recursos. El exportador genera los dos niveles y una referencia de la transición a 120 Hz desde el código web. Mantener estas referencias sincronizadas al modificar el original.
 
-En Windows se puede ejecutar `./android-godot/tools/build.ps1 -Godot 'C:/ruta/godot_console.exe'`. Agregar `-ExportAndroid` para exportar después de preparar y verificar.
+En PowerShell:
 
-## Exportar Android
+```powershell
+./android-godot/tools/build.ps1 -Godot 'C:/ruta/godot_console.exe' -ExportAndroid
+```
 
-Instalar las plantillas de exportación **4.7.2**, OpenJDK 17 y Android SDK (platform-tools, build-tools 36.0.0 y plataforma android-36). En los ajustes del editor de Godot, Export > Android, configurar las rutas del SDK, Java y un keystore de depuración. No guardar claves ni contraseñas privadas en Git.
+El script prepara, importa, ejecuta las cinco suites y exporta si se solicita. Las pruebas escriben guardados en el perfil de Godot usado: utilizar un perfil de pruebas si se quiere conservar una partida local.
+
+## Exportación e instalación
+
+Plantillas Godot 4.7.2, OpenJDK 17, SDK Android con platform-tools, build-tools 36.0.0 y android-36. Configurar SDK, Java y keystore debug en los ajustes del editor. No versionar claves. Crear android-godot/build/ antes de exportar directamente:
 
 ```sh
 godot --headless --path android-godot --export-debug "Android Debug" build/gordian-level1-debug.apk
 ```
 
-Crear antes `android-godot/build/`. Preset de prueba: ARM64, Android 7/API 24 o posterior, OpenGL ES 3, orientación horizontal, target API 36, sin permiso de Internet. Identificador provisional: `com.facszero.gordian.prototype`. Es un APK de depuración para instalación directa; no es todavía una entrega para Google Play. El AAB, firma de publicación e identificador definitivo corresponden a una etapa posterior.
+El nombre interno del archivo de salida se conserva por compatibilidad con los scripts; ahora contiene ambos niveles. APK entregado: gordian-campaign-v0.2.0-debug.apk. ARM64, API mínima 24, target 36, OpenGL ES 3, horizontal, sin permiso de Internet. Paquete com.facszero.gordian.prototype, versionCode 5, misma firma debug que 0.1.3. Instalar como actualización, sin desinstalar.
 
-## Verificación
+## Partidas y transición
+
+Se mantiene la ruta user://level1.json y el nombre interno del proyecto para conservar los datos de las instalaciones anteriores. El esquema 2 identifica el nivel e incluye barreras destruidas; se aceptan partidas del esquema 1 para el nivel 1.
+
+- Una partida en progreso retoma su último checkpoint.
+- Una partida antigua que completó el nivel 1 puede continuar directamente con Dellinger.
+- Si se guardó durante la transición, se vuelve a mostrar desde el inicio, igual que en la web.
+- Al cambiar de nivel se conservan vidas; células, bajas y tiempo del nivel se reinician como en la referencia.
+- El cambio de nivel se guarda inmediatamente, también al pulsar Continuar.
+- Las cuatro vidas se recuperan al iniciar una nueva misión o reiniciar manualmente un nivel.
+
+## Validación
+
+164 comprobaciones: 51 de lógica del nivel 1, 11 de integración, 56 de recursos, 10 de audio enemigo y 36 de campaña. La suite de campaña incluye cada hueco del recorrido principal de la cantera, daño y colisión de barreras, salto y armas de Dellinger, migración de guardados, transición automática y manual, pausa y restauración. Una comprobación compara 1.321 muestras de poses, etiquetas, entrada y fundidos con couplingState() de la web.
+
+Capturas reproducibles con:
 
 ```sh
-godot --headless --path android-godot --script tests/test_level1.gd
-godot --headless --path android-godot --script tests/test_runtime.gd
-npm test
+godot --path android-godot --script tests/capture_campaign.gd
 ```
 
-Resultados del primer prototipo: 51 comprobaciones de simulación y guardado, 11 de integración, y 128 pruebas del juego web aprobadas. Las pruebas de simulación incluyen todos los huecos del recorrido principal. Se verificó renderizado de escritorio y firma APK v2/v3. Las pruebas de integración escriben un guardado de prueba: usar un perfil de usuario separado si se desea conservar una partida local.
+Pendiente: completar ambos niveles de esta versión en un teléfono físico, evaluar dificultad, control y rendimiento sostenido y escuchar la mezcla. La versión 0.1.3 fue validada en teléfono; eso no sustituye la prueba de la nueva campaña.
 
-Pendiente en teléfono físico: completar el nivel manualmente; comprobar multitáctil y comodidad de botones, muescas/barras del sistema, audio, rendimiento sostenido, pausa al bloquear/cambiar de app y restauración tras cerrar el proceso. Las pruebas automatizadas no sustituyen esta evaluación.
+## Controles y diferencias conocidas
 
-## Controles
+Cruceta multitáctil a la izquierda, acciones verticales (rayo, mira, salto), fondos translúcidos. Teclado: A/D o flechas, espacio/Z, X/J, C/K, arriba/W, abajo/S y Escape. Mando: stick/cruceta, A, X, B y Start.
 
-- Mover: A/D o flechas; mando: cruceta/stick izquierdo.
-- Saltar: espacio/Z o A del mando. Soltar y pulsar de nuevo para doble salto.
-- Disparar: X/J o X del mando. Potente: C/K o B del mando.
-- Apuntar arriba/agacharse: flechas arriba/abajo o W/S.
-- Pausa: Escape, Start, botón de pantalla o Atrás en Android.
+Los sonidos enemigos usan fragmentos MP3, velocidad y filtros de la web, sin su normalización previa de amplitud. Algunos efectos generales siguen sintetizados de forma simplificada; el acoplamiento tiene una recreación del barrido de motor y los tres cierres mecánicos. La tipografía usa la fuente de Godot y puede variar ligeramente respecto de Arial. La interfaz conserva el estilo del port Android. No se afirma equivalencia píxel a píxel ni de mezcla sonora.
 
-## Siguientes hitos
+## Próximas etapas
 
-1. Validar y ajustar este nivel en un teléfono real, incluyendo rendimiento y controles.
-2. Comparar con el original y cerrar diferencias de combate, animación y audio.
-3. Migrar progresivamente robots, campaña, jefes y niveles secretos.
-4. Preparar versión de publicación y pruebas de Google Play con requisitos vigentes en ese momento.
-
-Este prototipo Android no incluye exportador Nintendo Switch ni confirma compatibilidad de un proveedor de consolas.
-
-## Revisión 0.1.1
-
-Cruceta en la disposición web y acciones en columna (rayo, mira y salto), dibujadas como vectores para evitar diferencias de fuentes. Fondos al 7% de opacidad, símbolos al 68% y mayor contraste al pulsar. Se puede deslizar el dedo entre direcciones mientras se mantiene el disparo. Plataformas ensambladas fuera de la ejecución del juego y recortadas a su superficie original. Los efectos de disparo se pausan con el juego y se eliminan al reaparecer.
-
-El APK utiliza el mismo identificador y clave de depuración que la entrega anterior, con versionCode 2, para actualizar conservando los datos. Las capturas de revisión se pueden regenerar con 
-
-`godot --path android-godot --script tests/capture_visuals.gd`.
-
-## Revisión 0.1.2
-
-Corrige el recorte de las ocho piezas industriales: usa el umbral alpha > 150/255 de la web, eliminando márgenes casi transparentes que aplastaban el tablero y separaban visualmente sus soportes. Regenera las 40 plataformas sin cambiar sus colisiones. Añade 48 comprobaciones de márgenes y dimensiones al proceso de construcción. APK con versionCode 3 y la misma firma de depuración.
-
-
-## Revisión 0.1.3
-
-Aplica el recorte alpha > 150/255 a las ocho poses de enemy-army y añade la sombra de apoyo terrestre de la web. Mantiene posiciones y colisiones. Incorpora disparos enemigos ligeros y pesados con LivianaSimple1 y LivianaSimple2, offsets, duraciones, velocidades y filtros de weapon-audio.js. Atenúa por distancia, limita a tres voces y separa emisiones al menos 90 ms; pausa y segundo plano detienen las voces. La mezcla utiliza fragmentos MP3 directos, sin la normalización previa de amplitud de Web Audio, por lo que requiere ajustar a oído el balance en teléfono. Los sonidos de jefes no forman parte de este nivel.
-
-Validación: 51 comprobaciones de lógica, 11 de integración general, 56 de recorte/dimensiones y 10 de audio enemigo. Capturas de tanque en reposo y disparando revisadas. versionCode 4, misma firma de depuración.
-
+Validar esta campaña en teléfono, corregir diferencias observadas y luego integrar el nivel 3, Garbin y el primer jefe. Después migrar la campaña restante y preparar firma de publicación, AAB y pruebas de Google Play. Este proyecto no incluye exportador de Nintendo Switch.

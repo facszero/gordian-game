@@ -27,17 +27,18 @@ func _init():
 			if not spec.get("preserve",false):
 				# WebP can leave nearly transparent pixels across the whole cell.
 				# Match environment.js's alpha > 150 bounds, not any nonzero alpha.
-				var bounds = industrial_bounds(frame) if key in ["industrial-props","enemy-army"] else frame.get_used_rect()
+				var bounds = industrial_bounds(frame) if key in ["industrial-props","enemy-army","enemy-group-b","dellinger","industrial-crates"] else frame.get_used_rect()
 				frame = frame.get_region(bounds)
 			if frame.save_png("res://assets/%s_%d.png" % [key,index]) != OK:
 				quit(1)
 				return
 			index += 1
-	for key in ["canyon","hangar-background"]:
+	for key in ["canyon","quarry","hangar-background"]:
 		DirAccess.copy_absolute("res://../dist/assets/"+key+".webp","res://assets/"+key+".webp")
 	for key in ["IntroGordian","LivianaSimple1","LivianaSimple2","PesadaSimple1"]:
 		DirAccess.copy_absolute("res://../dist/audio/"+key+".mp3","res://assets/"+key+".mp3")
-	prepare_platforms()
+	prepare_platforms(1)
+	prepare_platforms(2)
 	print("Assets prepared offline; no chroma processing during gameplay.")
 	quit()
 
@@ -61,9 +62,9 @@ func stamp(canvas: Image, part: Image, x: float, y: float, w: float, h: float):
 	scaled.resize(maxi(1,roundi(w)),maxi(1,roundi(h)),Image.INTERPOLATE_BILINEAR)
 	canvas.blend_rect(scaled,Rect2i(0,0,scaled.get_width(),scaled.get_height()),Vector2i(roundi(x),roundi(y)))
 
-func prepare_platforms():
+func prepare_platforms(level_id: int):
 	# Same layers, clipping and dimensions as environment.js buildPlatform().
-	var level = JSON.parse_string(FileAccess.get_file_as_string("res://data/level1.json"))
+	var level = JSON.parse_string(FileAccess.get_file_as_string("res://data/level%d.json" % level_id))
 	var parts = []
 	for i in 8: parts.append(Image.load_from_file("res://assets/industrial-props_%d.png" % i))
 	for index in level.platforms.size():
@@ -82,12 +83,13 @@ func prepare_platforms():
 		for i in count:
 			var x = roundi(i*p.w/count)
 			var end = roundi((i+1)*p.w/count)
-			stamp(canvas,parts[0],x,36,end-x,45)
-		canvas.fill_rect(Rect2i(0,37,canvas.get_width(),1),Color("d7b18a"))
+			stamp(canvas,parts[1 if level_id == 2 else 0],x,36,end-x,45)
+		canvas.fill_rect(Rect2i(0,37,canvas.get_width(),1),Color("e7c278") if level_id == 2 else Color("d7b18a"))
 		if p.w > 300:
 			stamp(canvas,parts[7],10,54,14,23)
 			stamp(canvas,parts[7],p.w-25,54,14,23)
-		if canvas.save_png("res://assets/platform_%d.png" % index) != OK:
+		var target = "res://assets/platform_%d.png" % index if level_id == 1 else "res://assets/level2-platform_%d.png" % index
+		if canvas.save_png(target) != OK:
 			push_error("Could not generate platform " + str(index))
 			quit(1)
 			return

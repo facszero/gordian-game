@@ -5,3 +5,4 @@ build/
 export_credentials.cfg
 android/
 assets/
+data/coupling-reference.json

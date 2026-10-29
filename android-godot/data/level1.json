@@ -697,6 +697,11 @@
     "height": 90,
     "maxHealth": 100
   },
+  "story": [
+    "EL LEGADO DESPIERTA",
+    "Victor Town resiste. Daigo comprende por qué su padre creó a Gordian: para proteger a quienes aún creen en el mañana. Desde Santore, Saori señala el camino hacia la cantera."
+  ],
+  "nextTitle": "Cantera de Santore",
   "companion": {
     "active": true,
     "x": 205,

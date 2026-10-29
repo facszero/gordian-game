@@ -2,6 +2,8 @@ extends Node2D
 const Simulation = preload("res://scripts/simulation.gd")
 const Saves = preload("res://scripts/save_store.gd")
 const Visuals = preload("res://scripts/visuals.gd")
+const Transition = preload("res://scripts/transition.gd")
+var levels = {}
 var sim
 var textures = {}
 var fingers = {}
@@ -27,15 +29,17 @@ var skip_button: Button
 func _ready():
 	get_tree().auto_accept_quit = false
 	get_tree().quit_on_go_back = false
-	var data = JSON.parse_string(FileAccess.get_file_as_string("res://data/level1.json"))
-	sim = Simulation.new(data)
-	textures["platforms"] = []
-	for i in sim.level.platforms.size(): textures["platforms"].append(load("res://assets/platform_%d.png" % i))
-	for entry in [["protesser",8],["enemy-army",8],["stations",4],["industrial-props",8],["energy-atom",1],["coupling-front",12],["companion",8]]:
+	for id in [1,2]:
+		levels[id] = JSON.parse_string(FileAccess.get_file_as_string("res://data/level%d.json" % id))
+		textures["platforms%d" % id] = []
+		for i in levels[id].platforms.size():
+			textures["platforms%d" % id].append(load("res://assets/platform_%d.png" % i if id == 1 else "res://assets/level2-platform_%d.png" % i))
+	sim = Simulation.new(levels[1])
+	for entry in [["protesser",8],["dellinger",8],["enemy-army",8],["enemy-group-b",8],["industrial-crates",2],["stations",4],["industrial-props",8],["energy-atom",1],["coupling-front",12],["companion",8]]:
 		var frames = []
 		for i in entry[1]: frames.append(load("res://assets/%s_%d.png" % [entry[0],i]))
 		textures[entry[0]] = frames
-	for name in ["canyon","hangar-background"]: textures[name] = load("res://assets/"+name+".webp")
+	for name in ["canyon","quarry","hangar-background"]: textures[name] = load("res://assets/"+name+".webp")
 	setup_inputs()
 	music = audio("IntroGordian",-14)
 	shot_audio = audio("LivianaSimple1",-10)
@@ -46,6 +50,7 @@ func _ready():
 	add_child(synth)
 	for kind in ["jump","pickup","checkpoint","hit","explosion"]:
 		tones[kind] = make_tone(kind)
+	tones["coupling"] = Transition.sound()
 	var layer = CanvasLayer.new()
 	add_child(layer)
 	ui = Control.new()
@@ -75,12 +80,13 @@ func _ready():
 		mute_button.text = "SONIDO ON" if sound_on else "SONIDO OFF")
 	ui.add_child(mute_button)
 	skip_button = Button.new()
-	skip_button.text = "OMITIR ACOPLAMIENTO"
+	skip_button.text = "CONTINUAR →"
 	skip_button.position = Vector2(940,620)
 	skip_button.size = Vector2(310,60)
 	skip_button.pressed.connect(func():
 		if sim.mode == "transition":
 			sim.mode = "complete"
+			finish_transition()
 			persist()
 			refresh_menu())
 	ui.add_child(skip_button)
@@ -101,6 +107,33 @@ func audio(name: String, volume: float) -> AudioStreamPlayer:
 	node.volume_db = volume
 	add_child(node)
 	return node
+
+func read_campaign() -> Dictionary:
+	for id in [1,2]:
+		var data = Saves.read_save(levels[id])
+		if not data.is_empty(): return data
+	return {}
+
+func start_level(id: int, data: Dictionary = {}):
+	stop_effects()
+	fingers.clear()
+	sim = Simulation.new(levels[id])
+	sim.reset(data)
+	shot_audio.stream = load("res://assets/LivianaSimple2.mp3" if id == 2 else "res://assets/LivianaSimple1.mp3")
+	shot_audio.pitch_scale = 1.0 if id == 2 else 1.15
+	charge_audio.pitch_scale = 0.95 if id == 2 else 1.15
+	finish_transition()
+	persist()
+	refresh_menu()
+
+func finish_transition():
+	if sim.mode == "complete" and sim.level.id == 1:
+		var remaining_lives = sim.lives
+		start_level(2,{"lives":remaining_lives})
+
+func restore_campaign():
+	var saved = read_campaign()
+	if not saved.is_empty(): start_level(int(saved.level_id),saved)
 
 func setup_inputs():
 	var keys = {"left":[KEY_LEFT,KEY_A],"right":[KEY_RIGHT,KEY_D],"up":[KEY_UP,KEY_W],"crouch":[KEY_DOWN,KEY_S],"jump":[KEY_SPACE,KEY_Z],"fire":[KEY_X,KEY_J],"charge":[KEY_C,KEY_K],"pause_game":[KEY_ESCAPE]}
@@ -172,21 +205,17 @@ func refresh_menu():
 	var heading = Label.new()
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	heading.add_theme_font_size_override("font_size",32)
-	heading.text = {"menu":"GORDIAN · EL DESPERTAR","pause":"MISIÓN EN PAUSA","complete":"NIVEL 1 COMPLETADO","game_over":"MISIÓN TERMINADA"}[sim.mode]
+	heading.text = {"menu":"GORDIAN · EL DESPERTAR","pause":"MISIÓN EN PAUSA","complete":"NIVELES 1 Y 2 COMPLETADOS","game_over":"MISIÓN TERMINADA"}[sim.mode]
 	menu.add_child(heading)
 	var subtitle = Label.new()
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	subtitle.text = "VICTOR TOWN · PROTESSER\nPrototipo Android · Nivel 1 completo"
+	subtitle.text = sim.level.title.to_upper()+" · "+sim.level.robot.to_upper()+"\nPrototipo Android · Niveles 1 y 2"
 	menu.add_child(subtitle)
 	if sim.mode == "pause": add_button("CONTINUAR",toggle_pause)
-	if sim.mode == "menu" and not Saves.read_save(sim.level).is_empty():
-		add_button("RECUPERAR PARTIDA",func():
-			sim.reset(Saves.read_save(sim.level))
-			refresh_menu())
+	if sim.mode == "menu" and not read_campaign().is_empty():
+		add_button("RECUPERAR PARTIDA",restore_campaign)
 	add_button("INICIAR MISIÓN" if sim.mode == "menu" else "REINICIAR NIVEL",func():
-		sim.reset()
-		persist()
-		refresh_menu())
+		start_level(1 if sim.mode == "menu" else int(sim.level.id)))
 	if sim.mode != "menu":
 		add_button("GUARDAR Y VOLVER AL MENÚ",func():
 			persist()
@@ -196,7 +225,7 @@ func refresh_menu():
 	help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	help.text = "← → / A D mover · Z / espacio saltar\nX disparar · C potente · ↑ apuntar · ↓ agacharse\nDoble salto: soltar y volver a pulsar salto"
 	menu.add_child(help)
-	if sim.mode == "complete": subtitle.text = "Llegaste al hangar y completaste el acoplamiento.\nLa campaña continúa en la versión web."
+	if sim.mode == "complete": subtitle.text = "Cantera completada y Protesser liberado.\nLos túneles del nivel 3 llegarán en la próxima etapa."
 	if sim.mode == "menu" and not music.playing: music.play()
 	var first = menu.find_children("*","Button",false,false)
 	if not first.is_empty(): first[0].grab_focus()
@@ -216,6 +245,9 @@ func _physics_process(dt):
 		for point in fingers.values():
 			if controls[action].has_point(point): actions[action] = true
 	sim.update(dt,actions)
+	if sim.mode == "complete" and sim.level.id == 1:
+		finish_transition()
+		return
 	for event in sim.events:
 		if event == "save": persist()
 		elif event == "shot": shot_audio.play()
@@ -231,6 +263,9 @@ func _physics_process(dt):
 		autosave = 0
 	toast_time = maxf(0,toast_time-dt)
 	if last_mode != sim.mode:
+		if sim.mode == "transition" and last_mode != "pause":
+			stop_effects()
+			tone("coupling")
 		fingers.clear()
 		refresh_menu()
 	queue_redraw()
@@ -281,19 +316,10 @@ func _draw():
 	if sim == null or textures.is_empty(): return
 	var transition = sim.mode == "transition" or (sim.mode == "pause" and sim.before_pause == "transition") or sim.mode == "complete"
 	if transition:
-		draw_texture_rect(textures["hangar-background"],Rect2(0,0,1280,720),false)
-		var cues = [0,3,3.8,4.6,5.4,6.2,6.9,7.6,8.1,8.6,9.1]
-		var pose = 0
-		for i in cues.size():
-			if sim.timer >= cues[i]: pose = i
-		sprite_at("coupling-front",pose,810,604,490)
-		if sim.timer > 0.9 and sim.timer < 3:
-			var t = smoothstep(0,1,(sim.timer-0.9)/2.1)
-			sprite_at("coupling-front",11,420+390*t,636-32*t,330+100*t)
-		label_at("ACOPLAMIENTO · PROTESSER + DELLINGER",Vector2(50,250),24)
-		label_at("VICTOR TOWN · MISIÓN COMPLETADA",Vector2(50,290),20)
+		Transition.draw(self)
+		draw_hud()
 		return
-	var bg = textures.canyon
+	var bg = textures[sim.level.get("background","canyon")]
 	var scale_bg = maxf(1280.0/bg.get_width(),720.0/bg.get_height())*1.22
 	var size_bg = bg.get_size()*scale_bg
 	draw_texture_rect(bg,Rect2(-sim.camera/(sim.level.width-1280)*(size_bg.x-1280),-(size_bg.y-720)*0.35,size_bg.x,size_bg.y),false)
@@ -302,28 +328,30 @@ func _draw():
 		var p = sim.level.platforms[platform_index]
 		if p.x+p.w < sim.camera or p.x > sim.camera+1280: continue
 		var x = p.x-sim.camera
-		draw_texture(textures["platforms"][platform_index],Vector2(x,p.y-36))
-	sprite_at("stations",0,170-sim.camera,560,205)
+		draw_texture(textures["platforms%d" % int(sim.level.id)][platform_index],Vector2(x,p.y-36))
+	sprite_at("stations",0,170-sim.camera,sim.level.spawn.y+sim.spec.height,205)
 	var exit_floor = 560.0
 	for p in sim.level.platforms:
 		if sim.level.exit >= p.x and sim.level.exit < p.x+p.w: exit_floor = p.y
 	sprite_at("stations",1,sim.level.exit-sim.camera,exit_floor,205)
 	for i in sim.level.checkpoints.size():
 		var cp = sim.level.checkpoints[i]
-		var feet = cp.y+90
+		var feet = cp.y+sim.spec.height
 		for p in sim.level.platforms:
-			if cp.x >= p.x and cp.x < p.x+p.w and p.y >= cp.y+88:
+			if cp.x >= p.x and cp.x < p.x+p.w and p.y >= cp.y+sim.spec.height-2:
 				feet = p.y
 				break
 		sprite_at("stations",3 if i <= sim.checkpoint else 2,cp.x+24-sim.camera,feet,80)
 		label_at("CP "+str(i+1),Vector2(cp.x-sim.camera,feet-90),16,Color.CYAN)
 	for p in sim.pickups:
 		if not p.taken: sprite_at("energy-atom",0,p.x+12-sim.camera,p.y+24,32)
+	for b in sim.barriers:
+		if not b.dead: picture(textures["industrial-crates"][1 if b.hp < 6 else 0],Rect2(b.x-sim.camera,b.y,b.w,b.h))
 	for e in sim.enemies:
 		if e.dead or absf(e.x-sim.camera-640)>800: continue
-		var tex = textures["enemy-army"][int(e.frame)+(1 if e.flash>0 else 0)]
+		var tex = textures["enemy-group-b" if sim.level.id == 2 else "enemy-army"][int(e.frame)+(1 if e.flash>0 else 0)]
 		if e.type != "drone": Visuals.oval(self,Vector2(e.x+e.w/2-sim.camera,e.y+e.h+1),Vector2(e.w*0.5,5),Color(0.016,0.043,0.082,0.6))
-		picture(tex,Rect2(e.x-10-sim.camera,e.y-3,e.w+20,e.h+3),sim.player.x+19 < e.x+e.w/2)
+		picture(tex,Rect2(e.x-10-sim.camera,e.y-3,e.w+20,e.h+3),sim.player.x+sim.player.w/2 < e.x+e.w/2)
 		if e.timer < 0.4: draw_circle(Vector2(e.x+e.w/2-sim.camera,e.y-10),5,Color.ORANGE)
 	if sim.companion.active:
 		var cat = sim.companion
@@ -332,18 +360,11 @@ func _draw():
 	if sim.mode != "dead":
 		var p = sim.player
 		var frame = 7 if p.crouching else 4 if p.aim_up else 6 if not p.grounded else int(sim.clock*11)%4 if absf(p.vx)>10 else 5 if sim.cooldown>0.08 else 4
-		Visuals.robot(self,textures["protesser"][frame],Vector2(p.x+19-sim.camera,p.y+p.h),p.h,p.face,p.aim_up,0.45 if sim.invulnerable>0 and int(sim.clock*12)%2 else 1.0)
+		Visuals.robot(self,textures[sim.level.robot][frame],Vector2(p.x+p.w/2-sim.camera,p.y+p.h),p.h,p.face,p.aim_up,0.45 if sim.invulnerable>0 and int(sim.clock*12)%2 else 1.0,sim.spec.height)
 	for s in sim.shots:
 		Visuals.shot(self,s,sim.camera)
 	for effect in sim.effects: Visuals.effect(self,effect,sim.camera)
-	draw_rect(Rect2(0,0,1280,95),Color(0.02,0.05,0.09,0.92))
-	label_at("PROTESSER",Vector2(25,30),24,Color("efc983"))
-	draw_rect(Rect2(25,43,240,13),Color("344455"))
-	draw_rect(Rect2(25,43,240*sim.player.health/100,13),Color("60dfbb"))
-	label_at("ENERGÍA %d%% · VIDAS %d / 4" % [sim.energy,sim.lives],Vector2(25,80),18)
-	label_at("NIVEL 01 · VICTOR TOWN",Vector2(380,32),22)
-	label_at("CÉLULAS %d / %d · ENEMIGOS %d" % [sim.cells,sim.pickups.size(),sim.kills],Vector2(380,62),18)
-	draw_rect(Rect2(380,76,480*clampf(sim.player.x/sim.level.exit,0,1),4),Color.CYAN)
+	draw_hud()
 	if sim.mode == "play":
 		for action in controls:
 			var rect = controls[action]
@@ -351,3 +372,13 @@ func _draw():
 			for point in fingers.values(): active = active or rect.has_point(point)
 			Visuals.control(self,action,rect,active)
 	if toast_time>0: label_at(toast,Vector2(380,130),20,Color.CYAN)
+
+func draw_hud():
+	draw_rect(Rect2(0,0,1280,95),Color(0.02,0.05,0.09,0.92))
+	label_at(sim.level.robot.to_upper(),Vector2(25,30),24,Color("efc983"))
+	draw_rect(Rect2(25,43,240,13),Color("344455"))
+	draw_rect(Rect2(25,43,240*sim.player.health/sim.spec.maxHealth,13),Color("60dfbb"))
+	label_at("ENERGÍA %d%% · VIDAS %d / 4" % [sim.energy,sim.lives],Vector2(25,80),18)
+	label_at("NIVEL %02d · %s" % [sim.level.id,sim.level.title.to_upper()],Vector2(380,32),22)
+	label_at("CÉLULAS %d / %d · ENEMIGOS %d" % [sim.cells,sim.pickups.size(),sim.kills],Vector2(380,62),18)
+	draw_rect(Rect2(380,76,480*clampf(sim.player.x/sim.level.exit,0,1),4),Color.CYAN)

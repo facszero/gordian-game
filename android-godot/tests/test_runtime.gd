@@ -55,7 +55,7 @@ func run():
 	await physics_frame
 	expect(game.sim.mode == "transition" and game.skip_button.visible,"Coupling UI")
 	game.skip_button.pressed.emit()
-	expect(game.sim.mode == "complete" and game.panel.visible,"Skip reaches completed level")
+	expect(game.sim.mode == "play" and game.sim.level.id == 2 and not game.panel.visible,"Skip continues into level 2")
 	game.queue_free()
 	await process_frame
 	print("Godot runtime: 11 checks, %d failures" % failures)

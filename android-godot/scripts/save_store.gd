@@ -7,14 +7,16 @@ static func read_save(level: Dictionary, path = PATH) -> Dictionary:
 	if parser.parse(FileAccess.get_file_as_string(path)) != OK: return {}
 	var data = parser.data
 	if not data is Dictionary: return {}
-	if data.get("version") != 1 or data.get("level_id") != 1: return {}
+	if (data.get("version") != 1 and data.get("version") != 2) or data.get("level_id") != level.id: return {}
+	if data.version == 1 and level.id != 1: return {}
+	if not data.has("destroyed"): data.destroyed = []
 	for field in ["lives","checkpoint","kills","cells","elapsed"]:
 		if not (data.get(field) is float or data.get(field) is int): return {}
 		if not is_finite(float(data[field])): return {}
 	if data.lives < 1 or data.lives > 4: return {}
 	if data.checkpoint < -1 or data.checkpoint >= level.checkpoints.size(): return {}
 	data.checkpoint = int(data.checkpoint)
-	for spec in [["defeated",level.enemies.size()],["collected",level.pickups.size()]]:
+	for spec in [["defeated",level.enemies.size()],["collected",level.pickups.size()],["destroyed",level.get("barriers",[]).size()]]:
 		if not data.get(spec[0]) is Array: return {}
 		var clean = []
 		for id in data[spec[0]]:
