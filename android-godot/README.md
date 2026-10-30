@@ -1,4 +1,4 @@
-# Gordian Android — campaña 0.5.2
+# Gordian Android — campaña 0.5.3
 
 Port nativo Godot 4.7.2 / GDScript / Compatibility. Campaña de doce niveles, dos rutas secretas, menú principal y tema musical. Funciona sin WebView y sin conexión. La versión web en dist/ permanece intacta.
 
@@ -15,6 +15,14 @@ Port nativo Godot 4.7.2 / GDScript / Compatibility. Campaña de doce niveles, do
 - Pantalla principal con arte, textos, nueva misión, continuar y IntroGordian en bucle. La música se detiene al jugar y se suspende al enviar la app al fondo.
 - Sonidos diferenciados de los nuevos jefes: teletransporte, espada, invocación, rayos, hielo y descarga del reactor.
 - Las texturas de plataformas se cargan para el nivel actual y se liberan al cambiar de nivel, en vez de mantener toda la campaña simultáneamente.
+
+## Correcciones y efectos 0.5.3
+
+Se corrigen seis anclajes de enemigos terrestres en las uniones de recorridos extendidos (niveles 2, 5, 6, 7, 9 y 10), y el recorte de la fila superior del grupo F para eliminar un fragmento del robot inferior. Los drones conservan sus alturas.
+
+La descarga principal del Núcleo mantiene dos anillos concéntricos y añade una corona Tesla giratoria con ramificaciones. El proyectil principal de Cryodrax incorpora facetas, puntas que crecen y fragmentos que se desprenden. Son animaciones procedurales basadas en la vida del disparo, se congelan en pausa y conservan daño y colisiones. Las ramas y esquirlas exteriores son decorativas.
+
+Validación: 422 comprobaciones existentes, seis regresiones de anclajes y capturas de doce fases de cada efecto con el renderizador real. APK 0.5.3-campaign (código 10), misma firma y guardado. Pendiente de prueba en teléfono por el usuario.
 
 ## Ayuda de controles 0.5.2
 

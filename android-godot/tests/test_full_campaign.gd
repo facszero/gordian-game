@@ -13,6 +13,10 @@ func _init(): call_deferred("run")
 func run():
 	var levels = {}
 	for id in range(1,15): levels[id] = JSON.parse_string(FileAccess.get_file_as_string("res://data/level%d.json" % id))
+	# These units stood at the old floor height after route extension.
+	for fixture in [[2,12],[5,12],[6,12],[7,13],[9,41],[10,28]]:
+		var enemy = levels[fixture[0]].enemies[fixture[1]]
+		check(enemy.y == 560, "Extended route ground anchor %s" % str(fixture))
 	for id in range(5,13):
 		var s = Sim.new(levels[id])
 		var floors = s.level.platforms.filter(func(p): return p.w >= 300)

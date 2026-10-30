@@ -9,6 +9,12 @@ import {INDUSTRIAL_REGIONS} from '../../dist/src/environment.js';
 import {CHAPTER_STORY} from '../../dist/src/story.js';
 import {couplingState} from '../../dist/src/coupling.js';
 import {createBoss,updateBoss,bossBounds} from '../../dist/src/boss.js';
+// Extended routes can replace the floor at the join; bind ground units to its actual surface.
+function groundY(level,type,x,y,w){
+ if(type==='drone')return y;
+ const floors=level.platforms.filter(p=>x+w/2>=p.x&&x+w/2<=p.x+p.w&&p.y>=y-2);
+ return floors.length?Math.min(...floors.map(p=>p.y)):y;
+}
 const root=new URL('../',import.meta.url);
 const boss=createBoss(LEVELS[3].boss),player={x:5600,y:400,w:80,h:160},trace=[];
 for(let frame=0;frame<3600;frame++){
@@ -31,7 +37,7 @@ for(const config of [LEVELS[7].boss,LEVELS[11].boss,NUCLEUS.boss,CRYODRAX.boss,.
 }
 fs.writeFileSync(new URL('data/advanced-reference.json',root),JSON.stringify(advanced));
 for(const level of [...LEVELS,NUCLEUS,CRYODRAX]) {
-fs.writeFileSync(new URL(`data/level${level.id}.json`,root),JSON.stringify({...level,sourceCommit:'11439a2ef93966d3e5c8e7df9147a979d7e61f80',gravity:GRAVITY,robots:ROBOTS,robotSpec:ROBOTS[level.robot],story:CHAPTER_STORY[level.id]||[],nextTitle:LEVELS[level.id]?.title||'',nextRobot:LEVELS[level.id]?.robot||'',victories:Object.fromEntries(Object.keys(ROBOTS).map(r=>[r,victoryStory(level.id,r)])),epilogue:epilogueStory(!!level.extra),enemies:level.enemies.map(([type,x,y],id)=>({type,x,y,id,...enemySpec(type,level.id,groupForEnemy(level.id,id),level.robot)})),companion:createCompanion(level)},null,2)+'\n');
+fs.writeFileSync(new URL(`data/level${level.id}.json`,root),JSON.stringify({...level,sourceCommit:'11439a2ef93966d3e5c8e7df9147a979d7e61f80',gravity:GRAVITY,robots:ROBOTS,robotSpec:ROBOTS[level.robot],story:CHAPTER_STORY[level.id]||[],nextTitle:LEVELS[level.id]?.title||'',nextRobot:LEVELS[level.id]?.robot||'',victories:Object.fromEntries(Object.keys(ROBOTS).map(r=>[r,victoryStory(level.id,r)])),epilogue:epilogueStory(!!level.extra),enemies:level.enemies.map(([type,x,y],id)=>({type,x,y:groundY(level,type,x,y,enemySpec(type,level.id,groupForEnemy(level.id,id),level.robot).w),id,...enemySpec(type,level.id,groupForEnemy(level.id,id),level.robot)})),companion:createCompanion(level)},null,2)+'\n');
 console.log(`Level ${level.id}: ${level.platforms.length} platforms, ${level.enemies.length} enemies, ${level.checkpoints.length} checkpoints, ${level.pickups.length} cells`);
 }
 fs.writeFileSync(new URL('data/coupling-reference.json',root),JSON.stringify(Array.from({length:1321},(_,i)=>({time:i/120,...couplingState(i/120)}))));
@@ -52,6 +58,7 @@ atlas['garbin-up']={key:'magenta',regions:[[0,0,.5,1],[.5,0,.5,1]]};
 atlas['boss-scorpion']={key:'magenta',regions:[[0,0,1,1]]};
 atlas['boss-walk']={key:'magenta',regions:[[0,.016,.5,.467],[.5,.016,.5,.467],[0,.516,.5,.467],[.5,.516,.5,.467]],preserve:true};
 for(const name of ['enemy-group-e','enemy-group-f']) atlas[name]={key:'magenta',regions:grid(2)};
+atlas['enemy-group-f'].regions=Array.from({length:8},(_,i)=>[i%4/4,i<4?0:.45,.25,i<4?.45:.55]);
 atlas['dark-dellinger']={key:'magenta',regions:[[0,0,.5,.5],[.5,0,.5,.5],[0,.5,.5,.5],[.5,.5,.5,.5]]};
 atlas.dokuma={key:'magenta',regions:[[0,0,.53,.5],[.53,0,.47,.5],[0,.5,.53,.5],[.53,.5,.47,.5]]};
 atlas['dokuma-summon']={key:'magenta',regions:[[0,0,.5,.5],[.5,0,.5,.5],[0,.5,.5,.5],[.5,.5,.5,.5]],preserve:true};

@@ -110,6 +110,12 @@ static func draw_dokuma(c,b,tint):
 
 static func projectile(c,s):
 	var origin = Vector2(s.x-c.sim.camera,s.y)
+	if s.get("reactorBurst",false):
+		tesla(c,s,origin)
+		return
+	if s.get("iceBeam",false):
+		frozen_bolt(c,s,origin)
+		return
 	if s.get("ice",false):
 		c.draw_set_transform(origin,s.angle)
 		var l = s.length/2
@@ -120,3 +126,80 @@ static func projectile(c,s):
 	else:
 		c.Visuals.oval(c,origin,Vector2(s.w/2,s.h/2),Color("ee7cff"))
 		c.Visuals.oval(c,origin,Vector2(s.w/3,s.h/3),Color("ffe4ff"))
+
+static func glow_line(c,points,color,width=2.0):
+	c.draw_polyline(points,Color(color,0.08),width+10,true)
+	c.draw_polyline(points,Color(color,0.23),width+5,true)
+	c.draw_polyline(points,color,width,true)
+	c.draw_polyline(points,Color("fff0ff"),maxf(0.8,width*0.4),true)
+
+static func tesla(c,s,origin):
+	var age = maxf(0,6-s.life)
+	var radius = minf(s.w,s.h)*0.5
+	var pulse = 1+sin(age*13)*0.035
+	c.draw_set_transform(origin,age*1.7,Vector2(s.w/s.h,1))
+	for i in range(8,0,-1):
+		c.draw_circle(Vector2.ZERO,radius*(0.8+i*0.05)*pulse,Color(0.85,0.08,1,0.025))
+	c.draw_circle(Vector2.ZERO,radius*0.81,Color("44136566"))
+	for ring in [0.68,0.95]:
+		var points = PackedVector2Array()
+		for i in 81:
+			var a = TAU*i/80
+			var ripple = sin(a*17+age*18)*1.1+sin(a*31-age*14)*0.7
+			points.append(Vector2.from_angle(a)*(radius*ring*pulse+ripple))
+		glow_line(c,points,Color("f65cff"),2.2)
+	# Branches change shape on a short cadence while the corona rotates smoothly.
+	var tick = floorf(age*14)
+	for i in 10:
+		var angle = TAU*i/10+sin(i*2.7)*0.12
+		var direction = Vector2.from_angle(angle)
+		var tangent = direction.orthogonal()
+		var points = PackedVector2Array()
+		for j in 7:
+			var fraction = j/6.0
+			var jag = sin(i*17.1+j*9.3+tick*7.1)*8*fraction
+			points.append(direction*(radius*0.94+fraction*(20+10*sin(i*3+tick)))+tangent*jag)
+		glow_line(c,points,Color("f761ff"),1.5)
+		var branch = PackedVector2Array([points[3],points[3]+tangent*12+direction*4,points[3]+tangent*18+direction*13])
+		glow_line(c,branch,Color("e953ff"),0.9)
+	for i in range(5,0,-1): c.draw_circle(Vector2.ZERO,radius*(0.36+i*0.035),Color(1,0.65,1,0.05))
+	c.draw_circle(Vector2.ZERO,radius*0.38*pulse,Color("fff2ff"))
+	c.draw_set_transform(Vector2.ZERO)
+
+static func crystal(c,base,tip,width,alpha=1.0):
+	var delta = tip-base
+	var normal = delta.normalized().orthogonal()*width
+	c.draw_colored_polygon(PackedVector2Array([base-normal,tip,base+normal,base-delta*0.2]),Color(0.1,0.55,0.95,alpha))
+	c.draw_colored_polygon(PackedVector2Array([base-normal,tip,base]),Color(0.52,0.89,1,alpha))
+	c.draw_line(base,tip,Color(0.93,1,1,alpha),1.4,true)
+
+static func frozen_bolt(c,s,origin):
+	var age = maxf(0,6-s.life)
+	var l = s.length/2
+	var h = s.thickness/2
+	c.draw_set_transform(origin,s.angle)
+	var hull = PackedVector2Array([Vector2(l+4,0),Vector2(l-30,-h*0.6),Vector2(-l*0.65,-h),Vector2(-l-14,0),Vector2(-l*0.65,h),Vector2(l-30,h*0.6)])
+	for i in range(3,0,-1):
+		var halo = PackedVector2Array()
+		for point in hull: halo.append(point*Vector2(1+i*0.025,1+i*0.18))
+		c.draw_colored_polygon(halo,Color(0.1,0.7,1,0.055))
+	c.draw_colored_polygon(hull,Color("269fe8"))
+	for side in [-1,1]:
+		for i in 7:
+			var cycle = fposmod(age*2.4+i*0.29,1)
+			var x = -l*0.72+i*l*0.23
+			var root = Vector2(x,side*h*(0.84-i*0.065))
+			var height = (14+(6-i)*2.2)*sin(minf(1,cycle/0.7)*PI*0.5)
+			if cycle < 0.7:
+				crystal(c,root,root+Vector2(15,side*height),8)
+			else:
+				var drift = (cycle-0.7)/0.3
+				var base = root+Vector2(-drift*48,side*drift*23)
+				crystal(c,base,base+Vector2(9,side*height*(1-drift*0.6)),5,1-drift)
+				crystal(c,base+Vector2(-12,side*12),base+Vector2(-8,side*18),2,1-drift)
+	c.draw_colored_polygon(PackedVector2Array([Vector2(l,0),Vector2(l-38,-h*0.28),Vector2(-l*0.55,-h*0.6),Vector2(-l*0.87,0),Vector2(-l*0.55,h*0.6),Vector2(l-38,h*0.28)]),Color("b5f4ff"))
+	c.draw_colored_polygon(PackedVector2Array([Vector2(l-8,0),Vector2(-l*0.52,-h*0.27),Vector2(-l*0.76,0),Vector2(-l*0.52,h*0.27)]),Color("f3ffff"))
+	for i in 3:
+		var x = l*(0.2+i*0.25)
+		c.draw_polyline(PackedVector2Array([Vector2(x-11,-h*0.5),Vector2(x+5,0),Vector2(x-11,h*0.5)]),Color("e4ffff"),2,true)
+	c.draw_set_transform(Vector2.ZERO)
